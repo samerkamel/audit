@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class AuditQuestion extends Model
 {
@@ -34,6 +35,17 @@ class AuditQuestion extends Model
         'is_active' => 'boolean',
         'display_order' => 'integer',
     ];
+
+    /**
+     * The checklist groups that include this question.
+     */
+    public function checklistGroups(): BelongsToMany
+    {
+        return $this->belongsToMany(CheckListGroup::class, 'checklist_group_question')
+            ->withPivot('display_order')
+            ->withTimestamps()
+            ->orderByPivot('display_order');
+    }
 
     /**
      * Scope a query to only include active questions.

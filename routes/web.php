@@ -375,6 +375,7 @@ use App\Http\Controllers\SectorController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\AuditPlanController;
 use App\Http\Controllers\AuditQuestionController;
+use App\Http\Controllers\CheckListGroupController;
 
 Route::middleware(['auth'])->group(function () {
     // User Management
@@ -398,4 +399,8 @@ Route::middleware(['auth'])->group(function () {
     // Audit Questions Management
     Route::resource('audit-questions', AuditQuestionController::class);
     Route::post('audit-questions/{id}/reactivate', [AuditQuestionController::class, 'reactivate'])->name('audit-questions.reactivate');
+
+    // CheckList Groups Management
+    Route::resource('checklist-groups', CheckListGroupController::class);
+    Route::post('checklist-groups/{id}/reactivate', [CheckListGroupController::class, 'reactivate'])->name('checklist-groups.reactivate');
 });
