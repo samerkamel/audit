@@ -358,3 +358,11 @@ Route::get('/maps/leaflet', [Leaflet::class, 'index'])->name('maps-leaflet');
 // laravel example
 Route::get('/laravel/user-management', [UserManagement::class, 'UserManagement'])->name('laravel-example-user-management');
 Route::resource('/user-list', UserManagement::class);
+
+// Audit System - User Management
+use App\Http\Controllers\UserController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('users', UserController::class);
+    Route::post('users/{user}/reactivate', [UserController::class, 'reactivate'])->name('users.reactivate');
+});

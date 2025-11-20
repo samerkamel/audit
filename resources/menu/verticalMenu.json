@@ -5,6 +5,15 @@
       "name": "Dashboard",
       "icon": "menu-icon icon-base ti tabler-home",
       "slug": "dashboard"
+    },
+    {
+      "menuHeader": "Administration"
+    },
+    {
+      "url": "/users",
+      "name": "User Management",
+      "icon": "menu-icon icon-base ti tabler-users",
+      "slug": "users"
     }
   ]
 }
