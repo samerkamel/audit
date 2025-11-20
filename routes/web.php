@@ -374,6 +374,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\AuditPlanController;
+use App\Http\Controllers\AuditQuestionController;
 
 Route::middleware(['auth'])->group(function () {
     // User Management
@@ -393,4 +394,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('audit-plans/{auditPlan}/start', [AuditPlanController::class, 'start'])->name('audit-plans.start');
     Route::post('audit-plans/{auditPlan}/complete', [AuditPlanController::class, 'complete'])->name('audit-plans.complete');
     Route::post('audit-plans/{auditPlan}/cancel', [AuditPlanController::class, 'cancel'])->name('audit-plans.cancel');
+
+    // Audit Questions Management
+    Route::resource('audit-questions', AuditQuestionController::class);
+    Route::post('audit-questions/{id}/reactivate', [AuditQuestionController::class, 'reactivate'])->name('audit-questions.reactivate');
 });
