@@ -64,7 +64,10 @@ class AuditPlanController extends Controller
             'planned' => AuditPlan::where('status', 'planned')->count(),
             'in_progress' => AuditPlan::where('status', 'in_progress')->count(),
             'completed' => AuditPlan::where('status', 'completed')->count(),
-            'cancelled' => AuditPlan::where('status', 'cancelled')->count(),
+            'overdue' => AuditPlan::whereHas('departments', function ($query) {
+                $query->where('planned_end_date', '<', now())
+                    ->whereNotIn('audit_plan_department.status', ['completed', 'deferred']);
+            })->count(),
         ];
 
         return view('audit-plans.index', compact('auditPlans', 'departments', 'auditors', 'stats'));
