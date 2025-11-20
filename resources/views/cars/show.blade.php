@@ -179,10 +179,10 @@
       <div class="card mb-6">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="card-title mb-0">Department Responses</h5>
-          @if($car->status === 'issued' || $car->status === 'in_progress')
-          <button class="btn btn-sm btn-primary">
+          @if(in_array($car->status, ['issued', 'in_progress']) && Auth::user()->department_id === $car->to_department_id)
+          <a href="{{ route('cars.responses.create', $car) }}" class="btn btn-sm btn-primary">
             <i class="icon-base ti tabler-plus me-1"></i> Add Response
-          </button>
+          </a>
           @endif
         </div>
         <div class="card-body">
@@ -193,9 +193,16 @@
                 <h6 class="mb-1">Response from {{ $response->respondedBy->name }}</h6>
                 <small class="text-muted">{{ $response->responded_at ? $response->responded_at->format('M d, Y H:i') : 'Not submitted yet' }}</small>
               </div>
-              <span class="badge bg-label-{{ $response->response_status_color }}">
-                {{ ucfirst($response->response_status) }}
-              </span>
+              <div class="d-flex gap-2">
+                <span class="badge bg-label-{{ $response->response_status_color }}">
+                  {{ ucwords(str_replace('_', ' ', $response->response_status)) }}
+                </span>
+                @if(in_array($response->response_status, ['pending', 'rejected']) && Auth::user()->department_id === $car->to_department_id)
+                <a href="{{ route('cars.responses.edit', [$car, $response]) }}" class="btn btn-xs btn-label-primary">
+                  <i class="icon-base ti tabler-edit"></i>
+                </a>
+                @endif
+              </div>
             </div>
 
             <div class="row g-4">
@@ -239,11 +246,66 @@
                   @endif
                 </div>
               </div>
+
+              @if($response->attachments && count($response->attachments) > 0)
+              <div class="col-12">
+                <label class="fw-semibold text-muted small mb-2">Attachments</label>
+                <div class="list-group">
+                  @foreach($response->attachments as $attachment)
+                  <a href="{{ Storage::url($attachment['path']) }}" target="_blank" class="list-group-item list-group-item-action d-flex align-items-center">
+                    <i class="icon-base ti tabler-file me-2"></i>
+                    <span>{{ $attachment['name'] }}</span>
+                    <small class="text-muted ms-auto">({{ number_format($attachment['size'] / 1024, 2) }} KB)</small>
+                  </a>
+                  @endforeach
+                </div>
+              </div>
+              @endif
+
               @if($response->rejection_reason)
               <div class="col-12">
                 <div class="alert alert-danger mb-0" role="alert">
                   <strong>Rejection Reason:</strong><br>
                   {{ $response->rejection_reason }}
+                </div>
+              </div>
+              @endif
+
+              @if($response->response_status === 'submitted')
+              <div class="col-12">
+                <div class="d-flex gap-2">
+                  <form action="{{ route('cars.responses.accept', [$car, $response]) }}" method="POST" class="flex-fill" onsubmit="return confirm('Accept this response?')">
+                    @csrf
+                    <button type="submit" class="btn btn-success w-100">
+                      <i class="icon-base ti tabler-check me-1"></i> Accept Response
+                    </button>
+                  </form>
+                  <button type="button" class="btn btn-danger flex-fill" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $response->id }}">
+                    <i class="icon-base ti tabler-x me-1"></i> Reject Response
+                  </button>
+                </div>
+
+                <!-- Reject Modal -->
+                <div class="modal fade" id="rejectModal{{ $response->id }}" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <form action="{{ route('cars.responses.reject', [$car, $response]) }}" method="POST">
+                      @csrf
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Reject Response</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <label class="form-label" for="rejection_reason{{ $response->id }}">Rejection Reason <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="rejection_reason{{ $response->id }}" name="rejection_reason" rows="4" placeholder="Explain why this response is being rejected..." required></textarea>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="submit" class="btn btn-danger">Reject Response</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
               @endif
@@ -253,7 +315,7 @@
           <div class="text-center py-6">
             <i class="icon-base ti tabler-inbox-off icon-48px text-muted mb-3"></i>
             <p class="text-muted mb-0">No responses yet</p>
-            @if($car->status === 'issued' || $car->status === 'in_progress')
+            @if(in_array($car->status, ['issued', 'in_progress']))
             <small class="text-muted">The responsible department has not submitted a response yet.</small>
             @endif
           </div>
