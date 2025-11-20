@@ -20,6 +20,12 @@
       "name": "Sectors",
       "icon": "menu-icon icon-base ti tabler-building",
       "slug": "sectors"
+    },
+    {
+      "url": "/departments",
+      "name": "Departments",
+      "icon": "menu-icon icon-base ti tabler-building-community",
+      "slug": "departments"
     }
   ]
 }
