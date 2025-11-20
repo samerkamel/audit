@@ -2,7 +2,23 @@
   "permissions": {
     "allow": [
       "Bash(git init:*)",
-      "Bash(gh repo create:*)"
+      "Bash(gh repo create:*)",
+      "Bash(valet --version:*)",
+      "Bash(composer install:*)",
+      "Bash(php artisan:*)",
+      "Bash(mysql:*)",
+      "Bash(brew services:*)",
+      "Bash(valet link:*)",
+      "Bash(sudo -S valet link:*)",
+      "Bash(sudo -S valet secure audit:*)",
+      "Bash(curl -I https://audit.test)",
+      "Bash(valet links:*)",
+      "Bash(curl -Ik https://audit.test)",
+      "Bash(sudo -S valet links:*)",
+      "Bash(chmod:*)",
+      "Bash(git checkout:*)",
+      "Bash(yarn install)",
+      "Bash(yarn build)"
     ],
     "deny": [],
     "ask": []
