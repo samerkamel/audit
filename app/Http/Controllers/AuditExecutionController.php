@@ -76,14 +76,18 @@ class AuditExecutionController extends Controller
     {
         $auditPlan->load(['departments', 'leadAuditor']);
 
-        // Check if user has access
+        // Check if user has access (lead auditor or assigned to any department)
         $user = Auth::user();
-        $hasAccess = $auditPlan->lead_auditor_id === $user->id ||
-            $auditPlan->departments->contains(function ($dept) use ($user) {
-                return $dept->auditors->contains('id', $user->id);
-            });
+        $isLeadAuditor = $auditPlan->lead_auditor_id === $user->id;
 
-        if (!$hasAccess) {
+        // Check if user is assigned to any department in this audit plan
+        $isAssignedAuditor = DB::table('audit_plan_department')
+            ->join('audit_plan_department_auditor', 'audit_plan_department.id', '=', 'audit_plan_department_auditor.audit_plan_department_id')
+            ->where('audit_plan_department.audit_plan_id', $auditPlan->id)
+            ->where('audit_plan_department_auditor.user_id', $user->id)
+            ->exists();
+
+        if (!$isLeadAuditor && !$isAssignedAuditor) {
             return redirect()->route('audit-execution.index')
                 ->with('error', 'You do not have access to this audit plan.');
         }
@@ -122,12 +126,19 @@ class AuditExecutionController extends Controller
      */
     public function execute(AuditPlan $auditPlan, Department $department, CheckListGroup $checklistGroup)
     {
-        // Check if user has access
+        // Check if user has access (lead auditor or assigned to this department)
         $user = Auth::user();
-        $hasAccess = $auditPlan->lead_auditor_id === $user->id ||
-            $department->auditors->contains('id', $user->id);
+        $isLeadAuditor = $auditPlan->lead_auditor_id === $user->id;
 
-        if (!$hasAccess) {
+        // Check if user is assigned to this specific department in this audit plan
+        $isAssignedToDepartment = DB::table('audit_plan_department')
+            ->join('audit_plan_department_auditor', 'audit_plan_department.id', '=', 'audit_plan_department_auditor.audit_plan_department_id')
+            ->where('audit_plan_department.audit_plan_id', $auditPlan->id)
+            ->where('audit_plan_department.department_id', $department->id)
+            ->where('audit_plan_department_auditor.user_id', $user->id)
+            ->exists();
+
+        if (!$isLeadAuditor && !$isAssignedToDepartment) {
             return redirect()->route('audit-execution.show', $auditPlan)
                 ->with('error', 'You do not have access to audit this department.');
         }
