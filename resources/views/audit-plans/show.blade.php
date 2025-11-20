@@ -274,6 +274,91 @@
   </div>
 </div>
 
+<!-- Departments & CheckList Groups -->
+@if($auditPlan->departments->count() > 0)
+<div class="row">
+  <div class="col-12">
+    <div class="card mb-6">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="icon-base ti tabler-building-community me-1"></i> Departments & CheckList Groups
+        </h5>
+      </div>
+      <div class="card-body">
+        @foreach($auditPlan->departments as $department)
+          <div class="border rounded p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h6 class="mb-1">
+                  <span class="badge bg-label-primary me-2">{{ $department->code }}</span>
+                  {{ $department->name }}
+                </h6>
+                @if($department->pivot->notes)
+                  <small class="text-muted">{{ $department->pivot->notes }}</small>
+                @endif
+              </div>
+              <div class="text-end">
+                @if($department->pivot->planned_start_date && $department->pivot->planned_end_date)
+                  <small class="text-muted d-block">
+                    <i class="icon-base ti tabler-calendar-event"></i>
+                    {{ \Carbon\Carbon::parse($department->pivot->planned_start_date)->format('d M Y') }} -
+                    {{ \Carbon\Carbon::parse($department->pivot->planned_end_date)->format('d M Y') }}
+                  </small>
+                @endif
+                <span class="badge bg-label-{{ $department->pivot->status === 'completed' ? 'success' : ($department->pivot->status === 'in_progress' ? 'primary' : 'secondary') }}">
+                  {{ ucfirst(str_replace('_', ' ', $department->pivot->status)) }}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <h6 class="text-muted mb-2">
+                <i class="icon-base ti tabler-list-check me-1"></i> Assigned CheckList Groups
+              </h6>
+              @php
+                $checklistGroups = $auditPlan->checklistGroupsForDepartment($department->id)->get();
+              @endphp
+
+              @if($checklistGroups->count() > 0)
+                <div class="d-flex flex-wrap gap-2">
+                  @foreach($checklistGroups as $group)
+                    <div class="border rounded p-2" style="min-width: 200px;">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                          <small class="fw-medium d-block">{{ $group->code }}</small>
+                          <small class="text-muted d-block">{{ Str::limit($group->title, 30) }}</small>
+                          @if($group->quality_procedure_reference)
+                            <span class="badge bg-label-info badge-sm mt-1">{{ $group->quality_procedure_reference }}</span>
+                          @endif
+                        </div>
+                        <a href="{{ route('checklist-groups.show', $group) }}" class="btn btn-xs btn-icon btn-label-primary" title="View Details">
+                          <i class="icon-base ti tabler-eye"></i>
+                        </a>
+                      </div>
+                      <small class="text-muted d-block mt-1">
+                        <i class="icon-base ti tabler-list"></i> {{ $group->auditQuestions->count() }} questions
+                      </small>
+                    </div>
+                  @endforeach
+                </div>
+              @else
+                <div class="alert alert-warning mb-0">
+                  <i class="icon-base ti tabler-alert-triangle me-1"></i>
+                  No checklist groups assigned to this department yet.
+                  @if(!in_array($auditPlan->status, ['completed', 'cancelled']))
+                    <a href="{{ route('audit-plans.edit', $auditPlan) }}" class="alert-link">Add checklist groups</a>
+                  @endif
+                </div>
+              @endif
+            </div>
+          </div>
+        @endforeach
+      </div>
+    </div>
+  </div>
+</div>
+@endif
+
 <!-- Description, Scope, and Objectives -->
 <div class="row">
   @if($auditPlan->description)

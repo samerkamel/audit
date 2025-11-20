@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AuditPlan extends Model
@@ -56,6 +57,24 @@ class AuditPlan extends Model
                 'notes'
             ])
             ->withTimestamps();
+    }
+
+    /**
+     * Get all checklist groups associated with this audit plan.
+     */
+    public function checklistGroups(): BelongsToMany
+    {
+        return $this->belongsToMany(CheckListGroup::class, 'audit_plan_checklist_groups')
+            ->withPivot('department_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get checklist groups for a specific department in this audit plan.
+     */
+    public function checklistGroupsForDepartment(int $departmentId)
+    {
+        return $this->checklistGroups()->wherePivot('department_id', $departmentId);
     }
 
     /**

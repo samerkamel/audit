@@ -35,6 +35,18 @@
       "name": "Audit Plans",
       "icon": "menu-icon icon-base ti tabler-clipboard-check",
       "slug": "audit-plans"
+    },
+    {
+      "url": "/audit-questions",
+      "name": "Audit Questions",
+      "icon": "menu-icon icon-base ti tabler-list-check",
+      "slug": "audit-questions"
+    },
+    {
+      "url": "/checklist-groups",
+      "name": "CheckList Groups",
+      "icon": "menu-icon icon-base ti tabler-list",
+      "slug": "checklist-groups"
     }
   ]
 }
