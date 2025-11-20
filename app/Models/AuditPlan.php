@@ -22,11 +22,8 @@ class AuditPlan extends Model
         'audit_type',
         'scope',
         'objectives',
-        'sector_id',
         'lead_auditor_id',
         'created_by',
-        'planned_start_date',
-        'planned_end_date',
         'actual_start_date',
         'actual_end_date',
         'status',
@@ -39,20 +36,10 @@ class AuditPlan extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'planned_start_date' => 'date',
-        'planned_end_date' => 'date',
         'actual_start_date' => 'date',
         'actual_end_date' => 'date',
         'is_active' => 'boolean',
     ];
-
-    /**
-     * Get the sector that owns the audit plan.
-     */
-    public function sector(): BelongsTo
-    {
-        return $this->belongsTo(Sector::class);
-    }
 
     /**
      * Get the departments included in this audit plan.
@@ -104,14 +91,6 @@ class AuditPlan extends Model
     }
 
     /**
-     * Scope a query to filter by sector.
-     */
-    public function scopeBySector($query, int $sectorId)
-    {
-        return $query->where('sector_id', $sectorId);
-    }
-
-    /**
      * Scope a query to filter by department.
      */
     public function scopeByDepartment($query, int $departmentId)
@@ -153,23 +132,4 @@ class AuditPlan extends Model
         };
     }
 
-    /**
-     * Check if audit plan is overdue.
-     */
-    public function isOverdue(): bool
-    {
-        if ($this->status === 'completed' || $this->status === 'cancelled') {
-            return false;
-        }
-
-        return $this->planned_end_date < now() && !$this->actual_end_date;
-    }
-
-    /**
-     * Get duration in days.
-     */
-    public function getDurationAttribute(): int
-    {
-        return $this->planned_start_date->diffInDays($this->planned_end_date);
-    }
 }

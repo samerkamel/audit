@@ -19,7 +19,10 @@
       "Bash(git checkout:*)",
       "Bash(yarn install)",
       "Bash(yarn build)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(curl:*)",
+      "Bash(php /Users/SamerKamel/Root/audit/artisan tinker:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []

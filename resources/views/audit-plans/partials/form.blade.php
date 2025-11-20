@@ -43,23 +43,6 @@
     @enderror
   </div>
 
-  <!-- Sector -->
-  <div class="col-md-6 mb-4">
-    <label for="sector_id" class="form-label">Sector <small class="text-muted">(Optional)</small></label>
-    <select class="form-select select2 @error('sector_id') is-invalid @enderror" id="sector_id" name="sector_id">
-      <option value="">Select Sector</option>
-      @foreach($sectors as $sector)
-        <option value="{{ $sector->id }}" {{ old('sector_id', $auditPlan->sector_id ?? '') == $sector->id ? 'selected' : '' }}>
-          {{ $sector->name }} ({{ $sector->code }})
-        </option>
-      @endforeach
-    </select>
-    @error('sector_id')
-      <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-  </div>
-
-
   <!-- Lead Auditor -->
   <div class="col-md-12 mb-4">
     <label for="lead_auditor_id" class="form-label">Lead Auditor <span class="text-danger">*</span></label>
@@ -162,30 +145,6 @@
         </div>
       @endif
     </div>
-  </div>
-
-  <!-- Planned Start Date -->
-  <div class="col-md-6 mb-4">
-    <label for="planned_start_date" class="form-label">Planned Start Date <span class="text-danger">*</span></label>
-    <input type="date" class="form-control @error('planned_start_date') is-invalid @enderror" 
-      id="planned_start_date" name="planned_start_date" 
-      value="{{ old('planned_start_date', isset($auditPlan) ? $auditPlan->planned_start_date->format('Y-m-d') : '') }}" 
-      required>
-    @error('planned_start_date')
-      <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-  </div>
-
-  <!-- Planned End Date -->
-  <div class="col-md-6 mb-4">
-    <label for="planned_end_date" class="form-label">Planned End Date <span class="text-danger">*</span></label>
-    <input type="date" class="form-control @error('planned_end_date') is-invalid @enderror" 
-      id="planned_end_date" name="planned_end_date" 
-      value="{{ old('planned_end_date', isset($auditPlan) ? $auditPlan->planned_end_date->format('Y-m-d') : '') }}" 
-      required>
-    @error('planned_end_date')
-      <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
   </div>
 
   @if(isset($auditPlan) && $auditPlan->exists)

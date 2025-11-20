@@ -172,16 +172,6 @@
               <td><span class="badge bg-label-info">{{ $auditPlan->audit_type_label }}</span></td>
             </tr>
             <tr>
-              <td class="text-nowrap fw-medium">Sector</td>
-              <td>
-                @if($auditPlan->sector)
-                  {{ $auditPlan->sector->name }} ({{ $auditPlan->sector->code }})
-                @else
-                  <span class="text-muted">Not specified</span>
-                @endif
-              </td>
-            </tr>
-            <tr>
               <td class="text-nowrap fw-medium">Departments</td>
               <td>
                 @if($auditPlan->departments->count() > 0)
@@ -249,14 +239,6 @@
       <div class="card-body">
         <table class="table table-borderless">
           <tbody>
-            <tr>
-              <td class="text-nowrap fw-medium">Planned Start Date</td>
-              <td>{{ $auditPlan->planned_start_date->format('d M Y') }}</td>
-            </tr>
-            <tr>
-              <td class="text-nowrap fw-medium">Planned End Date</td>
-              <td>{{ $auditPlan->planned_end_date->format('d M Y') }}</td>
-            </tr>
             <tr>
               <td class="text-nowrap fw-medium">Actual Start Date</td>
               <td>

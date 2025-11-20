@@ -46,7 +46,15 @@
 
 @section('page-script')
 <script>
-$(document).ready(function() {
+// Wait for jQuery to be available
+(function() {
+  function initAuditPlanForm() {
+    if (typeof jQuery === 'undefined') {
+      setTimeout(initAuditPlanForm, 50);
+      return;
+    }
+
+  jQuery(document).ready(function($) {
   let departmentIndex = {{ $auditPlan->departments->count() }};
 
   // Pre-generate options HTML for departments and auditors
@@ -74,18 +82,6 @@ $(document).ready(function() {
 
   // Initialize existing Select2 instances
   initializeSelect2InContainer($('#departmentsContainer'));
-
-  // Update planned_end_date minimum when planned_start_date changes
-  $('#planned_start_date').on('change', function() {
-    const startDate = $(this).val();
-    $('#planned_end_date').attr('min', startDate);
-
-    // Clear end date if it's before the new start date
-    const endDate = $('#planned_end_date').val();
-    if (endDate && endDate <= startDate) {
-      $('#planned_end_date').val('');
-    }
-  });
 
   // Update actual_end_date minimum when actual_start_date changes
   $('#actual_start_date').on('change', function() {
@@ -211,6 +207,9 @@ $(document).ready(function() {
       return false;
     }
   });
-});
+  });
+  }
+  initAuditPlanForm();
+})();
 </script>
 @endsection

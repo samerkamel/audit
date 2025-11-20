@@ -45,7 +45,15 @@
 
 @section('page-script')
 <script>
-$(document).ready(function() {
+// Wait for jQuery to be available
+(function() {
+  function initAuditPlanForm() {
+    if (typeof jQuery === 'undefined') {
+      setTimeout(initAuditPlanForm, 50);
+      return;
+    }
+
+  jQuery(document).ready(function($) {
   let departmentIndex = 0;
 
   // Pre-generate options HTML for departments and auditors
@@ -73,22 +81,6 @@ $(document).ready(function() {
 
   // Initialize existing Select2 instances
   initializeSelect2InContainer($('#departmentsContainer'));
-
-  // Set minimum date for planned_start_date to today
-  const today = new Date().toISOString().split('T')[0];
-  $('#planned_start_date').attr('min', today);
-
-  // Update planned_end_date minimum when planned_start_date changes
-  $('#planned_start_date').on('change', function() {
-    const startDate = $(this).val();
-    $('#planned_end_date').attr('min', startDate);
-
-    // Clear end date if it's before the new start date
-    const endDate = $('#planned_end_date').val();
-    if (endDate && endDate <= startDate) {
-      $('#planned_end_date').val('');
-    }
-  });
 
   // Department Template
   function getDepartmentTemplate(index) {
@@ -202,6 +194,9 @@ $(document).ready(function() {
       return false;
     }
   });
-});
+  });
+  }
+  initAuditPlanForm();
+})();
 </script>
 @endsection
