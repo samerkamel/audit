@@ -23,7 +23,6 @@ class AuditPlan extends Model
         'scope',
         'objectives',
         'sector_id',
-        'department_id',
         'lead_auditor_id',
         'created_by',
         'planned_start_date',
@@ -56,11 +55,20 @@ class AuditPlan extends Model
     }
 
     /**
-     * Get the department that owns the audit plan.
+     * Get the departments included in this audit plan.
      */
-    public function department(): BelongsTo
+    public function departments()
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsToMany(Department::class, 'audit_plan_department')
+            ->withPivot([
+                'planned_start_date',
+                'planned_end_date',
+                'actual_start_date',
+                'actual_end_date',
+                'status',
+                'notes'
+            ])
+            ->withTimestamps();
     }
 
     /**
@@ -108,7 +116,9 @@ class AuditPlan extends Model
      */
     public function scopeByDepartment($query, int $departmentId)
     {
-        return $query->where('department_id', $departmentId);
+        return $query->whereHas('departments', function ($q) use ($departmentId) {
+            $q->where('departments.id', $departmentId);
+        });
     }
 
     /**

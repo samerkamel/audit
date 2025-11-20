@@ -170,8 +170,13 @@
             <td>
               <div class="d-flex flex-column">
                 <span class="fw-medium">{{ $plan->title }}</span>
-                @if($plan->department)
-                <small class="text-muted">{{ $plan->department->name }}</small>
+                @if($plan->departments->count() > 0)
+                <small class="text-muted">
+                  {{ $plan->departments->pluck('name')->implode(', ') }}
+                  @if($plan->departments->count() > 3)
+                    <span class="badge bg-label-secondary ms-1">+{{ $plan->departments->count() - 3 }} more</span>
+                  @endif
+                </small>
                 @endif
               </div>
             </td>

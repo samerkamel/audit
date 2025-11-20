@@ -59,20 +59,25 @@
     @enderror
   </div>
 
-  <!-- Department -->
+  <!-- Departments (Multiple) -->
   <div class="col-md-6 mb-4">
-    <label for="department_id" class="form-label">Department</label>
-    <select class="form-select select2 @error('department_id') is-invalid @enderror" id="department_id" name="department_id">
-      <option value="">Select Department (Optional)</option>
+    <label for="department_ids" class="form-label">Departments <span class="text-danger">*</span></label>
+    <select class="form-select select2 @error('department_ids') is-invalid @enderror @error('department_ids.*') is-invalid @enderror"
+      id="department_ids" name="department_ids[]" multiple required>
       @foreach($departments as $department)
-        <option value="{{ $department->id }}" {{ old('department_id', $auditPlan->department_id ?? '') == $department->id ? 'selected' : '' }}>
+        <option value="{{ $department->id }}"
+          {{ (isset($auditPlan) && $auditPlan->departments->contains($department->id)) || (is_array(old('department_ids')) && in_array($department->id, old('department_ids'))) ? 'selected' : '' }}>
           {{ $department->name }} ({{ $department->code }})
         </option>
       @endforeach
     </select>
-    @error('department_id')
+    @error('department_ids')
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
+    @error('department_ids.*')
+      <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+    <small class="text-muted">Select one or more departments for this audit plan</small>
   </div>
 
   <!-- Lead Auditor -->

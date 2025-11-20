@@ -176,12 +176,16 @@
               <td>{{ $auditPlan->sector->name }} ({{ $auditPlan->sector->code }})</td>
             </tr>
             <tr>
-              <td class="text-nowrap fw-medium">Department</td>
+              <td class="text-nowrap fw-medium">Departments</td>
               <td>
-                @if($auditPlan->department)
-                  {{ $auditPlan->department->name }} ({{ $auditPlan->department->code }})
+                @if($auditPlan->departments->count() > 0)
+                  @foreach($auditPlan->departments as $department)
+                    <span class="badge bg-label-primary me-1 mb-1">
+                      {{ $department->name }} ({{ $department->code }})
+                    </span>
+                  @endforeach
                 @else
-                  <span class="text-muted">N/A</span>
+                  <span class="text-muted">No departments assigned</span>
                 @endif
               </td>
             </tr>
