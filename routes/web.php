@@ -378,6 +378,7 @@ use App\Http\Controllers\AuditQuestionController;
 use App\Http\Controllers\CheckListGroupController;
 use App\Http\Controllers\AuditExecutionController;
 use App\Http\Controllers\AuditReportController;
+use App\Http\Controllers\CarController;
 
 Route::middleware(['auth'])->group(function () {
     // User Management
@@ -416,4 +417,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('audit-reports', [AuditReportController::class, 'index'])->name('audit-reports.index');
     Route::get('audit-reports/{auditPlan}', [AuditReportController::class, 'show'])->name('audit-reports.show');
     Route::get('audit-reports/{auditPlan}/department/{department}', [AuditReportController::class, 'department'])->name('audit-reports.department');
+
+    // CAR Management
+    Route::resource('cars', CarController::class);
+    Route::post('cars/{car}/submit-for-approval', [CarController::class, 'submitForApproval'])->name('cars.submit-for-approval');
+    Route::post('cars/{car}/approve', [CarController::class, 'approve'])->name('cars.approve');
+    Route::post('cars/{car}/reject', [CarController::class, 'reject'])->name('cars.reject');
+    Route::post('cars/auto-create-from-findings', [CarController::class, 'autoCreateFromFindings'])->name('cars.auto-create-from-findings');
 });
