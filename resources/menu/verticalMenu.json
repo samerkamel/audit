@@ -47,6 +47,12 @@
       "name": "CheckList Groups",
       "icon": "menu-icon icon-base ti tabler-list",
       "slug": "checklist-groups"
+    },
+    {
+      "url": "/audit-execution",
+      "name": "Audit Execution",
+      "icon": "menu-icon icon-base ti tabler-checkbox",
+      "slug": "audit-execution"
     }
   ]
 }

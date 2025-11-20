@@ -376,6 +376,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\AuditPlanController;
 use App\Http\Controllers\AuditQuestionController;
 use App\Http\Controllers\CheckListGroupController;
+use App\Http\Controllers\AuditExecutionController;
 
 Route::middleware(['auth'])->group(function () {
     // User Management
@@ -403,4 +404,10 @@ Route::middleware(['auth'])->group(function () {
     // CheckList Groups Management
     Route::resource('checklist-groups', CheckListGroupController::class);
     Route::post('checklist-groups/{id}/reactivate', [CheckListGroupController::class, 'reactivate'])->name('checklist-groups.reactivate');
+
+    // Audit Execution
+    Route::get('audit-execution', [AuditExecutionController::class, 'index'])->name('audit-execution.index');
+    Route::get('audit-execution/{auditPlan}', [AuditExecutionController::class, 'show'])->name('audit-execution.show');
+    Route::get('audit-execution/{auditPlan}/execute/{department}/{checklistGroup}', [AuditExecutionController::class, 'execute'])->name('audit-execution.execute');
+    Route::post('audit-execution/{auditPlan}/execute/{department}/{checklistGroup}', [AuditExecutionController::class, 'store'])->name('audit-execution.store');
 });
