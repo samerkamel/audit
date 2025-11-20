@@ -379,6 +379,7 @@ use App\Http\Controllers\CheckListGroupController;
 use App\Http\Controllers\AuditExecutionController;
 use App\Http\Controllers\AuditReportController;
 use App\Http\Controllers\CarController;
+use App\Http\Controllers\CarResponseController;
 
 Route::middleware(['auth'])->group(function () {
     // User Management
@@ -424,4 +425,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('cars/{car}/approve', [CarController::class, 'approve'])->name('cars.approve');
     Route::post('cars/{car}/reject', [CarController::class, 'reject'])->name('cars.reject');
     Route::post('cars/auto-create-from-findings', [CarController::class, 'autoCreateFromFindings'])->name('cars.auto-create-from-findings');
+
+    // CAR Response Management
+    Route::get('cars/{car}/responses/create', [CarResponseController::class, 'create'])->name('cars.responses.create');
+    Route::post('cars/{car}/responses', [CarResponseController::class, 'store'])->name('cars.responses.store');
+    Route::get('cars/{car}/responses/{response}/edit', [CarResponseController::class, 'edit'])->name('cars.responses.edit');
+    Route::put('cars/{car}/responses/{response}', [CarResponseController::class, 'update'])->name('cars.responses.update');
+    Route::post('cars/{car}/responses/{response}/accept', [CarResponseController::class, 'accept'])->name('cars.responses.accept');
+    Route::post('cars/{car}/responses/{response}/reject', [CarResponseController::class, 'reject'])->name('cars.responses.reject');
+    Route::post('cars/{car}/responses/{response}/update-correction-date', [CarResponseController::class, 'updateCorrectionDate'])->name('cars.responses.update-correction-date');
+    Route::post('cars/{car}/responses/{response}/update-corrective-action-date', [CarResponseController::class, 'updateCorrectiveActionDate'])->name('cars.responses.update-corrective-action-date');
+    Route::delete('cars/{car}/responses/{response}/remove-attachment', [CarResponseController::class, 'removeAttachment'])->name('cars.responses.remove-attachment');
 });
