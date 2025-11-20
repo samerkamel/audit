@@ -53,6 +53,12 @@
       "name": "Audit Execution",
       "icon": "menu-icon icon-base ti tabler-checkbox",
       "slug": "audit-execution"
+    },
+    {
+      "url": "/audit-reports",
+      "name": "Audit Reports",
+      "icon": "menu-icon icon-base ti tabler-report-analytics",
+      "slug": "audit-reports"
     }
   ]
 }

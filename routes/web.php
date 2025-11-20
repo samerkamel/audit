@@ -377,6 +377,7 @@ use App\Http\Controllers\AuditPlanController;
 use App\Http\Controllers\AuditQuestionController;
 use App\Http\Controllers\CheckListGroupController;
 use App\Http\Controllers\AuditExecutionController;
+use App\Http\Controllers\AuditReportController;
 
 Route::middleware(['auth'])->group(function () {
     // User Management
@@ -410,4 +411,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('audit-execution/{auditPlan}', [AuditExecutionController::class, 'show'])->name('audit-execution.show');
     Route::get('audit-execution/{auditPlan}/execute/{department}/{checklistGroup}', [AuditExecutionController::class, 'execute'])->name('audit-execution.execute');
     Route::post('audit-execution/{auditPlan}/execute/{department}/{checklistGroup}', [AuditExecutionController::class, 'store'])->name('audit-execution.store');
+
+    // Audit Reports
+    Route::get('audit-reports', [AuditReportController::class, 'index'])->name('audit-reports.index');
+    Route::get('audit-reports/{auditPlan}', [AuditReportController::class, 'show'])->name('audit-reports.show');
+    Route::get('audit-reports/{auditPlan}/department/{department}', [AuditReportController::class, 'department'])->name('audit-reports.department');
 });
