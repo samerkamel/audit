@@ -113,6 +113,24 @@
                   <small class="text-muted">Select auditors for this department</small>
                 </div>
 
+                <!-- CheckList Groups Selection -->
+                <div class="col-12 mb-3">
+                  <label class="form-label">CheckList Groups</label>
+                  <select class="form-select select2-checklist-groups" name="departments[{{ $departmentIndex }}][checklist_group_ids][]" multiple>
+                    @foreach($checklistGroups as $group)
+                      <option value="{{ $group->id }}"
+                        @if(isset($auditPlan))
+                          {{ $auditPlan->checklistGroupsForDepartment($dept->id)->pluck('id')->contains($group->id) ? 'selected' : '' }}
+                        @endif
+                      >
+                        {{ $group->code }} - {{ $group->title }} ({{ $group->auditQuestions->count() }} questions)
+                        @if($group->quality_procedure_reference) - {{ $group->quality_procedure_reference }}@endif
+                      </option>
+                    @endforeach
+                  </select>
+                  <small class="text-muted">Select checklist groups to audit for this department</small>
+                </div>
+
                 <!-- Planned Start Date -->
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Planned Start Date</label>

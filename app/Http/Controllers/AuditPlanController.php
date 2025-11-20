@@ -6,6 +6,7 @@ use App\Models\AuditPlan;
 use App\Models\Department;
 use App\Models\Sector;
 use App\Models\User;
+use App\Models\CheckListGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -77,8 +78,13 @@ class AuditPlanController extends Controller
         $auditors = User::whereHas('roles', function ($q) {
             $q->whereIn('name', ['admin', 'auditor', 'lead_auditor', 'manager']);
         })->get();
+        $checklistGroups = CheckListGroup::where('is_active', true)
+            ->with('auditQuestions')
+            ->orderBy('display_order')
+            ->orderBy('code')
+            ->get();
 
-        return view('audit-plans.create', compact('departments', 'auditors'));
+        return view('audit-plans.create', compact('departments', 'auditors', 'checklistGroups'));
     }
 
     /**
@@ -96,6 +102,8 @@ class AuditPlanController extends Controller
             'departments.*.department_id' => ['required', 'exists:departments,id'],
             'departments.*.auditor_ids' => ['nullable', 'array'],
             'departments.*.auditor_ids.*' => ['exists:users,id'],
+            'departments.*.checklist_group_ids' => ['nullable', 'array'],
+            'departments.*.checklist_group_ids.*' => ['exists:check_list_groups,id'],
             'departments.*.planned_start_date' => ['nullable', 'date'],
             'departments.*.planned_end_date' => ['nullable', 'date'],
             'departments.*.notes' => ['nullable', 'string'],
@@ -143,6 +151,19 @@ class AuditPlanController extends Controller
                     ]);
                 }
             }
+
+            // Attach checklist groups to this department
+            if (!empty($deptData['checklist_group_ids'])) {
+                foreach ($deptData['checklist_group_ids'] as $checklistGroupId) {
+                    \DB::table('audit_plan_checklist_groups')->insert([
+                        'audit_plan_id' => $auditPlan->id,
+                        'department_id' => $departmentId,
+                        'checklist_group_id' => $checklistGroupId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
         }
 
         return redirect()->route('audit-plans.index')
@@ -185,8 +206,16 @@ class AuditPlanController extends Controller
         $auditors = User::whereHas('roles', function ($q) {
             $q->whereIn('name', ['admin', 'auditor', 'lead_auditor', 'manager']);
         })->get();
+        $checklistGroups = CheckListGroup::where('is_active', true)
+            ->with('auditQuestions')
+            ->orderBy('display_order')
+            ->orderBy('code')
+            ->get();
 
-        return view('audit-plans.edit', compact('auditPlan', 'departments', 'auditors'));
+        // Load existing checklist group assignments per department
+        $auditPlan->load('checklistGroups');
+
+        return view('audit-plans.edit', compact('auditPlan', 'departments', 'auditors', 'checklistGroups'));
     }
 
     /**
@@ -204,6 +233,8 @@ class AuditPlanController extends Controller
             'departments.*.department_id' => ['required', 'exists:departments,id'],
             'departments.*.auditor_ids' => ['nullable', 'array'],
             'departments.*.auditor_ids.*' => ['exists:users,id'],
+            'departments.*.checklist_group_ids' => ['nullable', 'array'],
+            'departments.*.checklist_group_ids.*' => ['exists:check_list_groups,id'],
             'departments.*.planned_start_date' => ['nullable', 'date'],
             'departments.*.planned_end_date' => ['nullable', 'date'],
             'departments.*.notes' => ['nullable', 'string'],
@@ -222,6 +253,11 @@ class AuditPlanController extends Controller
 
         // Sync departments - detach all first, then reattach with new data
         $auditPlan->departments()->detach();
+
+        // Also delete existing checklist group assignments
+        \DB::table('audit_plan_checklist_groups')
+            ->where('audit_plan_id', $auditPlan->id)
+            ->delete();
 
         // Attach departments with their specific data
         foreach ($departmentsData as $deptData) {
@@ -248,6 +284,19 @@ class AuditPlanController extends Controller
                         'audit_plan_department_id' => $pivotRecord->id,
                         'user_id' => $auditorId,
                         'role' => 'member',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            // Attach checklist groups to this department
+            if (!empty($deptData['checklist_group_ids'])) {
+                foreach ($deptData['checklist_group_ids'] as $checklistGroupId) {
+                    \DB::table('audit_plan_checklist_groups')->insert([
+                        'audit_plan_id' => $auditPlan->id,
+                        'department_id' => $departmentId,
+                        'checklist_group_id' => $checklistGroupId,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);

@@ -70,6 +70,12 @@
     @endforeach
   `;
 
+  const checklistGroupOptions = `
+    @foreach($checklistGroups as $group)
+      <option value="{{ $group->id }}">{{ $group->code }} - {{ $group->title }} ({{ $group->auditQuestions->count() }} questions)@if($group->quality_procedure_reference) - {{ $group->quality_procedure_reference }}@endif</option>
+    @endforeach
+  `;
+
   // Initialize Select2 for enhanced dropdowns
   $('.select2').select2({
     placeholder: function() {
@@ -112,6 +118,15 @@
               <small class="text-muted">Select auditors for this department</small>
             </div>
 
+            <!-- CheckList Groups Selection -->
+            <div class="col-12 mb-3">
+              <label class="form-label">CheckList Groups</label>
+              <select class="form-select select2-checklist-groups" name="departments[${index}][checklist_group_ids][]" multiple>
+                ${checklistGroupOptions}
+              </select>
+              <small class="text-muted">Select checklist groups to audit for this department</small>
+            </div>
+
             <!-- Planned Start Date -->
             <div class="col-md-6 mb-3">
               <label class="form-label">Planned Start Date</label>
@@ -146,6 +161,12 @@
 
     $container.find('.select2-auditors').select2({
       placeholder: 'Select Auditors',
+      allowClear: true,
+      width: '100%'
+    });
+
+    $container.find('.select2-checklist-groups').select2({
+      placeholder: 'Select CheckList Groups',
       allowClear: true,
       width: '100%'
     });
