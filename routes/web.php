@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\laravel_example\UserManagement;
 use App\Http\Controllers\dashboard\Analytics;
 use App\Http\Controllers\dashboard\Crm;
@@ -160,10 +161,19 @@ use App\Http\Controllers\charts\ApexCharts;
 use App\Http\Controllers\charts\ChartJs;
 use App\Http\Controllers\maps\Leaflet;
 
-// Main Page Route
-Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
-Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics');
-Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
+// Authentication Routes
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Main Page Route (Protected)
+Route::get('/', [Analytics::class, 'index'])->middleware('auth')->name('dashboard-analytics');
+
+// Dashboard Routes (Protected)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/analytics', [Analytics::class, 'index'])->name('dashboard-analytics-alt');
+    Route::get('/dashboard/crm', [Crm::class, 'index'])->name('dashboard-crm');
+});
 // locale
 Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 
