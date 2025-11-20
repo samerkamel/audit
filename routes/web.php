@@ -371,8 +371,14 @@ Route::resource('/user-list', UserManagement::class);
 
 // Audit System - User Management
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SectorController;
 
 Route::middleware(['auth'])->group(function () {
+    // User Management
     Route::resource('users', UserController::class);
     Route::post('users/{user}/reactivate', [UserController::class, 'reactivate'])->name('users.reactivate');
+
+    // Sectors Management
+    Route::resource('sectors', SectorController::class);
+    Route::post('sectors/{sector}/reactivate', [SectorController::class, 'reactivate'])->name('sectors.reactivate');
 });
