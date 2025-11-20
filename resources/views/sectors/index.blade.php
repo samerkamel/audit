@@ -147,7 +147,7 @@
               <div class="d-flex flex-column">
                 <span class="fw-medium">{{ $sector->name }}</span>
                 @if($sector->description)
-                <small class="text-muted text-truncate" style="max-width: 200px;">{{ Str::limit($sector->description, 50) }}</small>
+                <small class="text-muted text-truncate" style="max-width: 200px;">{{ str($sector->description)->limit(50) }}</small>
                 @endif
               </div>
             </td>
