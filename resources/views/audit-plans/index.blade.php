@@ -130,14 +130,14 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Overdue</span>
+              <span class="text-heading">Cancelled</span>
               <div class="d-flex align-items-center my-1">
-                <h4 class="mb-0 me-2">{{ $stats['overdue'] }}</h4>
+                <h4 class="mb-0 me-2">{{ $stats['cancelled'] }}</h4>
               </div>
             </div>
             <div class="avatar">
-              <span class="avatar-initial rounded-circle bg-label-danger">
-                <i class="icon-base ti tabler-alert-circle icon-26px"></i>
+              <span class="avatar-initial rounded-circle bg-label-secondary">
+                <i class="icon-base ti tabler-x icon-26px"></i>
               </span>
             </div>
           </div>
