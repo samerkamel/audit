@@ -373,6 +373,7 @@ Route::resource('/user-list', UserManagement::class);
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\AuditPlanController;
 
 Route::middleware(['auth'])->group(function () {
     // User Management
@@ -386,4 +387,10 @@ Route::middleware(['auth'])->group(function () {
     // Departments Management
     Route::resource('departments', DepartmentController::class);
     Route::post('departments/{department}/reactivate', [DepartmentController::class, 'reactivate'])->name('departments.reactivate');
+
+    // Audit Plans Management
+    Route::resource('audit-plans', AuditPlanController::class);
+    Route::post('audit-plans/{auditPlan}/start', [AuditPlanController::class, 'start'])->name('audit-plans.start');
+    Route::post('audit-plans/{auditPlan}/complete', [AuditPlanController::class, 'complete'])->name('audit-plans.complete');
+    Route::post('audit-plans/{auditPlan}/cancel', [AuditPlanController::class, 'cancel'])->name('audit-plans.cancel');
 });
