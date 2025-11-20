@@ -366,4 +366,56 @@ class CarController extends Controller
                 ->with('error', 'Failed to create CARs: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Close CAR after all follow-ups are accepted.
+     */
+    public function close(Car $car)
+    {
+        // Check if CAR can be closed
+        if ($car->status === 'closed') {
+            return redirect()
+                ->route('cars.show', $car)
+                ->with('error', 'This CAR is already closed.');
+        }
+
+        // Verify all responses are accepted
+        $hasAcceptedResponse = $car->responses()->where('response_status', 'accepted')->exists();
+        if (!$hasAcceptedResponse) {
+            return redirect()
+                ->route('cars.show', $car)
+                ->with('error', 'CAR cannot be closed without an accepted response.');
+        }
+
+        // Verify all follow-ups are accepted
+        $hasUnacceptedFollowUps = $car->followUps()
+            ->where('status', '!=', 'accepted')
+            ->exists();
+
+        if ($hasUnacceptedFollowUps) {
+            return redirect()
+                ->route('cars.show', $car)
+                ->with('error', 'CAR cannot be closed while there are pending or not-accepted follow-ups.');
+        }
+
+        // Verify at least one follow-up exists
+        if ($car->followUps()->count() === 0) {
+            return redirect()
+                ->route('cars.show', $car)
+                ->with('error', 'CAR requires at least one effectiveness review before closure.');
+        }
+
+        // Close the CAR
+        $car->update([
+            'status' => 'closed',
+            'closed_by' => Auth::id(),
+            'closed_at' => now(),
+        ]);
+
+        // TODO: Send notification to department and stakeholders
+
+        return redirect()
+            ->route('cars.show', $car)
+            ->with('success', "CAR {$car->car_number} has been successfully closed.");
+    }
 }

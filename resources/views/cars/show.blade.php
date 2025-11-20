@@ -95,6 +95,52 @@
   </div>
   @endif
 
+  @php
+    $hasAcceptedResponse = $car->responses()->where('response_status', 'accepted')->exists();
+    $hasFollowUps = $car->followUps()->count() > 0;
+    $allFollowUpsAccepted = $car->followUps()->where('status', '!=', 'accepted')->doesntExist();
+    $canClose = $hasAcceptedResponse && $hasFollowUps && $allFollowUpsAccepted && $car->status !== 'closed';
+  @endphp
+
+  @if($canClose)
+  <div class="card mb-6">
+    <div class="card-body">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <h6 class="mb-1 text-success">
+            <i class="icon-base ti tabler-circle-check me-2"></i>Ready for Closure
+          </h6>
+          <p class="text-muted mb-0">All effectiveness reviews are accepted. This CAR can now be closed.</p>
+        </div>
+        <form action="{{ route('cars.close', $car) }}" method="POST" class="d-inline" onsubmit="return confirm('Close this CAR? This action marks the corrective action as complete and effective.')">
+          @csrf
+          <button type="submit" class="btn btn-success">
+            <i class="icon-base ti tabler-lock me-1"></i> Close CAR
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  @endif
+
+  @if($car->status === 'closed')
+  <div class="card mb-6">
+    <div class="card-body">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <h6 class="mb-1 text-success">
+            <i class="icon-base ti tabler-check me-2"></i>CAR Closed
+          </h6>
+          <p class="text-muted mb-0">
+            Closed by {{ $car->closedBy->name }} on {{ $car->closed_at->format('F d, Y H:i') }}
+          </p>
+        </div>
+        <span class="badge bg-success">Completed</span>
+      </div>
+    </div>
+  </div>
+  @endif
+
   <div class="row">
     <!-- CAR Details -->
     <div class="col-lg-8">
@@ -327,10 +373,10 @@
       <div class="card mb-6">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="card-title mb-0">Follow-ups & Effectiveness Reviews</h5>
-          @if($car->status === 'in_progress' || $car->status === 'pending_review')
-          <button class="btn btn-sm btn-primary">
+          @if($car->responses()->where('response_status', 'accepted')->exists() && $car->status !== 'closed')
+          <a href="{{ route('cars.follow-ups.create', $car) }}" class="btn btn-sm btn-primary">
             <i class="icon-base ti tabler-plus me-1"></i> Add Follow-up
-          </button>
+          </a>
           @endif
         </div>
         <div class="card-body">
@@ -338,20 +384,122 @@
           <div class="border rounded p-4 mb-4">
             <div class="d-flex justify-content-between align-items-start mb-3">
               <div>
-                <h6 class="mb-1">{{ $followUp->follow_up_type_label }}</h6>
-                <small class="text-muted">By {{ $followUp->followedUpBy->name }} on {{ $followUp->followed_up_at->format('M d, Y H:i') }}</small>
+                <h6 class="mb-1">Follow-up conducted by {{ $followUp->followedUpBy->name }}</h6>
+                <small class="text-muted">{{ $followUp->follow_up_date->format('F d, Y') }} | Reviewed: {{ $followUp->reviewed_at ? $followUp->reviewed_at->format('M d, Y H:i') : 'Pending' }}</small>
               </div>
-              <span class="badge bg-label-{{ $followUp->follow_up_status_color }}">
-                {{ ucfirst($followUp->follow_up_status) }}
-              </span>
+              <div class="d-flex gap-2">
+                <span class="badge bg-label-{{ $followUp->status_color }}">
+                  {{ ucwords(str_replace('_', ' ', $followUp->status)) }}
+                </span>
+                @if(in_array($followUp->status, ['pending', 'not_accepted']))
+                <a href="{{ route('cars.follow-ups.edit', [$car, $followUp]) }}" class="btn btn-xs btn-label-primary">
+                  <i class="icon-base ti tabler-edit"></i>
+                </a>
+                @endif
+              </div>
             </div>
-            <p class="mb-0" style="white-space: pre-wrap;">{{ $followUp->follow_up_notes }}</p>
+
+            <div class="row g-4">
+              <div class="col-12">
+                <label class="fw-semibold text-muted small mb-1">Effectiveness Assessment</label>
+                <p class="mb-0" style="white-space: pre-wrap;">{{ $followUp->effectiveness_review }}</p>
+              </div>
+
+              @if($followUp->verification_evidence)
+              <div class="col-12">
+                <label class="fw-semibold text-muted small mb-1">Verification Evidence</label>
+                <p class="mb-0" style="white-space: pre-wrap;">{{ $followUp->verification_evidence }}</p>
+              </div>
+              @endif
+
+              @if($followUp->remarks)
+              <div class="col-12">
+                <label class="fw-semibold text-muted small mb-1">Additional Remarks</label>
+                <p class="mb-0" style="white-space: pre-wrap;">{{ $followUp->remarks }}</p>
+              </div>
+              @endif
+
+              @if($followUp->attachments && count($followUp->attachments) > 0)
+              <div class="col-12">
+                <label class="fw-semibold text-muted small mb-2">Attachments</label>
+                <div class="list-group">
+                  @foreach($followUp->attachments as $attachment)
+                  <a href="{{ Storage::url($attachment['path']) }}" target="_blank" class="list-group-item list-group-item-action d-flex align-items-center">
+                    <i class="icon-base ti tabler-file me-2"></i>
+                    <span>{{ $attachment['name'] }}</span>
+                    <small class="text-muted ms-auto">({{ number_format($attachment['size'] / 1024, 2) }} KB)</small>
+                  </a>
+                  @endforeach
+                </div>
+              </div>
+              @endif
+
+              @if($followUp->rejection_reason)
+              <div class="col-12">
+                <div class="alert alert-danger mb-0" role="alert">
+                  <strong>Not Effective - Reason:</strong><br>
+                  {{ $followUp->rejection_reason }}
+                </div>
+              </div>
+              @endif
+
+              @if($followUp->status === 'pending')
+              <div class="col-12">
+                <div class="d-flex gap-2">
+                  <form action="{{ route('cars.follow-ups.accept', [$car, $followUp]) }}" method="POST" class="flex-fill" onsubmit="return confirm('Mark this follow-up as effective?')">
+                    @csrf
+                    <button type="submit" class="btn btn-success w-100">
+                      <i class="icon-base ti tabler-check me-1"></i> Mark as Effective
+                    </button>
+                  </form>
+                  <button type="button" class="btn btn-danger flex-fill" data-bs-toggle="modal" data-bs-target="#rejectFollowUpModal{{ $followUp->id }}">
+                    <i class="icon-base ti tabler-x me-1"></i> Not Effective
+                  </button>
+                </div>
+
+                <!-- Reject Modal -->
+                <div class="modal fade" id="rejectFollowUpModal{{ $followUp->id }}" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <form action="{{ route('cars.follow-ups.reject', [$car, $followUp]) }}" method="POST">
+                      @csrf
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Mark as Not Effective</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <label class="form-label" for="rejection_reason{{ $followUp->id }}">Reason <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="rejection_reason{{ $followUp->id }}" name="rejection_reason" rows="4" placeholder="Explain why the corrective actions are not effective..." required></textarea>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="submit" class="btn btn-danger">Mark as Not Effective</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              @endif
+
+              @if($followUp->status === 'pending')
+              <div class="col-12">
+                <form action="{{ route('cars.follow-ups.destroy', [$car, $followUp]) }}" method="POST" onsubmit="return confirm('Delete this follow-up?')">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="btn btn-sm btn-label-danger">
+                    <i class="icon-base ti tabler-trash me-1"></i> Delete Follow-up
+                  </button>
+                </form>
+              </div>
+              @endif
+            </div>
           </div>
           @empty
           <div class="text-center py-6">
             <i class="icon-base ti tabler-clipboard-check icon-48px text-muted mb-3"></i>
             <p class="text-muted mb-0">No follow-ups yet</p>
-            @if($car->status === 'in_progress' || $car->status === 'pending_review')
+            @if($car->responses()->where('response_status', 'accepted')->exists())
             <small class="text-muted">Quality team has not conducted effectiveness reviews yet.</small>
             @endif
           </div>

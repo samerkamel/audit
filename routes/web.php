@@ -380,6 +380,7 @@ use App\Http\Controllers\AuditExecutionController;
 use App\Http\Controllers\AuditReportController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\CarResponseController;
+use App\Http\Controllers\CarFollowUpController;
 
 Route::middleware(['auth'])->group(function () {
     // User Management
@@ -424,6 +425,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('cars/{car}/submit-for-approval', [CarController::class, 'submitForApproval'])->name('cars.submit-for-approval');
     Route::post('cars/{car}/approve', [CarController::class, 'approve'])->name('cars.approve');
     Route::post('cars/{car}/reject', [CarController::class, 'reject'])->name('cars.reject');
+    Route::post('cars/{car}/close', [CarController::class, 'close'])->name('cars.close');
     Route::post('cars/auto-create-from-findings', [CarController::class, 'autoCreateFromFindings'])->name('cars.auto-create-from-findings');
 
     // CAR Response Management
@@ -436,4 +438,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('cars/{car}/responses/{response}/update-correction-date', [CarResponseController::class, 'updateCorrectionDate'])->name('cars.responses.update-correction-date');
     Route::post('cars/{car}/responses/{response}/update-corrective-action-date', [CarResponseController::class, 'updateCorrectiveActionDate'])->name('cars.responses.update-corrective-action-date');
     Route::delete('cars/{car}/responses/{response}/remove-attachment', [CarResponseController::class, 'removeAttachment'])->name('cars.responses.remove-attachment');
+
+    // CAR Follow-up Management
+    Route::get('cars/{car}/follow-ups/create', [CarFollowUpController::class, 'create'])->name('cars.follow-ups.create');
+    Route::post('cars/{car}/follow-ups', [CarFollowUpController::class, 'store'])->name('cars.follow-ups.store');
+    Route::get('cars/{car}/follow-ups/{followUp}/edit', [CarFollowUpController::class, 'edit'])->name('cars.follow-ups.edit');
+    Route::put('cars/{car}/follow-ups/{followUp}', [CarFollowUpController::class, 'update'])->name('cars.follow-ups.update');
+    Route::post('cars/{car}/follow-ups/{followUp}/accept', [CarFollowUpController::class, 'accept'])->name('cars.follow-ups.accept');
+    Route::post('cars/{car}/follow-ups/{followUp}/reject', [CarFollowUpController::class, 'reject'])->name('cars.follow-ups.reject');
+    Route::delete('cars/{car}/follow-ups/{followUp}/remove-attachment', [CarFollowUpController::class, 'removeAttachment'])->name('cars.follow-ups.remove-attachment');
+    Route::delete('cars/{car}/follow-ups/{followUp}', [CarFollowUpController::class, 'destroy'])->name('cars.follow-ups.destroy');
 });
