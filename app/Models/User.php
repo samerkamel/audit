@@ -158,6 +158,29 @@ class User extends Authenticatable
     }
 
     /**
+     * Sync roles for user.
+     */
+    public function syncRoles(array $roles): void
+    {
+        $roleIds = [];
+
+        foreach ($roles as $role) {
+            if (is_numeric($role)) {
+                $roleIds[] = $role;
+            } elseif (is_string($role)) {
+                $roleModel = Role::where('name', $role)->first();
+                if ($roleModel) {
+                    $roleIds[] = $roleModel->id;
+                }
+            } elseif ($role instanceof Role) {
+                $roleIds[] = $role->id;
+            }
+        }
+
+        $this->roles()->sync($roleIds);
+    }
+
+    /**
      * Scope a query to only include active users.
      */
     public function scopeActive($query)
