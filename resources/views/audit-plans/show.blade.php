@@ -173,7 +173,13 @@
             </tr>
             <tr>
               <td class="text-nowrap fw-medium">Sector</td>
-              <td>{{ $auditPlan->sector->name }} ({{ $auditPlan->sector->code }})</td>
+              <td>
+                @if($auditPlan->sector)
+                  {{ $auditPlan->sector->name }} ({{ $auditPlan->sector->code }})
+                @else
+                  <span class="text-muted">Not specified</span>
+                @endif
+              </td>
             </tr>
             <tr>
               <td class="text-nowrap fw-medium">Departments</td>

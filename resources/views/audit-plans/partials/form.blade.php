@@ -45,8 +45,8 @@
 
   <!-- Sector -->
   <div class="col-md-6 mb-4">
-    <label for="sector_id" class="form-label">Sector <span class="text-danger">*</span></label>
-    <select class="form-select select2 @error('sector_id') is-invalid @enderror" id="sector_id" name="sector_id" required>
+    <label for="sector_id" class="form-label">Sector <small class="text-muted">(Optional)</small></label>
+    <select class="form-select select2 @error('sector_id') is-invalid @enderror" id="sector_id" name="sector_id">
       <option value="">Select Sector</option>
       @foreach($sectors as $sector)
         <option value="{{ $sector->id }}" {{ old('sector_id', $auditPlan->sector_id ?? '') == $sector->id ? 'selected' : '' }}>
@@ -59,26 +59,6 @@
     @enderror
   </div>
 
-  <!-- Departments (Multiple) -->
-  <div class="col-md-6 mb-4">
-    <label for="department_ids" class="form-label">Departments <span class="text-danger">*</span></label>
-    <select class="form-select select2 @error('department_ids') is-invalid @enderror @error('department_ids.*') is-invalid @enderror"
-      id="department_ids" name="department_ids[]" multiple required>
-      @foreach($departments as $department)
-        <option value="{{ $department->id }}"
-          {{ (isset($auditPlan) && $auditPlan->departments->contains($department->id)) || (is_array(old('department_ids')) && in_array($department->id, old('department_ids'))) ? 'selected' : '' }}>
-          {{ $department->name }} ({{ $department->code }})
-        </option>
-      @endforeach
-    </select>
-    @error('department_ids')
-      <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-    @error('department_ids.*')
-      <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-    <small class="text-muted">Select one or more departments for this audit plan</small>
-  </div>
 
   <!-- Lead Auditor -->
   <div class="col-md-12 mb-4">
@@ -94,6 +74,94 @@
     @error('lead_auditor_id')
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
+  </div>
+
+  <!-- Departments Section -->
+  <div class="col-12 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">Departments & Auditors <span class="text-danger">*</span></h5>
+      <button type="button" class="btn btn-sm btn-primary" id="addDepartment">
+        <i class="icon-base ti tabler-plus me-1"></i> Add Department
+      </button>
+    </div>
+
+    <div id="departmentsContainer">
+      @php
+        $existingDepartments = isset($auditPlan) ? $auditPlan->departments : collect();
+        $departmentIndex = 0;
+      @endphp
+
+      @if($existingDepartments->count() > 0)
+        @foreach($existingDepartments as $dept)
+          @php $departmentIndex++; @endphp
+          <div class="card mb-3 department-section" data-index="{{ $departmentIndex }}">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Department {{ $departmentIndex }}</h6>
+                <button type="button" class="btn btn-sm btn-danger remove-department">
+                  <i class="icon-base ti tabler-trash"></i> Remove
+                </button>
+              </div>
+
+              <div class="row">
+                <!-- Department Selection -->
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Department <span class="text-danger">*</span></label>
+                  <select class="form-select select2-department" name="departments[{{ $departmentIndex }}][department_id]" required>
+                    <option value="">Select Department</option>
+                    @foreach($departments as $department)
+                      <option value="{{ $department->id }}" {{ $dept->id == $department->id ? 'selected' : '' }}>
+                        {{ $department->name }} ({{ $department->code }})
+                      </option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <!-- Auditors Selection -->
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Assigned Auditors</label>
+                  <select class="form-select select2-auditors" name="departments[{{ $departmentIndex }}][auditor_ids][]" multiple>
+                    @foreach($auditors as $auditor)
+                      <option value="{{ $auditor->id }}">
+                        {{ $auditor->name }} ({{ $auditor->email }})
+                      </option>
+                    @endforeach
+                  </select>
+                  <small class="text-muted">Select auditors for this department</small>
+                </div>
+
+                <!-- Planned Start Date -->
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Planned Start Date</label>
+                  <input type="date" class="form-control" name="departments[{{ $departmentIndex }}][planned_start_date]"
+                    value="{{ $dept->pivot->planned_start_date?->format('Y-m-d') ?? '' }}">
+                </div>
+
+                <!-- Planned End Date -->
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Planned End Date</label>
+                  <input type="date" class="form-control" name="departments[{{ $departmentIndex }}][planned_end_date]"
+                    value="{{ $dept->pivot->planned_end_date?->format('Y-m-d') ?? '' }}">
+                </div>
+
+                <!-- Notes -->
+                <div class="col-12 mb-3">
+                  <label class="form-label">Notes</label>
+                  <textarea class="form-control" name="departments[{{ $departmentIndex }}][notes]" rows="2"
+                    placeholder="Additional notes for this department's audit">{{ $dept->pivot->notes ?? '' }}</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      @else
+        <!-- Empty state - will be populated by JavaScript -->
+        <div class="alert alert-info">
+          <i class="icon-base ti tabler-info-circle me-2"></i>
+          Click "Add Department" to start adding departments to this audit plan.
+        </div>
+      @endif
+    </div>
   </div>
 
   <!-- Planned Start Date -->
