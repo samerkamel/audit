@@ -27,7 +27,12 @@ class CheckListGroup extends Model
 
     public function auditQuestions(): BelongsToMany
     {
-        return $this->belongsToMany(AuditQuestion::class, 'checklist_group_question')
+        return $this->belongsToMany(
+            AuditQuestion::class,
+            'checklist_group_question',
+            'checklist_group_id',  // Foreign pivot key
+            'audit_question_id'     // Related pivot key
+        )
             ->withPivot('display_order')
             ->withTimestamps()
             ->orderByPivot('display_order');

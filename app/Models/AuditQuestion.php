@@ -17,7 +17,9 @@ class AuditQuestion extends Model
      */
     protected $fillable = [
         'code',
-        'question',
+        'question_text',
+        'iso_reference',
+        'quality_procedure_reference',
         'category',
         'description',
         'is_required',
@@ -41,7 +43,12 @@ class AuditQuestion extends Model
      */
     public function checklistGroups(): BelongsToMany
     {
-        return $this->belongsToMany(CheckListGroup::class, 'checklist_group_question')
+        return $this->belongsToMany(
+            CheckListGroup::class,
+            'checklist_group_question',
+            'audit_question_id',    // Foreign pivot key
+            'checklist_group_id'    // Related pivot key
+        )
             ->withPivot('display_order')
             ->withTimestamps()
             ->orderByPivot('display_order');
