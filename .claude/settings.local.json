@@ -18,7 +18,8 @@
       "Bash(chmod:*)",
       "Bash(git checkout:*)",
       "Bash(yarn install)",
-      "Bash(yarn build)"
+      "Bash(yarn build)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []
