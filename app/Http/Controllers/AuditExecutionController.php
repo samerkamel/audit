@@ -24,11 +24,13 @@ class AuditExecutionController extends Controller
             ->where(function ($q) use ($user) {
                 // Lead auditor
                 $q->where('lead_auditor_id', $user->id)
-                    // Or assigned to any department
-                    ->orWhereHas('departments', function ($dq) use ($user) {
-                        $dq->whereHas('auditors', function ($aq) use ($user) {
-                            $aq->where('users.id', $user->id);
-                        });
+                    // Or assigned to any department in this audit plan
+                    ->orWhereExists(function ($subquery) use ($user) {
+                        $subquery->select(DB::raw(1))
+                            ->from('audit_plan_department')
+                            ->join('audit_plan_department_auditor', 'audit_plan_department.id', '=', 'audit_plan_department_auditor.audit_plan_department_id')
+                            ->whereColumn('audit_plan_department.audit_plan_id', 'audit_plans.id')
+                            ->where('audit_plan_department_auditor.user_id', $user->id);
                     });
             })
             ->where('is_active', true)
