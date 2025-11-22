@@ -3,9 +3,8 @@
 namespace Tests\Feature\Api;
 
 use App\Models\User;
-use App\Models\Complaint;
+use App\Models\CustomerComplaint;
 use App\Models\Department;
-use App\Models\Sector;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -27,7 +26,7 @@ class ComplaintControllerTest extends TestCase
     /** @test */
     public function it_can_list_complaints()
     {
-        Complaint::factory()->count(5)->create();
+        CustomerComplaint::factory()->count(5)->create();
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/v1/complaints');
@@ -40,10 +39,10 @@ class ComplaintControllerTest extends TestCase
                         '*' => [
                             'id',
                             'complaint_number',
-                            'subject',
-                            'description',
+                            'complaint_subject',
+                            'complaint_description',
                             'customer_name',
-                            'category',
+                            'complaint_category',
                             'severity',
                             'status',
                         ],
@@ -55,8 +54,8 @@ class ComplaintControllerTest extends TestCase
     /** @test */
     public function it_can_filter_complaints_by_status()
     {
-        Complaint::factory()->create(['status' => 'new']);
-        Complaint::factory()->create(['status' => 'resolved']);
+        CustomerComplaint::factory()->create(['status' => 'new']);
+        CustomerComplaint::factory()->create(['status' => 'resolved']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/v1/complaints?status=new');
@@ -68,8 +67,8 @@ class ComplaintControllerTest extends TestCase
     /** @test */
     public function it_can_filter_complaints_by_severity()
     {
-        Complaint::factory()->create(['severity' => 'critical']);
-        Complaint::factory()->create(['severity' => 'low']);
+        CustomerComplaint::factory()->create(['severity' => 'critical']);
+        CustomerComplaint::factory()->create(['severity' => 'minor']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/v1/complaints?severity=critical');
@@ -81,8 +80,8 @@ class ComplaintControllerTest extends TestCase
     /** @test */
     public function it_can_filter_complaints_by_category()
     {
-        Complaint::factory()->create(['category' => 'product_quality']);
-        Complaint::factory()->create(['category' => 'service_quality']);
+        CustomerComplaint::factory()->create(['complaint_category' => 'product_quality']);
+        CustomerComplaint::factory()->create(['complaint_category' => 'service_quality']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/v1/complaints?category=product_quality');
@@ -95,20 +94,20 @@ class ComplaintControllerTest extends TestCase
     public function it_can_create_complaint()
     {
         $department = Department::factory()->create();
-        $sector = Sector::factory()->create();
 
         $complaintData = [
             'complaint_number' => 'COMP-2025-001',
-            'subject' => 'Product defect in batch 123',
-            'description' => 'Customer reported defects in product finish',
+            'complaint_subject' => 'Product defect in batch 123',
+            'complaint_description' => 'Customer reported defects in product finish',
             'customer_name' => 'ABC Manufacturing Ltd',
             'customer_email' => 'contact@abc.com',
             'customer_phone' => '+1234567890',
-            'category' => 'product_quality',
-            'severity' => 'high',
+            'complaint_category' => 'product_quality',
+            'severity' => 'major',
+            'priority' => 'high',
             'complaint_date' => '2025-01-18',
-            'assigned_to' => $this->user->id,
-            'department_id' => $department->id,
+            'assigned_to_user_id' => $this->user->id,
+            'assigned_to_department_id' => $department->id,
         ];
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
@@ -120,9 +119,9 @@ class ComplaintControllerTest extends TestCase
                 'message' => 'Complaint created successfully',
             ]);
 
-        $this->assertDatabaseHas('complaints', [
+        $this->assertDatabaseHas('customer_complaints', [
             'complaint_number' => 'COMP-2025-001',
-            'severity' => 'high',
+            'severity' => 'major',
         ]);
     }
 
@@ -135,10 +134,10 @@ class ComplaintControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors([
                 'complaint_number',
-                'subject',
-                'description',
+                'complaint_subject',
+                'complaint_description',
                 'customer_name',
-                'category',
+                'complaint_category',
                 'severity',
                 'complaint_date',
             ]);
@@ -147,7 +146,7 @@ class ComplaintControllerTest extends TestCase
     /** @test */
     public function it_can_show_specific_complaint()
     {
-        $complaint = Complaint::factory()->create();
+        $complaint = CustomerComplaint::factory()->create();
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/v1/complaints/' . $complaint->id);
@@ -165,7 +164,7 @@ class ComplaintControllerTest extends TestCase
     /** @test */
     public function it_can_update_complaint()
     {
-        $complaint = Complaint::factory()->create([
+        $complaint = CustomerComplaint::factory()->create([
             'status' => 'new',
         ]);
 
@@ -180,7 +179,7 @@ class ComplaintControllerTest extends TestCase
                 'message' => 'Complaint updated successfully',
             ]);
 
-        $this->assertDatabaseHas('complaints', [
+        $this->assertDatabaseHas('customer_complaints', [
             'id' => $complaint->id,
             'status' => 'investigating',
         ]);
@@ -189,7 +188,7 @@ class ComplaintControllerTest extends TestCase
     /** @test */
     public function it_can_delete_new_complaint()
     {
-        $complaint = Complaint::factory()->create([
+        $complaint = CustomerComplaint::factory()->create([
             'status' => 'new',
         ]);
 
@@ -202,7 +201,7 @@ class ComplaintControllerTest extends TestCase
                 'message' => 'Complaint deleted successfully',
             ]);
 
-        $this->assertDatabaseMissing('complaints', [
+        $this->assertSoftDeleted('customer_complaints', [
             'id' => $complaint->id,
         ]);
     }
@@ -210,7 +209,7 @@ class ComplaintControllerTest extends TestCase
     /** @test */
     public function it_cannot_delete_resolved_complaint()
     {
-        $complaint = Complaint::factory()->create([
+        $complaint = CustomerComplaint::factory()->create([
             'status' => 'resolved',
         ]);
 
@@ -220,18 +219,18 @@ class ComplaintControllerTest extends TestCase
         $response->assertStatus(403)
             ->assertJson([
                 'success' => false,
-                'message' => 'Only new or rejected complaints can be deleted',
+                'message' => 'Only new complaints can be deleted',
             ]);
     }
 
     /** @test */
     public function it_can_get_unresolved_complaints()
     {
-        Complaint::factory()->create(['status' => 'new']);
-        Complaint::factory()->create(['status' => 'investigating']);
-        Complaint::factory()->create(['status' => 'action_required']);
-        Complaint::factory()->create(['status' => 'resolved']); // Should not be included
-        Complaint::factory()->create(['status' => 'closed']); // Should not be included
+        CustomerComplaint::factory()->create(['status' => 'new']);
+        CustomerComplaint::factory()->create(['status' => 'investigating']);
+        CustomerComplaint::factory()->create(['status' => 'acknowledged']);
+        CustomerComplaint::factory()->create(['status' => 'resolved']); // Should not be included
+        CustomerComplaint::factory()->create(['status' => 'closed']); // Should not be included
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/v1/complaints/unresolved');
@@ -241,19 +240,19 @@ class ComplaintControllerTest extends TestCase
                 'success' => true,
             ]);
 
-        // Only unresolved complaints (new, investigating, action_required) should be returned
+        // Only unresolved complaints (new, investigating, acknowledged, escalated) should be returned
         $this->assertEquals(3, count($response->json('data')));
     }
 
     /** @test */
     public function it_can_get_complaint_statistics()
     {
-        Complaint::factory()->create(['status' => 'new']);
-        Complaint::factory()->create(['status' => 'investigating']);
-        Complaint::factory()->create(['status' => 'resolved']);
-        Complaint::factory()->create(['status' => 'closed']);
-        Complaint::factory()->create(['severity' => 'critical']);
-        Complaint::factory()->create(['severity' => 'high']);
+        CustomerComplaint::factory()->create(['status' => 'new']);
+        CustomerComplaint::factory()->create(['status' => 'investigating']);
+        CustomerComplaint::factory()->create(['status' => 'resolved']);
+        CustomerComplaint::factory()->create(['status' => 'closed']);
+        CustomerComplaint::factory()->create(['severity' => 'critical']);
+        CustomerComplaint::factory()->create(['priority' => 'high']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/v1/complaints/statistics');
@@ -264,12 +263,15 @@ class ComplaintControllerTest extends TestCase
                 'data' => [
                     'total',
                     'new',
+                    'acknowledged',
                     'investigating',
-                    'action_required',
                     'resolved',
                     'closed',
-                    'critical',
-                    'high',
+                    'escalated',
+                    'critical_severity',
+                    'major_severity',
+                    'critical_priority',
+                    'high_priority',
                 ],
             ]);
     }

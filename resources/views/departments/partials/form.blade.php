@@ -34,7 +34,7 @@
   </div>
 
   <div class="col-md-6 mb-4">
-    <label for="manager_id" class="form-label">Manager</label>
+    <label for="manager_id" class="form-label">Department Manager</label>
     <select class="form-select select2 @error('manager_id') is-invalid @enderror" id="manager_id" name="manager_id">
       <option value="">Select Manager</option>
       @foreach($managers as $manager)
@@ -44,6 +44,20 @@
       @endforeach
     </select>
     @error('manager_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+  </div>
+
+  <div class="col-md-6 mb-4">
+    <label for="general_manager_id" class="form-label">General Manager</label>
+    <select class="form-select select2 @error('general_manager_id') is-invalid @enderror" id="general_manager_id" name="general_manager_id">
+      <option value="">Select General Manager</option>
+      @foreach($managers as $manager)
+        <option value="{{ $manager->id }}" {{ old('general_manager_id', $department->general_manager_id ?? '') == $manager->id ? 'selected' : '' }}>
+          {{ $manager->name }}
+        </option>
+      @endforeach
+    </select>
+    @error('general_manager_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    <small class="form-text text-muted">General Manager will be CC'd on notifications</small>
   </div>
 
   <div class="col-md-6 mb-4">

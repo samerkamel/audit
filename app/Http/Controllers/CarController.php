@@ -6,6 +6,10 @@ use App\Models\Car;
 use App\Models\AuditResponse;
 use App\Models\Department;
 use App\Models\User;
+use App\Notifications\CarApprovalRequiredNotification;
+use App\Notifications\CarClosedNotification;
+use App\Notifications\CarIssuedNotification;
+use App\Notifications\CarRejectedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -238,7 +242,16 @@ class CarController extends Controller
 
         $car->update(['status' => 'pending_approval']);
 
-        // TODO: Send notification to quality manager
+        // Send notification to quality managers (users with 'approve cars' permission or quality role)
+        $qualityManagers = User::where('is_active', true)
+            ->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Quality Manager', 'Admin', 'Super Admin']);
+            })
+            ->get();
+
+        foreach ($qualityManagers as $manager) {
+            $manager->notify(new CarApprovalRequiredNotification($car));
+        }
 
         return redirect()
             ->route('cars.show', $car)
@@ -267,7 +280,14 @@ class CarController extends Controller
             'clarification' => $validated['clarification'] ?? $car->clarification,
         ]);
 
-        // TODO: Send notification to responsible department
+        // Send notification to users in the responsible department
+        $departmentUsers = User::where('is_active', true)
+            ->where('department_id', $car->to_department_id)
+            ->get();
+
+        foreach ($departmentUsers as $user) {
+            $user->notify(new CarIssuedNotification($car));
+        }
 
         return redirect()
             ->route('cars.show', $car)
@@ -294,7 +314,10 @@ class CarController extends Controller
             'clarification' => $validated['clarification'],
         ]);
 
-        // TODO: Send notification to issuer
+        // Send notification to the issuer
+        if ($car->issuedBy) {
+            $car->issuedBy->notify(new CarRejectedNotification($car));
+        }
 
         return redirect()
             ->route('cars.show', $car)
@@ -412,7 +435,19 @@ class CarController extends Controller
             'closed_at' => now(),
         ]);
 
-        // TODO: Send notification to department and stakeholders
+        // Send notification to department users and the issuer
+        $notifyUsers = User::where('is_active', true)
+            ->where('department_id', $car->to_department_id)
+            ->get();
+
+        // Also notify the issuer if not already in department users
+        if ($car->issuedBy && !$notifyUsers->contains('id', $car->issued_by)) {
+            $notifyUsers->push($car->issuedBy);
+        }
+
+        foreach ($notifyUsers as $user) {
+            $user->notify(new CarClosedNotification($car));
+        }
 
         return redirect()
             ->route('cars.show', $car)

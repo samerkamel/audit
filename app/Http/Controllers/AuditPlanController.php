@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\Sector;
 use App\Models\User;
 use App\Models\CheckListGroup;
+use App\Notifications\AuditScheduledNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -71,7 +72,39 @@ class AuditPlanController extends Controller
             })->count(),
         ];
 
-        return view('audit-plans.index', compact('auditPlans', 'departments', 'auditors', 'stats'));
+        // Prepare Gantt chart data
+        $ganttData = $auditPlans->map(function($plan) {
+            $startDate = $plan->departments->min('pivot.planned_start_date') ?? $plan->actual_start_date;
+            $endDate = $plan->departments->max('pivot.planned_end_date') ?? $plan->actual_end_date;
+
+            $color = match($plan->status) {
+                'draft' => '#6c757d',
+                'planned' => '#17a2b8',
+                'in_progress' => '#ffc107',
+                'completed' => '#28a745',
+                'cancelled' => '#dc3545',
+                default => '#6c757d'
+            };
+
+            if ($plan->isOverdue()) {
+                $color = '#dc3545';
+            }
+
+            return [
+                'x' => $plan->title,
+                'y' => [
+                    $startDate ? strtotime($startDate) * 1000 : null,
+                    $endDate ? strtotime($endDate) * 1000 : null
+                ],
+                'fillColor' => $color,
+                'id' => $plan->id,
+                'status' => $plan->status
+            ];
+        })->filter(function($item) {
+            return $item['y'][0] !== null && $item['y'][1] !== null;
+        })->values();
+
+        return view('audit-plans.index', compact('auditPlans', 'departments', 'auditors', 'stats', 'ganttData'));
     }
 
     /**
@@ -345,8 +378,33 @@ class AuditPlanController extends Controller
             'actual_start_date' => now(),
         ]);
 
+        // Send notifications to lead auditor and department users
+        $this->sendAuditNotifications($auditPlan);
+
         return redirect()->route('audit-plans.show', $auditPlan)
             ->with('success', 'Audit plan started successfully.');
+    }
+
+    /**
+     * Send audit notifications to relevant users.
+     */
+    protected function sendAuditNotifications(AuditPlan $auditPlan): void
+    {
+        // Notify lead auditor
+        if ($auditPlan->leadAuditor) {
+            $auditPlan->leadAuditor->notify(new AuditScheduledNotification($auditPlan));
+        }
+
+        // Notify department users
+        foreach ($auditPlan->departments as $department) {
+            $users = User::where('department_id', $department->id)
+                ->where('is_active', true)
+                ->get();
+
+            foreach ($users as $user) {
+                $user->notify(new AuditScheduledNotification($auditPlan, $department));
+            }
+        }
     }
 
     /**

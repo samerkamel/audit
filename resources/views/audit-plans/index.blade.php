@@ -5,14 +5,16 @@
 @section('vendor-style')
 @vite([
   'resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss',
-  'resources/assets/vendor/libs/select2/select2.scss'
+  'resources/assets/vendor/libs/select2/select2.scss',
+  'resources/assets/vendor/libs/apex-charts/apex-charts.scss'
 ])
 @endsection
 
 @section('vendor-script')
 @vite([
   'resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js',
-  'resources/assets/vendor/libs/select2/select2.js'
+  'resources/assets/vendor/libs/select2/select2.js',
+  'resources/assets/vendor/libs/apex-charts/apexcharts.js'
 ])
 @endsection
 
@@ -146,8 +148,36 @@
     </div>
   </div>
 
+  <!-- View Toggle Buttons -->
+  <div class="d-flex justify-content-end mb-3">
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-outline-primary active" id="tableViewBtn" onclick="toggleView('table')">
+        <i class="icon-base ti tabler-table me-1"></i> Table View
+      </button>
+      <button type="button" class="btn btn-outline-primary" id="ganttViewBtn" onclick="toggleView('gantt')">
+        <i class="icon-base ti tabler-chart-gantt me-1"></i> Gantt Chart
+      </button>
+    </div>
+  </div>
+
+  <!-- Gantt Chart Card -->
+  <div class="card mb-6" id="ganttChartCard" style="display: none;">
+    <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+      <h5 class="card-title mb-0">Audit Plans Timeline ({{ date('Y') }})</h5>
+      <div class="d-flex gap-2">
+        <span class="badge bg-info"><i class="icon-base ti tabler-circle-filled me-1"></i>Planned</span>
+        <span class="badge bg-warning"><i class="icon-base ti tabler-circle-filled me-1"></i>In Progress</span>
+        <span class="badge bg-success"><i class="icon-base ti tabler-circle-filled me-1"></i>Completed</span>
+        <span class="badge bg-danger"><i class="icon-base ti tabler-circle-filled me-1"></i>Overdue</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div id="ganttChart"></div>
+    </div>
+  </div>
+
   <!-- Audit Plans List Card -->
-  <div class="card">
+  <div class="card" id="tableViewCard">
     <div class="card-header border-bottom">
       <h5 class="card-title mb-0">Audit Plans List</h5>
     </div>
@@ -279,8 +309,147 @@
 @endif
 @endsection
 
-@push('scripts')
+@section('page-script')
 <script>
+  // Gantt chart data (prepared in controller)
+  const ganttData = @json($ganttData);
+
+  let ganttChart = null;
+
+  function initGanttChart() {
+    if (ganttChart) {
+      ganttChart.destroy();
+    }
+
+    if (ganttData.length === 0) {
+      document.getElementById('ganttChart').innerHTML = '<div class="text-center py-5"><p class="text-muted">No audit plans with scheduled dates to display</p></div>';
+      return;
+    }
+
+    const options = {
+      series: [{
+        data: ganttData
+      }],
+      chart: {
+        height: Math.max(300, ganttData.length * 50),
+        type: 'rangeBar',
+        toolbar: {
+          show: true,
+          tools: {
+            download: true,
+            selection: false,
+            zoom: true,
+            zoomin: true,
+            zoomout: true,
+            pan: true,
+            reset: true
+          }
+        },
+        events: {
+          dataPointSelection: function(event, chartContext, config) {
+            const planId = ganttData[config.dataPointIndex].id;
+            window.location.href = '/audit-plans/' + planId;
+          }
+        }
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          distributed: true,
+          barHeight: '70%',
+          borderRadius: 4
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function(val, opts) {
+          const start = new Date(val[0]);
+          const end = new Date(val[1]);
+          const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+          return diff + ' days';
+        },
+        style: {
+          fontSize: '11px',
+          fontWeight: 500,
+          colors: ['#fff']
+        }
+      },
+      xaxis: {
+        type: 'datetime',
+        labels: {
+          datetimeFormatter: {
+            year: 'yyyy',
+            month: 'MMM',
+            day: 'dd MMM',
+            hour: 'HH:mm'
+          }
+        }
+      },
+      yaxis: {
+        labels: {
+          style: {
+            fontSize: '12px'
+          },
+          maxWidth: 200
+        }
+      },
+      grid: {
+        row: {
+          colors: ['#f3f4f6', 'transparent'],
+          opacity: 0.5
+        }
+      },
+      tooltip: {
+        custom: function({ series, seriesIndex, dataPointIndex, w }) {
+          const data = ganttData[dataPointIndex];
+          const start = new Date(data.y[0]);
+          const end = new Date(data.y[1]);
+          const options = { year: 'numeric', month: 'short', day: 'numeric' };
+
+          return '<div class="p-3">' +
+            '<strong>' + data.x + '</strong><br>' +
+            '<span class="text-muted">Start:</span> ' + start.toLocaleDateString('en-US', options) + '<br>' +
+            '<span class="text-muted">End:</span> ' + end.toLocaleDateString('en-US', options) + '<br>' +
+            '<span class="text-muted">Status:</span> ' + data.status.replace('_', ' ') +
+            '</div>';
+        }
+      },
+      legend: {
+        show: false
+      }
+    };
+
+    ganttChart = new ApexCharts(document.querySelector("#ganttChart"), options);
+    ganttChart.render();
+  }
+
+  function toggleView(view) {
+    const tableCard = document.getElementById('tableViewCard');
+    const ganttCard = document.getElementById('ganttChartCard');
+    const tableBtn = document.getElementById('tableViewBtn');
+    const ganttBtn = document.getElementById('ganttViewBtn');
+
+    if (view === 'table') {
+      tableCard.style.display = 'block';
+      ganttCard.style.display = 'none';
+      tableBtn.classList.add('active');
+      ganttBtn.classList.remove('active');
+    } else {
+      tableCard.style.display = 'none';
+      ganttCard.style.display = 'block';
+      tableBtn.classList.remove('active');
+      ganttBtn.classList.add('active');
+
+      // Initialize chart when showing Gantt view
+      setTimeout(function() {
+        initGanttChart();
+      }, 100);
+    }
+
+    // Save preference
+    localStorage.setItem('auditPlansView', view);
+  }
+
   $(document).ready(function() {
     $('.datatables-audit-plans').DataTable({
       responsive: true,
@@ -288,6 +457,12 @@
       dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
       language: { search: '', searchPlaceholder: 'Search audit plans...' }
     });
+
+    // Restore saved view preference
+    const savedView = localStorage.getItem('auditPlansView');
+    if (savedView === 'gantt') {
+      toggleView('gantt');
+    }
   });
 </script>
-@endpush
+@endsection

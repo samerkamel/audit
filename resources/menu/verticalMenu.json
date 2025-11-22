@@ -70,6 +70,12 @@
       "slug": "cars"
     },
     {
+      "url": "/improvement-opportunities",
+      "name": "Improvement Opportunities",
+      "icon": "menu-icon icon-base ti tabler-bulb",
+      "slug": "improvement-opportunities"
+    },
+    {
       "url": "/complaints",
       "name": "Customer Complaints",
       "icon": "menu-icon icon-base ti tabler-message-report",
@@ -98,6 +104,30 @@
       "name": "Document Management",
       "icon": "menu-icon icon-base ti tabler-file-text",
       "slug": "documents"
+    },
+    {
+      "menuHeader": "Communication"
+    },
+    {
+      "url": "/messages",
+      "name": "Messages",
+      "icon": "menu-icon icon-base ti tabler-message-circle",
+      "slug": "messages"
+    },
+    {
+      "menuHeader": "Settings"
+    },
+    {
+      "url": "/settings/notification-templates",
+      "name": "Notification Templates",
+      "icon": "menu-icon icon-base ti tabler-mail-cog",
+      "slug": "notification-templates"
+    },
+    {
+      "url": "/settings/reminder-settings",
+      "name": "Reminder Settings",
+      "icon": "menu-icon icon-base ti tabler-clock-cog",
+      "slug": "reminder-settings"
     }
   ]
 }

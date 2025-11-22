@@ -14,7 +14,7 @@ class DepartmentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Department::with(['sector', 'manager', 'users']);
+        $query = Department::with(['sector', 'manager', 'generalManager', 'users']);
 
         // Search functionality
         if ($request->filled('search')) {
@@ -84,6 +84,7 @@ class DepartmentController extends Controller
             'name_ar' => ['nullable', 'string', 'max:255'],
             'code' => ['required', 'string', 'max:50', 'unique:departments'],
             'manager_id' => ['nullable', 'exists:users,id'],
+            'general_manager_id' => ['nullable', 'exists:users,id'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
             'description' => ['nullable', 'string'],
@@ -103,7 +104,7 @@ class DepartmentController extends Controller
      */
     public function show(Department $department)
     {
-        $department->load(['sector', 'manager', 'users']);
+        $department->load(['sector', 'manager', 'generalManager', 'users']);
 
         // Calculate department statistics
         $stats = [
@@ -139,6 +140,7 @@ class DepartmentController extends Controller
             'name_ar' => ['nullable', 'string', 'max:255'],
             'code' => ['required', 'string', 'max:50', 'unique:departments,code,' . $department->id],
             'manager_id' => ['nullable', 'exists:users,id'],
+            'general_manager_id' => ['nullable', 'exists:users,id'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
             'description' => ['nullable', 'string'],

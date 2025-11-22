@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ExternalAudit;
 use App\Models\User;
 use App\Models\Department;
+use App\Notifications\ExternalAuditNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -73,6 +74,14 @@ class ExternalAuditController extends Controller
         $validated['result'] = 'pending';
 
         $audit = ExternalAudit::create($validated);
+
+        // Notify quality managers about scheduled audit
+        $this->notifyQualityTeam($audit, 'scheduled');
+
+        // Also notify the coordinator if assigned
+        if ($audit->coordinator) {
+            $audit->coordinator->notify(new ExternalAuditNotification($audit, 'scheduled'));
+        }
 
         return redirect()
             ->route('external-audits.show', $audit)
@@ -170,6 +179,13 @@ class ExternalAuditController extends Controller
             'actual_start_date' => now()->toDateString(),
         ]);
 
+        // Notify quality team and coordinator about audit start
+        $this->notifyQualityTeam($externalAudit, 'started');
+
+        if ($externalAudit->coordinator) {
+            $externalAudit->coordinator->notify(new ExternalAuditNotification($externalAudit, 'started'));
+        }
+
         return redirect()
             ->route('external-audits.show', $externalAudit)
             ->with('success', 'Audit started successfully.');
@@ -203,6 +219,9 @@ class ExternalAuditController extends Controller
 
         $externalAudit->update($validated);
 
+        // Notify quality team about completion
+        $this->notifyQualityTeam($externalAudit, 'completed');
+
         return redirect()
             ->route('external-audits.show', $externalAudit)
             ->with('success', 'Audit completed successfully.');
@@ -221,8 +240,29 @@ class ExternalAuditController extends Controller
 
         $externalAudit->update(['status' => 'cancelled']);
 
+        // Notify coordinator about cancellation
+        if ($externalAudit->coordinator) {
+            $externalAudit->coordinator->notify(new ExternalAuditNotification($externalAudit, 'cancelled'));
+        }
+
         return redirect()
             ->route('external-audits.show', $externalAudit)
             ->with('success', 'Audit cancelled successfully.');
+    }
+
+    /**
+     * Notify quality team about external audit events.
+     */
+    protected function notifyQualityTeam(ExternalAudit $audit, string $action): void
+    {
+        $qualityManagers = User::where('is_active', true)
+            ->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Quality Manager', 'Admin', 'Super Admin']);
+            })
+            ->get();
+
+        foreach ($qualityManagers as $manager) {
+            $manager->notify(new ExternalAuditNotification($audit, $action));
+        }
     }
 }

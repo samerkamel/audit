@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use App\Models\Department;
 use App\Models\User;
+use App\Notifications\DocumentStatusChangedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -175,6 +176,9 @@ class DocumentController extends Controller
                 ->with('error', 'Document cannot be submitted for review.');
         }
 
+        // Notify quality managers for review
+        $this->notifyQualityTeam($document, 'submitted_for_review');
+
         return redirect()->route('documents.show', $document)
             ->with('success', 'Document submitted for review.');
     }
@@ -186,6 +190,9 @@ class DocumentController extends Controller
                 ->with('error', 'Document cannot be reviewed.');
         }
 
+        // Notify quality managers for approval
+        $this->notifyQualityTeam($document, 'reviewed');
+
         return redirect()->route('documents.show', $document)
             ->with('success', 'Document reviewed and sent for approval.');
     }
@@ -195,6 +202,11 @@ class DocumentController extends Controller
         if (!$document->approve(Auth::id())) {
             return redirect()->route('documents.show', $document)
                 ->with('error', 'Document cannot be approved.');
+        }
+
+        // Notify document owner about approval
+        if ($document->owner) {
+            $document->owner->notify(new DocumentStatusChangedNotification($document, 'approved'));
         }
 
         return redirect()->route('documents.show', $document)
@@ -208,6 +220,9 @@ class DocumentController extends Controller
                 ->with('error', 'Document cannot be made effective.');
         }
 
+        // Notify stakeholders about effective document
+        $this->notifyQualityTeam($document, 'effective');
+
         return redirect()->route('documents.show', $document)
             ->with('success', 'Document is now effective.');
     }
@@ -219,8 +234,29 @@ class DocumentController extends Controller
                 ->with('error', 'Document cannot be made obsolete.');
         }
 
+        // Notify document owner about obsolete status
+        if ($document->owner) {
+            $document->owner->notify(new DocumentStatusChangedNotification($document, 'obsolete'));
+        }
+
         return redirect()->route('documents.show', $document)
             ->with('success', 'Document marked as obsolete.');
+    }
+
+    /**
+     * Notify quality team about document status changes.
+     */
+    protected function notifyQualityTeam(Document $document, string $action): void
+    {
+        $qualityManagers = User::where('is_active', true)
+            ->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Quality Manager', 'Admin', 'Super Admin']);
+            })
+            ->get();
+
+        foreach ($qualityManagers as $manager) {
+            $manager->notify(new DocumentStatusChangedNotification($document, $action));
+        }
     }
 
     public function download(Document $document)

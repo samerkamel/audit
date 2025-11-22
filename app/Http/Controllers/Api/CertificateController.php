@@ -21,7 +21,7 @@ class CertificateController extends Controller
         $status = $request->get('status');
         $type = $request->get('certificate_type');
 
-        $query = Certificate::with(['department', 'sector', 'audit']);
+        $query = Certificate::with(['issuedForAudit', 'createdBy']);
 
         if ($status) {
             $query->where('status', $status);
@@ -50,15 +50,16 @@ class CertificateController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'certificate_number' => 'required|string|unique:certificates,certificate_number',
-            'certificate_name' => 'required|string|max:255',
-            'certificate_type' => 'required|in:iso_certification,accreditation,license,other',
-            'issuing_authority' => 'required|string|max:255',
+            'standard' => 'required|string|max:255',
+            'certification_body' => 'required|string|max:255',
+            'certificate_type' => 'required|in:initial,renewal,transfer',
             'issue_date' => 'required|date',
             'expiry_date' => 'required|date|after:issue_date',
-            'scope' => 'required|string',
-            'department_id' => 'nullable|exists:departments,id',
-            'sector_id' => 'nullable|exists:sectors,id',
-            'audit_id' => 'nullable|exists:external_audits,id',
+            'scope_of_certification' => 'required|string',
+            'covered_sites' => 'nullable|array',
+            'covered_processes' => 'nullable|array',
+            'notes' => 'nullable|string',
+            'issued_for_audit_id' => 'nullable|exists:external_audits,id',
         ]);
 
         if ($validator->fails()) {
@@ -69,12 +70,16 @@ class CertificateController extends Controller
             ], 422);
         }
 
-        $certificate = Certificate::create($request->all());
+        $data = $request->all();
+        $data['created_by'] = auth()->id();
+        $data['status'] = 'valid';
+
+        $certificate = Certificate::create($data);
 
         return response()->json([
             'success' => true,
             'message' => 'Certificate created successfully',
-            'data' => $certificate->load(['department', 'sector', 'audit']),
+            'data' => $certificate->load(['issuedForAudit', 'createdBy']),
         ], 201);
     }
 
@@ -87,9 +92,8 @@ class CertificateController extends Controller
     public function show($id)
     {
         $certificate = Certificate::with([
-            'department',
-            'sector',
-            'audit'
+            'issuedForAudit',
+            'createdBy'
         ])->find($id);
 
         if (!$certificate) {
@@ -128,17 +132,17 @@ class CertificateController extends Controller
 
         $validator = Validator::make($request->all(), [
             'certificate_number' => 'string|unique:certificates,certificate_number,' . $id,
-            'certificate_name' => 'string|max:255',
-            'certificate_type' => 'in:iso_certification,accreditation,license,other',
-            'issuing_authority' => 'string|max:255',
+            'standard' => 'string|max:255',
+            'certification_body' => 'string|max:255',
+            'certificate_type' => 'in:initial,renewal,transfer',
             'issue_date' => 'date',
             'expiry_date' => 'date|after:issue_date',
-            'renewal_date' => 'nullable|date',
-            'status' => 'in:active,expiring_soon,expired,suspended,revoked',
-            'scope' => 'string',
-            'department_id' => 'nullable|exists:departments,id',
-            'sector_id' => 'nullable|exists:sectors,id',
-            'audit_id' => 'nullable|exists:external_audits,id',
+            'status' => 'in:valid,expiring_soon,expired,suspended,revoked',
+            'scope_of_certification' => 'string',
+            'covered_sites' => 'nullable|array',
+            'covered_processes' => 'nullable|array',
+            'notes' => 'nullable|string',
+            'issued_for_audit_id' => 'nullable|exists:external_audits,id',
         ]);
 
         if ($validator->fails()) {
@@ -154,7 +158,7 @@ class CertificateController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Certificate updated successfully',
-            'data' => $certificate->load(['department', 'sector', 'audit']),
+            'data' => $certificate->load(['issuedForAudit', 'createdBy']),
         ], 200);
     }
 
@@ -175,6 +179,14 @@ class CertificateController extends Controller
             ], 404);
         }
 
+        // Only allow deletion of expired or revoked certificates
+        if (!in_array($certificate->status, ['expired', 'revoked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only expired or revoked certificates can be deleted',
+            ], 403);
+        }
+
         $certificate->delete();
 
         return response()->json([
@@ -192,15 +204,11 @@ class CertificateController extends Controller
     {
         $stats = [
             'total' => Certificate::count(),
-            'active' => Certificate::where('status', 'active')->count(),
+            'valid' => Certificate::where('status', 'valid')->count(),
             'expiring_soon' => Certificate::where('status', 'expiring_soon')->count(),
             'expired' => Certificate::where('status', 'expired')->count(),
-            'expiring_30_days' => Certificate::where('expiry_date', '<=', now()->addDays(30))
-                ->where('expiry_date', '>', now())
-                ->count(),
-            'expiring_90_days' => Certificate::where('expiry_date', '<=', now()->addDays(90))
-                ->where('expiry_date', '>', now())
-                ->count(),
+            'suspended' => Certificate::where('status', 'suspended')->count(),
+            'revoked' => Certificate::where('status', 'revoked')->count(),
         ];
 
         return response()->json([
@@ -217,9 +225,10 @@ class CertificateController extends Controller
      */
     public function expiring(Request $request)
     {
-        $days = $request->get('days', 30);
+        $days = (int) $request->get('days', 30);
 
-        $certificates = Certificate::with(['department', 'sector'])
+        $certificates = Certificate::with(['issuedForAudit', 'createdBy'])
+            ->whereIn('status', ['valid', 'expiring_soon'])
             ->where('expiry_date', '<=', now()->addDays($days))
             ->where('expiry_date', '>', now())
             ->orderBy('expiry_date', 'asc')

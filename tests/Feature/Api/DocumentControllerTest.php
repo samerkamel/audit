@@ -41,7 +41,7 @@ class DocumentControllerTest extends TestCase
                             'id',
                             'document_number',
                             'title',
-                            'revision',
+                            'version',
                             'status',
                         ],
                     ],
@@ -52,11 +52,11 @@ class DocumentControllerTest extends TestCase
     /** @test */
     public function it_can_filter_documents_by_status()
     {
-        Document::factory()->create(['status' => 'active']);
+        Document::factory()->create(['status' => 'effective']);
         Document::factory()->create(['status' => 'obsolete']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
-            ->getJson('/api/v1/documents?status=active');
+            ->getJson('/api/v1/documents?status=effective');
 
         $response->assertStatus(200);
         $this->assertEquals(1, count($response->json('data.data')));
@@ -66,7 +66,7 @@ class DocumentControllerTest extends TestCase
     public function it_can_filter_documents_by_category()
     {
         Document::factory()->create(['category' => 'procedure']);
-        Document::factory()->create(['category' => 'policy']);
+        Document::factory()->create(['category' => 'form']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/v1/documents?category=procedure');
@@ -78,18 +78,15 @@ class DocumentControllerTest extends TestCase
     /** @test */
     public function it_can_create_document()
     {
-        $department = Department::factory()->create();
-
         $documentData = [
             'document_number' => 'QMS-PR-001',
             'title' => 'Quality Management Procedure',
             'category' => 'procedure',
             'description' => 'Procedure for quality management system',
-            'revision' => '2.0',
-            'issue_date' => '2025-01-10',
-            'review_date' => '2026-01-10',
+            'version' => '2.0',
+            'effective_date' => '2025-01-10',
+            'next_review_date' => '2026-01-10',
             'owner_id' => $this->user->id,
-            'department_id' => $department->id,
         ];
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
@@ -118,7 +115,6 @@ class DocumentControllerTest extends TestCase
                 'document_number',
                 'title',
                 'category',
-                'issue_date',
                 'owner_id',
             ]);
     }
@@ -150,7 +146,7 @@ class DocumentControllerTest extends TestCase
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->putJson('/api/v1/documents/' . $document->id, [
-                'status' => 'active',
+                'status' => 'effective',
             ]);
 
         $response->assertStatus(200)
@@ -161,7 +157,7 @@ class DocumentControllerTest extends TestCase
 
         $this->assertDatabaseHas('documents', [
             'id' => $document->id,
-            'status' => 'active',
+            'status' => 'effective',
         ]);
     }
 
@@ -181,16 +177,16 @@ class DocumentControllerTest extends TestCase
                 'message' => 'Document deleted successfully',
             ]);
 
-        $this->assertDatabaseMissing('documents', [
+        $this->assertSoftDeleted('documents', [
             'id' => $document->id,
         ]);
     }
 
     /** @test */
-    public function it_cannot_delete_active_document()
+    public function it_cannot_delete_effective_document()
     {
         $document = Document::factory()->create([
-            'status' => 'active',
+            'status' => 'effective',
         ]);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
@@ -208,19 +204,19 @@ class DocumentControllerTest extends TestCase
     {
         // Create document due for review (review date in past)
         Document::factory()->create([
-            'review_date' => Carbon::now()->subDays(10),
-            'status' => 'active',
+            'next_review_date' => Carbon::now()->subDays(10),
+            'status' => 'effective',
         ]);
 
         // Create document not due for review
         Document::factory()->create([
-            'review_date' => Carbon::now()->addDays(30),
-            'status' => 'active',
+            'next_review_date' => Carbon::now()->addDays(30),
+            'status' => 'effective',
         ]);
 
         // Create obsolete document (should not be included)
         Document::factory()->create([
-            'review_date' => Carbon::now()->subDays(5),
+            'next_review_date' => Carbon::now()->subDays(5),
             'status' => 'obsolete',
         ]);
 
@@ -232,20 +228,20 @@ class DocumentControllerTest extends TestCase
                 'success' => true,
             ]);
 
-        // Only the active document with past review date should be returned
+        // Only the effective document with past review date should be returned
         $this->assertEquals(1, count($response->json('data')));
     }
 
     /** @test */
     public function it_can_get_document_statistics()
     {
-        Document::factory()->create(['status' => 'active']);
-        Document::factory()->create(['status' => 'active']);
+        Document::factory()->create(['status' => 'effective']);
+        Document::factory()->create(['status' => 'effective']);
         Document::factory()->create(['status' => 'draft']);
         Document::factory()->create(['status' => 'obsolete']);
         Document::factory()->create([
-            'status' => 'active',
-            'review_date' => Carbon::now()->subDays(5),
+            'status' => 'effective',
+            'next_review_date' => Carbon::now()->subDays(5),
         ]);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
@@ -256,9 +252,10 @@ class DocumentControllerTest extends TestCase
                 'success',
                 'data' => [
                     'total',
-                    'active',
+                    'effective',
                     'draft',
-                    'under_review',
+                    'pending_review',
+                    'pending_approval',
                     'obsolete',
                     'due_for_review',
                 ],

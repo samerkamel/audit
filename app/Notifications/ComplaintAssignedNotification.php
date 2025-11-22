@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Models\Complaint;
+use App\Models\CustomerComplaint;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -16,7 +16,7 @@ class ComplaintAssignedNotification extends Notification implements ShouldQueue
      * Create a new notification instance.
      */
     public function __construct(
-        public Complaint $complaint
+        public CustomerComplaint $complaint
     ) {
     }
 
@@ -35,14 +35,22 @@ class ComplaintAssignedNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        $mail = (new MailMessage)
             ->subject("Complaint Assigned: {$this->complaint->complaint_number}")
             ->line("A new complaint has been assigned to you.")
             ->line("**Complaint:** {$this->complaint->complaint_number}")
             ->line("**Subject:** {$this->complaint->subject}")
-            ->line("**Priority:** " . ucfirst($this->complaint->priority))
-            ->line("**Customer:** {$this->complaint->customer->name}")
-            ->line("**Received Date:** {$this->complaint->complaint_date->format('F d, Y')}")
+            ->line("**Priority:** " . ucfirst($this->complaint->priority ?? 'normal'));
+
+        if ($this->complaint->customer) {
+            $mail->line("**Customer:** {$this->complaint->customer->name}");
+        }
+
+        if ($this->complaint->complaint_date) {
+            $mail->line("**Received Date:** {$this->complaint->complaint_date->format('F d, Y')}");
+        }
+
+        return $mail
             ->action('View Complaint', route('complaints.show', $this->complaint))
             ->line('Please review and address this complaint promptly.');
     }
@@ -54,15 +62,17 @@ class ComplaintAssignedNotification extends Notification implements ShouldQueue
      */
     public function toDatabase(object $notifiable): array
     {
+        $priority = $this->complaint->priority ?? 'normal';
+
         return [
             'type' => 'complaint_assigned',
             'title' => 'Complaint Assigned',
             'message' => "{$this->complaint->complaint_number} - {$this->complaint->subject}",
             'icon' => 'message-report',
-            'color' => $this->complaint->priority === 'high' ? 'danger' : ($this->complaint->priority === 'medium' ? 'warning' : 'info'),
+            'color' => $priority === 'high' ? 'danger' : ($priority === 'medium' ? 'warning' : 'info'),
             'action_url' => route('complaints.show', $this->complaint),
             'action_text' => 'View Complaint',
-            'notifiable_type' => Complaint::class,
+            'notifiable_type' => CustomerComplaint::class,
             'notifiable_id' => $this->complaint->id,
         ];
     }

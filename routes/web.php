@@ -385,6 +385,11 @@ use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\ExternalAuditController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\NotificationTemplateController;
+use App\Http\Controllers\ReminderSettingController;
+use App\Http\Controllers\ImprovementOpportunityController;
+use App\Http\Controllers\ImprovementOpportunityResponseController;
+use App\Http\Controllers\MessageController;
 
 Route::middleware(['auth'])->group(function () {
     // User Management
@@ -461,6 +466,22 @@ Route::middleware(['auth'])->group(function () {
     Route::post('complaints/{complaint}/close', [ComplaintController::class, 'close'])->name('complaints.close');
     Route::post('complaints/{complaint}/generate-car', [ComplaintController::class, 'generateCar'])->name('complaints.generate-car');
 
+    // Improvement Opportunity Management
+    Route::resource('improvement-opportunities', ImprovementOpportunityController::class);
+    Route::post('improvement-opportunities/{improvementOpportunity}/submit-for-approval', [ImprovementOpportunityController::class, 'submitForApproval'])->name('improvement-opportunities.submit-for-approval');
+    Route::post('improvement-opportunities/{improvementOpportunity}/approve', [ImprovementOpportunityController::class, 'approve'])->name('improvement-opportunities.approve');
+    Route::post('improvement-opportunities/{improvementOpportunity}/reject', [ImprovementOpportunityController::class, 'reject'])->name('improvement-opportunities.reject');
+    Route::post('improvement-opportunities/{improvementOpportunity}/close', [ImprovementOpportunityController::class, 'close'])->name('improvement-opportunities.close');
+    Route::post('improvement-opportunities/auto-create-from-observations', [ImprovementOpportunityController::class, 'autoCreateFromObservations'])->name('improvement-opportunities.auto-create-from-observations');
+
+    // Improvement Opportunity Response Management
+    Route::get('improvement-opportunities/{improvementOpportunity}/responses/create', [ImprovementOpportunityResponseController::class, 'create'])->name('improvement-opportunity-responses.create');
+    Route::post('improvement-opportunities/{improvementOpportunity}/responses', [ImprovementOpportunityResponseController::class, 'store'])->name('improvement-opportunity-responses.store');
+    Route::get('improvement-opportunities/{improvementOpportunity}/responses/{response}/edit', [ImprovementOpportunityResponseController::class, 'edit'])->name('improvement-opportunity-responses.edit');
+    Route::put('improvement-opportunities/{improvementOpportunity}/responses/{response}', [ImprovementOpportunityResponseController::class, 'update'])->name('improvement-opportunity-responses.update');
+    Route::post('improvement-opportunities/{improvementOpportunity}/responses/{response}/accept', [ImprovementOpportunityResponseController::class, 'accept'])->name('improvement-opportunity-responses.accept');
+    Route::post('improvement-opportunities/{improvementOpportunity}/responses/{response}/reject', [ImprovementOpportunityResponseController::class, 'reject'])->name('improvement-opportunity-responses.reject');
+
     // External Audit Management
     Route::resource('external-audits', ExternalAuditController::class);
     Route::post('external-audits/{externalAudit}/start', [ExternalAuditController::class, 'start'])->name('external-audits.start');
@@ -487,10 +508,47 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [App\Http\Controllers\NotificationController::class, 'index'])->name('index');
         Route::get('/unread-count', [App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('unread-count');
         Route::get('/latest', [App\Http\Controllers\NotificationController::class, 'getLatest'])->name('latest');
+        Route::get('/requiring-confirmation', [App\Http\Controllers\NotificationController::class, 'getRequiringConfirmation'])->name('requiring-confirmation');
         Route::post('/{notification}/mark-as-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('mark-as-read');
+        Route::post('/{notification}/confirm', [App\Http\Controllers\NotificationController::class, 'confirm'])->name('confirm');
         Route::post('/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('mark-all-as-read');
         Route::delete('/{notification}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('destroy');
         Route::delete('/', [App\Http\Controllers\NotificationController::class, 'destroyAll'])->name('destroy-all');
+    });
+
+    // Messages (In-System Communication)
+    Route::prefix('messages')->name('messages.')->group(function () {
+        Route::get('/', [MessageController::class, 'index'])->name('index');
+        Route::get('/sent', [MessageController::class, 'sent'])->name('sent');
+        Route::get('/create', [MessageController::class, 'create'])->name('create');
+        Route::post('/', [MessageController::class, 'store'])->name('store');
+        Route::get('/{message}', [MessageController::class, 'show'])->name('show');
+        Route::post('/{message}/reply', [MessageController::class, 'reply'])->name('reply');
+        Route::post('/{message}/mark-as-read', [MessageController::class, 'markAsRead'])->name('mark-as-read');
+        Route::post('/mark-all-read', [MessageController::class, 'markAllAsRead'])->name('mark-all-read');
+        Route::delete('/{message}', [MessageController::class, 'destroy'])->name('destroy');
+        Route::get('/api/unread-count', [MessageController::class, 'getUnreadCount'])->name('unread-count');
+    });
+
+    // Notification Template Management (Settings)
+    Route::prefix('settings/notification-templates')->name('notification-templates.')->group(function () {
+        Route::get('/', [NotificationTemplateController::class, 'index'])->name('index');
+        Route::get('/{notificationTemplate}/edit', [NotificationTemplateController::class, 'edit'])->name('edit');
+        Route::put('/{notificationTemplate}', [NotificationTemplateController::class, 'update'])->name('update');
+        Route::patch('/{notificationTemplate}/toggle-status', [NotificationTemplateController::class, 'toggleStatus'])->name('toggle-status');
+        Route::get('/{notificationTemplate}/preview', [NotificationTemplateController::class, 'preview'])->name('preview');
+        Route::post('/{notificationTemplate}/reset', [NotificationTemplateController::class, 'reset'])->name('reset');
+    });
+
+    // Reminder Settings Management (Settings)
+    Route::prefix('settings/reminder-settings')->name('reminder-settings.')->group(function () {
+        Route::get('/', [ReminderSettingController::class, 'index'])->name('index');
+        Route::get('/create', [ReminderSettingController::class, 'create'])->name('create');
+        Route::post('/', [ReminderSettingController::class, 'store'])->name('store');
+        Route::get('/{reminderSetting}/edit', [ReminderSettingController::class, 'edit'])->name('edit');
+        Route::put('/{reminderSetting}', [ReminderSettingController::class, 'update'])->name('update');
+        Route::patch('/{reminderSetting}/toggle-status', [ReminderSettingController::class, 'toggleStatus'])->name('toggle-status');
+        Route::delete('/{reminderSetting}', [ReminderSettingController::class, 'destroy'])->name('destroy');
     });
 
     // Report Export Routes

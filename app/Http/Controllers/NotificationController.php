@@ -107,4 +107,70 @@ class NotificationController extends Controller
 
         return redirect()->back()->with('success', 'All notifications deleted successfully');
     }
+
+    /**
+     * Confirm a notification
+     */
+    public function confirm(string $notification)
+    {
+        $notificationRecord = auth()->user()
+            ->notifications()
+            ->where('id', $notification)
+            ->first();
+
+        if (!$notificationRecord) {
+            abort(404);
+        }
+
+        // Update confirmation status
+        $notificationRecord->update([
+            'confirmed_at' => now(),
+            'confirmed_by' => auth()->id(),
+        ]);
+
+        // Also mark as read if not already
+        if (!$notificationRecord->read_at) {
+            $notificationRecord->markAsRead();
+        }
+
+        if (request()->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Notification confirmed successfully']);
+        }
+
+        return redirect()->back()->with('success', 'Notification confirmed successfully');
+    }
+
+    /**
+     * Get notifications requiring confirmation
+     */
+    public function getRequiringConfirmation()
+    {
+        $notifications = auth()->user()
+            ->notifications()
+            ->where('requires_confirmation', true)
+            ->whereNull('confirmed_at')
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'notifications' => $notifications,
+            'count' => $notifications->count(),
+        ]);
+    }
+
+    /**
+     * Check if a specific notification type requires confirmation
+     */
+    public static function requiresConfirmation(string $notificationType): bool
+    {
+        // Define notification types that require confirmation
+        $requiresConfirmation = [
+            'car_issued',
+            'improvement_opportunity_issued',
+            'audit_scheduled',
+            'external_audit_scheduled',
+        ];
+
+        return in_array($notificationType, $requiresConfirmation);
+    }
 }

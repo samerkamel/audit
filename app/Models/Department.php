@@ -24,6 +24,7 @@ class Department extends Model
         'name_ar',
         'code',
         'manager_id',
+        'general_manager_id',
         'email',
         'phone',
         'description',
@@ -53,6 +54,14 @@ class Department extends Model
     public function manager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    /**
+     * Get the general manager of the department.
+     */
+    public function generalManager(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'general_manager_id');
     }
 
     /**

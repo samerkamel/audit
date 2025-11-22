@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Certificate;
 use App\Models\ExternalAudit;
+use App\Models\User;
+use App\Notifications\CertificateStatusChangedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -77,6 +79,9 @@ class CertificateController extends Controller
 
         // Update certificate status based on expiry date
         $certificate->updateStatus();
+
+        // Notify quality managers about new certificate
+        $this->notifyQualityTeam($certificate, 'created');
 
         return redirect()
             ->route('certificates.show', $certificate)
@@ -176,6 +181,9 @@ class CertificateController extends Controller
 
         $certificate->update(['status' => 'suspended']);
 
+        // Notify quality managers about suspension
+        $this->notifyQualityTeam($certificate, 'suspended');
+
         return redirect()
             ->route('certificates.show', $certificate)
             ->with('success', 'Certificate suspended successfully.');
@@ -193,6 +201,9 @@ class CertificateController extends Controller
         }
 
         $certificate->update(['status' => 'revoked']);
+
+        // Notify quality managers about revocation
+        $this->notifyQualityTeam($certificate, 'revoked');
 
         return redirect()
             ->route('certificates.show', $certificate)
@@ -213,8 +224,27 @@ class CertificateController extends Controller
         // Update status based on expiry date
         $certificate->updateStatus();
 
+        // Notify quality managers about reinstatement
+        $this->notifyQualityTeam($certificate, 'reinstated');
+
         return redirect()
             ->route('certificates.show', $certificate)
             ->with('success', 'Certificate reinstated successfully.');
+    }
+
+    /**
+     * Notify quality team about certificate status changes.
+     */
+    protected function notifyQualityTeam(Certificate $certificate, string $action): void
+    {
+        $qualityManagers = User::where('is_active', true)
+            ->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['Quality Manager', 'Admin', 'Super Admin']);
+            })
+            ->get();
+
+        foreach ($qualityManagers as $manager) {
+            $manager->notify(new CertificateStatusChangedNotification($certificate, $action));
+        }
     }
 }

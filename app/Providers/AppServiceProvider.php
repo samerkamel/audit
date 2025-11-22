@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Helpers\WorkingDaysCalculator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Facades\RateLimiter;
@@ -15,7 +16,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register WorkingDaysCalculator as a singleton with Middle East weekend
+        $this->app->singleton(WorkingDaysCalculator::class, function ($app) {
+            return WorkingDaysCalculator::middleEast();
+        });
+
+        // Create an alias for easier access
+        $this->app->alias(WorkingDaysCalculator::class, 'working-days');
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Models\CustomerComplaint;
 use App\Models\Department;
 use App\Models\User;
 use App\Models\Car;
+use App\Notifications\ComplaintAssignedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -82,6 +83,14 @@ class ComplaintController extends Controller
 
         $complaint = CustomerComplaint::create($validated);
 
+        // Send notification if assigned to a user
+        if ($complaint->assigned_to_user_id) {
+            $assignedUser = User::find($complaint->assigned_to_user_id);
+            if ($assignedUser) {
+                $assignedUser->notify(new ComplaintAssignedNotification($complaint));
+            }
+        }
+
         return redirect()
             ->route('complaints.show', $complaint)
             ->with('success', "Complaint {$complaint->complaint_number} created successfully.");
@@ -145,7 +154,19 @@ class ComplaintController extends Controller
             'car_required' => 'boolean',
         ]);
 
+        // Check if assignment changed
+        $previousAssignee = $complaint->assigned_to_user_id;
+        $newAssignee = $validated['assigned_to_user_id'] ?? null;
+
         $complaint->update($validated);
+
+        // Send notification if assigned to a new user
+        if ($newAssignee && $newAssignee !== $previousAssignee) {
+            $assignedUser = User::find($newAssignee);
+            if ($assignedUser) {
+                $assignedUser->notify(new ComplaintAssignedNotification($complaint));
+            }
+        }
 
         return redirect()
             ->route('complaints.show', $complaint)

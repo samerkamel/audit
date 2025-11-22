@@ -19,16 +19,16 @@ class DocumentController extends Controller
     {
         $perPage = $request->get('per_page', 15);
         $status = $request->get('status');
-        $categoryId = $request->get('category_id');
+        $category = $request->get('category');
 
-        $query = Document::with(['category', 'department', 'sector', 'owner', 'approvedBy']);
+        $query = Document::with(['owner', 'reviewer', 'approver']);
 
         if ($status) {
             $query->where('status', $status);
         }
 
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
+        if ($category) {
+            $query->where('category', $category);
         }
 
         $documents = $query->orderBy('document_number', 'desc')
@@ -51,14 +51,12 @@ class DocumentController extends Controller
         $validator = Validator::make($request->all(), [
             'document_number' => 'required|string|unique:documents,document_number',
             'title' => 'required|string|max:255',
-            'category_id' => 'required|exists:document_categories,id',
+            'category' => 'required|in:quality_manual,procedure,work_instruction,form,record,external_document',
             'description' => 'nullable|string',
-            'revision' => 'nullable|string|max:50',
-            'issue_date' => 'required|date',
-            'review_date' => 'nullable|date|after:issue_date',
+            'version' => 'nullable|string|max:20',
+            'effective_date' => 'nullable|date',
+            'next_review_date' => 'nullable|date|after:effective_date',
             'owner_id' => 'required|exists:users,id',
-            'department_id' => 'nullable|exists:departments,id',
-            'sector_id' => 'nullable|exists:sectors,id',
         ]);
 
         if ($validator->fails()) {
@@ -69,12 +67,15 @@ class DocumentController extends Controller
             ], 422);
         }
 
-        $document = Document::create($request->all());
+        $data = $request->all();
+        $data['created_by'] = auth()->id();
+
+        $document = Document::create($data);
 
         return response()->json([
             'success' => true,
             'message' => 'Document created successfully',
-            'data' => $document->load(['category', 'department', 'sector', 'owner']),
+            'data' => $document->load(['owner']),
         ], 201);
     }
 
@@ -87,12 +88,10 @@ class DocumentController extends Controller
     public function show($id)
     {
         $document = Document::with([
-            'category',
-            'department',
-            'sector',
             'owner',
-            'approvedBy',
-            'revisions'
+            'reviewer',
+            'approver',
+            'createdBy',
         ])->find($id);
 
         if (!$document) {
@@ -129,17 +128,13 @@ class DocumentController extends Controller
         $validator = Validator::make($request->all(), [
             'document_number' => 'string|unique:documents,document_number,' . $id,
             'title' => 'string|max:255',
-            'category_id' => 'exists:document_categories,id',
+            'category' => 'in:quality_manual,procedure,work_instruction,form,record,external_document',
             'description' => 'nullable|string',
-            'revision' => 'nullable|string|max:50',
-            'status' => 'in:draft,active,under_review,obsolete,archived',
-            'issue_date' => 'date',
-            'review_date' => 'nullable|date|after:issue_date',
-            'approval_date' => 'nullable|date',
+            'version' => 'nullable|string|max:20',
+            'status' => 'in:draft,pending_review,pending_approval,approved,effective,obsolete,archived',
+            'effective_date' => 'nullable|date',
+            'next_review_date' => 'nullable|date|after:effective_date',
             'owner_id' => 'exists:users,id',
-            'approved_by' => 'nullable|exists:users,id',
-            'department_id' => 'nullable|exists:departments,id',
-            'sector_id' => 'nullable|exists:sectors,id',
         ]);
 
         if ($validator->fails()) {
@@ -155,7 +150,7 @@ class DocumentController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Document updated successfully',
-            'data' => $document->load(['category', 'department', 'sector', 'owner', 'approvedBy']),
+            'data' => $document->load(['owner', 'reviewer', 'approver']),
         ], 200);
     }
 
@@ -202,11 +197,12 @@ class DocumentController extends Controller
         $stats = [
             'total' => Document::count(),
             'draft' => Document::where('status', 'draft')->count(),
-            'active' => Document::where('status', 'active')->count(),
-            'under_review' => Document::where('status', 'under_review')->count(),
+            'effective' => Document::where('status', 'effective')->count(),
+            'pending_review' => Document::where('status', 'pending_review')->count(),
+            'pending_approval' => Document::where('status', 'pending_approval')->count(),
             'obsolete' => Document::where('status', 'obsolete')->count(),
-            'due_for_review' => Document::where('review_date', '<=', now())
-                ->where('status', 'active')
+            'due_for_review' => Document::where('next_review_date', '<=', now())
+                ->where('status', 'effective')
                 ->count(),
         ];
 
@@ -223,10 +219,10 @@ class DocumentController extends Controller
      */
     public function dueForReview()
     {
-        $documents = Document::with(['category', 'department', 'sector', 'owner'])
-            ->where('review_date', '<=', now())
-            ->where('status', 'active')
-            ->orderBy('review_date', 'asc')
+        $documents = Document::with(['owner'])
+            ->where('next_review_date', '<=', now())
+            ->where('status', 'effective')
+            ->orderBy('next_review_date', 'asc')
             ->get();
 
         return response()->json([

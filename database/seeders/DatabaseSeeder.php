@@ -25,6 +25,12 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
         ]);
 
+        // Seed notification and reminder settings
+        $this->call([
+            NotificationTemplateSeeder::class,
+            ReminderSettingSeeder::class,
+        ]);
+
         // Create super admin user
         $admin = User::create([
             'name' => 'System Administrator',

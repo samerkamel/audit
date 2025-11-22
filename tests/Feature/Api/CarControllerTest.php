@@ -5,7 +5,6 @@ namespace Tests\Feature\Api;
 use App\Models\User;
 use App\Models\Car;
 use App\Models\Department;
-use App\Models\Sector;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -41,8 +40,8 @@ class CarControllerTest extends TestCase
                             'id',
                             'car_number',
                             'subject',
-                            'description',
-                            'source',
+                            'ncr_description',
+                            'source_type',
                             'priority',
                             'status',
                         ],
@@ -54,11 +53,11 @@ class CarControllerTest extends TestCase
     /** @test */
     public function it_can_filter_cars_by_status()
     {
-        Car::factory()->create(['status' => 'open']);
+        Car::factory()->create(['status' => 'issued']);
         Car::factory()->create(['status' => 'closed']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
-            ->getJson('/api/v1/cars?status=open');
+            ->getJson('/api/v1/cars?status=issued');
 
         $response->assertStatus(200);
         $this->assertEquals(1, count($response->json('data.data')));
@@ -80,20 +79,18 @@ class CarControllerTest extends TestCase
     /** @test */
     public function it_can_create_car()
     {
-        $department = Department::factory()->create();
-        $sector = Sector::factory()->create();
+        $fromDepartment = Department::factory()->create();
+        $toDepartment = Department::factory()->create();
 
         $carData = [
             'car_number' => 'CAR-2025-001',
             'subject' => 'Non-conformance in welding',
-            'description' => 'Welding parameters not within specified range',
-            'source' => 'internal_audit',
+            'ncr_description' => 'Welding parameters not within specified range',
+            'source_type' => 'internal_audit',
             'priority' => 'high',
             'issued_date' => '2025-01-20',
-            'due_date' => '2025-02-20',
-            'assigned_to' => $this->user->id,
-            'department_id' => $department->id,
-            'sector_id' => $sector->id,
+            'from_department_id' => $fromDepartment->id,
+            'to_department_id' => $toDepartment->id,
         ];
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
@@ -121,11 +118,10 @@ class CarControllerTest extends TestCase
             ->assertJsonValidationErrors([
                 'car_number',
                 'subject',
-                'description',
-                'source',
+                'ncr_description',
+                'source_type',
                 'priority',
                 'issued_date',
-                'due_date',
             ]);
     }
 
@@ -151,7 +147,7 @@ class CarControllerTest extends TestCase
     public function it_can_update_car()
     {
         $car = Car::factory()->create([
-            'status' => 'open',
+            'status' => 'issued',
         ]);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
@@ -172,10 +168,10 @@ class CarControllerTest extends TestCase
     }
 
     /** @test */
-    public function it_can_delete_open_car()
+    public function it_can_delete_draft_car()
     {
         $car = Car::factory()->create([
-            'status' => 'open',
+            'status' => 'draft',
         ]);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
@@ -187,7 +183,7 @@ class CarControllerTest extends TestCase
                 'message' => 'CAR deleted successfully',
             ]);
 
-        $this->assertDatabaseMissing('cars', [
+        $this->assertSoftDeleted('cars', [
             'id' => $car->id,
         ]);
     }
@@ -205,14 +201,14 @@ class CarControllerTest extends TestCase
         $response->assertStatus(403)
             ->assertJson([
                 'success' => false,
-                'message' => 'Only open or cancelled CARs can be deleted',
+                'message' => 'Only draft CARs can be deleted',
             ]);
     }
 
     /** @test */
     public function it_can_get_car_statistics()
     {
-        Car::factory()->create(['status' => 'open']);
+        Car::factory()->create(['status' => 'issued']);
         Car::factory()->create(['status' => 'in_progress']);
         Car::factory()->count(2)->create(['status' => 'closed']);
 
@@ -224,10 +220,13 @@ class CarControllerTest extends TestCase
                 'success',
                 'data' => [
                     'total',
-                    'open',
+                    'draft',
+                    'pending_approval',
+                    'issued',
                     'in_progress',
+                    'pending_review',
                     'closed',
-                    'overdue',
+                    'late',
                 ],
             ]);
     }

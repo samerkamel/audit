@@ -4,8 +4,6 @@ namespace Tests\Feature\Api;
 
 use App\Models\User;
 use App\Models\Certificate;
-use App\Models\Department;
-use App\Models\Sector;
 use App\Models\ExternalAudit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
@@ -42,9 +40,9 @@ class CertificateControllerTest extends TestCase
                         '*' => [
                             'id',
                             'certificate_number',
-                            'certificate_name',
+                            'standard',
+                            'certification_body',
                             'certificate_type',
-                            'issuing_authority',
                             'status',
                         ],
                     ],
@@ -55,11 +53,11 @@ class CertificateControllerTest extends TestCase
     /** @test */
     public function it_can_filter_certificates_by_status()
     {
-        Certificate::factory()->create(['status' => 'active']);
+        Certificate::factory()->create(['status' => 'valid']);
         Certificate::factory()->create(['status' => 'expired']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
-            ->getJson('/api/v1/certificates?status=active');
+            ->getJson('/api/v1/certificates?status=valid');
 
         $response->assertStatus(200);
         $this->assertEquals(1, count($response->json('data.data')));
@@ -68,11 +66,11 @@ class CertificateControllerTest extends TestCase
     /** @test */
     public function it_can_filter_certificates_by_type()
     {
-        Certificate::factory()->create(['certificate_type' => 'iso_certification']);
-        Certificate::factory()->create(['certificate_type' => 'accreditation']);
+        Certificate::factory()->create(['certificate_type' => 'initial']);
+        Certificate::factory()->create(['certificate_type' => 'renewal']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
-            ->getJson('/api/v1/certificates?certificate_type=iso_certification');
+            ->getJson('/api/v1/certificates?certificate_type=initial');
 
         $response->assertStatus(200);
         $this->assertEquals(1, count($response->json('data.data')));
@@ -81,19 +79,14 @@ class CertificateControllerTest extends TestCase
     /** @test */
     public function it_can_create_certificate()
     {
-        $department = Department::factory()->create();
-        $audit = ExternalAudit::factory()->create();
-
         $certificateData = [
             'certificate_number' => 'CERT-ISO-2025-001',
-            'certificate_name' => 'ISO 9001:2015 Certification',
-            'certificate_type' => 'iso_certification',
-            'issuing_authority' => 'BSI',
+            'standard' => 'ISO 9001:2015',
+            'certification_body' => 'BSI',
+            'certificate_type' => 'initial',
             'issue_date' => '2025-01-15',
             'expiry_date' => '2028-01-15',
-            'scope' => 'Design, manufacture and supply of automotive components',
-            'department_id' => $department->id,
-            'audit_id' => $audit->id,
+            'scope_of_certification' => 'Design, manufacture and supply of automotive components',
         ];
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
@@ -107,7 +100,7 @@ class CertificateControllerTest extends TestCase
 
         $this->assertDatabaseHas('certificates', [
             'certificate_number' => 'CERT-ISO-2025-001',
-            'certificate_type' => 'iso_certification',
+            'certificate_type' => 'initial',
         ]);
     }
 
@@ -120,11 +113,12 @@ class CertificateControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors([
                 'certificate_number',
-                'certificate_name',
+                'standard',
+                'certification_body',
                 'certificate_type',
-                'issuing_authority',
                 'issue_date',
                 'expiry_date',
+                'scope_of_certification',
             ]);
     }
 
@@ -150,7 +144,7 @@ class CertificateControllerTest extends TestCase
     public function it_can_update_certificate()
     {
         $certificate = Certificate::factory()->create([
-            'status' => 'active',
+            'status' => 'valid',
         ]);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
@@ -186,16 +180,16 @@ class CertificateControllerTest extends TestCase
                 'message' => 'Certificate deleted successfully',
             ]);
 
-        $this->assertDatabaseMissing('certificates', [
+        $this->assertSoftDeleted('certificates', [
             'id' => $certificate->id,
         ]);
     }
 
     /** @test */
-    public function it_cannot_delete_active_certificate()
+    public function it_cannot_delete_valid_certificate()
     {
         $certificate = Certificate::factory()->create([
-            'status' => 'active',
+            'status' => 'valid',
         ]);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
@@ -213,16 +207,19 @@ class CertificateControllerTest extends TestCase
     {
         // Create certificate expiring in 15 days
         Certificate::factory()->create([
+            'status' => 'valid',
             'expiry_date' => Carbon::now()->addDays(15),
         ]);
 
         // Create certificate expiring in 60 days
         Certificate::factory()->create([
+            'status' => 'valid',
             'expiry_date' => Carbon::now()->addDays(60),
         ]);
 
         // Create already expired certificate
         Certificate::factory()->create([
+            'status' => 'expired',
             'expiry_date' => Carbon::now()->subDays(10),
         ]);
 
@@ -234,18 +231,18 @@ class CertificateControllerTest extends TestCase
                 'success' => true,
             ]);
 
-        // Only the certificate expiring in 15 days should be returned
+        // Only the valid certificate expiring in 15 days should be returned
         $this->assertEquals(1, count($response->json('data')));
     }
 
     /** @test */
     public function it_can_get_certificate_statistics()
     {
-        Certificate::factory()->create(['status' => 'active']);
-        Certificate::factory()->create(['status' => 'active']);
+        Certificate::factory()->create(['status' => 'valid']);
+        Certificate::factory()->create(['status' => 'valid']);
         Certificate::factory()->create(['status' => 'expired']);
         Certificate::factory()->create([
-            'status' => 'active',
+            'status' => 'expiring_soon',
             'expiry_date' => Carbon::now()->addDays(20),
         ]);
 
@@ -257,11 +254,11 @@ class CertificateControllerTest extends TestCase
                 'success',
                 'data' => [
                     'total',
-                    'active',
-                    'expired',
+                    'valid',
                     'expiring_soon',
-                    'expiring_30_days',
-                    'expiring_90_days',
+                    'expired',
+                    'suspended',
+                    'revoked',
                 ],
             ]);
     }

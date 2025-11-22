@@ -15,6 +15,14 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(LocaleMiddleware::class);
 
+        // Exclude notification JSON endpoints from CSRF verification
+        $middleware->validateCsrfTokens(except: [
+            'notifications',
+            'notifications/*',
+            'notifications/*/mark-as-read',
+            'notifications/mark-all-as-read',
+        ]);
+
         // API Rate Limiting
         $middleware->api(prepend: [
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',

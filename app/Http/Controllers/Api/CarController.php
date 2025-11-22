@@ -21,7 +21,7 @@ class CarController extends Controller
         $status = $request->get('status');
         $priority = $request->get('priority');
 
-        $query = Car::with(['department', 'sector', 'assignedTo', 'verifiedBy']);
+        $query = Car::with(['fromDepartment', 'toDepartment', 'issuedBy']);
 
         if ($status) {
             $query->where('status', $status);
@@ -51,14 +51,12 @@ class CarController extends Controller
         $validator = Validator::make($request->all(), [
             'car_number' => 'required|string|unique:cars,car_number',
             'subject' => 'required|string|max:255',
-            'description' => 'required|string',
-            'source' => 'required|in:internal_audit,external_audit,customer_complaint,management_review,process_monitoring,other',
+            'ncr_description' => 'required|string',
+            'source_type' => 'required|in:internal_audit,external_audit,customer_complaint,process_performance,other',
             'priority' => 'required|in:low,medium,high,critical',
             'issued_date' => 'required|date',
-            'due_date' => 'required|date|after_or_equal:issued_date',
-            'assigned_to' => 'required|exists:users,id',
-            'department_id' => 'nullable|exists:departments,id',
-            'sector_id' => 'nullable|exists:sectors,id',
+            'from_department_id' => 'nullable|exists:departments,id',
+            'to_department_id' => 'nullable|exists:departments,id',
         ]);
 
         if ($validator->fails()) {
@@ -69,12 +67,16 @@ class CarController extends Controller
             ], 422);
         }
 
-        $car = Car::create($request->all());
+        $data = $request->all();
+        $data['issued_by'] = auth()->id();
+        $data['status'] = 'draft';
+
+        $car = Car::create($data);
 
         return response()->json([
             'success' => true,
             'message' => 'CAR created successfully',
-            'data' => $car->load(['department', 'sector', 'assignedTo']),
+            'data' => $car->load(['fromDepartment', 'toDepartment', 'issuedBy']),
         ], 201);
     }
 
@@ -87,12 +89,9 @@ class CarController extends Controller
     public function show($id)
     {
         $car = Car::with([
-            'department',
-            'sector',
-            'assignedTo',
-            'verifiedBy',
-            'rootCauseAnalysis',
-            'correctiveActions'
+            'fromDepartment',
+            'toDepartment',
+            'issuedBy',
         ])->find($id);
 
         if (!$car) {
@@ -129,17 +128,13 @@ class CarController extends Controller
         $validator = Validator::make($request->all(), [
             'car_number' => 'string|unique:cars,car_number,' . $id,
             'subject' => 'string|max:255',
-            'description' => 'string',
-            'source' => 'in:internal_audit,external_audit,customer_complaint,management_review,process_monitoring,other',
+            'ncr_description' => 'string',
+            'source_type' => 'in:internal_audit,external_audit,customer_complaint,process_performance,other',
             'priority' => 'in:low,medium,high,critical',
-            'status' => 'in:open,in_progress,pending_verification,closed,cancelled',
+            'status' => 'in:draft,pending_approval,issued,in_progress,pending_review,rejected_to_be_edited,closed,late',
             'issued_date' => 'date',
-            'due_date' => 'date|after_or_equal:issued_date',
-            'completion_date' => 'nullable|date',
-            'assigned_to' => 'exists:users,id',
-            'verified_by' => 'nullable|exists:users,id',
-            'department_id' => 'nullable|exists:departments,id',
-            'sector_id' => 'nullable|exists:sectors,id',
+            'from_department_id' => 'nullable|exists:departments,id',
+            'to_department_id' => 'nullable|exists:departments,id',
         ]);
 
         if ($validator->fails()) {
@@ -155,7 +150,7 @@ class CarController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'CAR updated successfully',
-            'data' => $car->load(['department', 'sector', 'assignedTo', 'verifiedBy']),
+            'data' => $car->load(['fromDepartment', 'toDepartment', 'issuedBy']),
         ], 200);
     }
 
@@ -176,11 +171,11 @@ class CarController extends Controller
             ], 404);
         }
 
-        // Only allow deletion of open CARs
-        if (!in_array($car->status, ['open', 'cancelled'])) {
+        // Only allow deletion of draft CARs
+        if ($car->status !== 'draft') {
             return response()->json([
                 'success' => false,
-                'message' => 'Only open or cancelled CARs can be deleted',
+                'message' => 'Only draft CARs can be deleted',
             ], 403);
         }
 
@@ -201,16 +196,13 @@ class CarController extends Controller
     {
         $stats = [
             'total' => Car::count(),
-            'open' => Car::where('status', 'open')->count(),
+            'draft' => Car::where('status', 'draft')->count(),
+            'pending_approval' => Car::where('status', 'pending_approval')->count(),
+            'issued' => Car::where('status', 'issued')->count(),
             'in_progress' => Car::where('status', 'in_progress')->count(),
-            'pending_verification' => Car::where('status', 'pending_verification')->count(),
+            'pending_review' => Car::where('status', 'pending_review')->count(),
             'closed' => Car::where('status', 'closed')->count(),
-            'overdue' => Car::where('due_date', '<', now())
-                ->whereNotIn('status', ['closed', 'cancelled'])
-                ->count(),
-            'late' => Car::where('completion_date', '>', \DB::raw('due_date'))
-                ->where('status', 'closed')
-                ->count(),
+            'late' => Car::where('status', 'late')->count(),
         ];
 
         return response()->json([

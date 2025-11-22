@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Complaint;
+use App\Models\CustomerComplaint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,7 +22,7 @@ class ComplaintController extends Controller
         $severity = $request->get('severity');
         $category = $request->get('category');
 
-        $query = Complaint::with(['department', 'sector', 'assignedTo', 'resolvedBy']);
+        $query = CustomerComplaint::with(['assignedToDepartment', 'assignedToUser', 'receivedBy', 'resolvedBy']);
 
         if ($status) {
             $query->where('status', $status);
@@ -33,7 +33,7 @@ class ComplaintController extends Controller
         }
 
         if ($category) {
-            $query->where('category', $category);
+            $query->where('complaint_category', $category);
         }
 
         $complaints = $query->orderBy('complaint_date', 'desc')
@@ -54,18 +54,18 @@ class ComplaintController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'complaint_number' => 'required|string|unique:complaints,complaint_number',
-            'subject' => 'required|string|max:255',
-            'description' => 'required|string',
+            'complaint_number' => 'required|string|unique:customer_complaints,complaint_number',
+            'complaint_subject' => 'required|string|max:255',
+            'complaint_description' => 'required|string',
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'nullable|email|max:255',
             'customer_phone' => 'nullable|string|max:50',
-            'category' => 'required|in:product_quality,service_quality,delivery,documentation,other',
-            'severity' => 'required|in:low,medium,high,critical',
+            'complaint_category' => 'required|in:product_quality,service_quality,delivery,documentation,technical_support,billing,other',
+            'severity' => 'required|in:minor,major,critical',
+            'priority' => 'nullable|in:low,medium,high,critical',
             'complaint_date' => 'required|date',
-            'assigned_to' => 'nullable|exists:users,id',
-            'department_id' => 'nullable|exists:departments,id',
-            'sector_id' => 'nullable|exists:sectors,id',
+            'assigned_to_user_id' => 'nullable|exists:users,id',
+            'assigned_to_department_id' => 'nullable|exists:departments,id',
         ]);
 
         if ($validator->fails()) {
@@ -76,12 +76,15 @@ class ComplaintController extends Controller
             ], 422);
         }
 
-        $complaint = Complaint::create($request->all());
+        $data = $request->all();
+        $data['received_by'] = auth()->id();
+
+        $complaint = CustomerComplaint::create($data);
 
         return response()->json([
             'success' => true,
             'message' => 'Complaint created successfully',
-            'data' => $complaint->load(['department', 'sector', 'assignedTo']),
+            'data' => $complaint->load(['assignedToDepartment', 'assignedToUser', 'receivedBy']),
         ], 201);
     }
 
@@ -93,12 +96,12 @@ class ComplaintController extends Controller
      */
     public function show($id)
     {
-        $complaint = Complaint::with([
-            'department',
-            'sector',
-            'assignedTo',
+        $complaint = CustomerComplaint::with([
+            'assignedToDepartment',
+            'assignedToUser',
+            'receivedBy',
             'resolvedBy',
-            'correctiveActions'
+            'car'
         ])->find($id);
 
         if (!$complaint) {
@@ -123,7 +126,7 @@ class ComplaintController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $complaint = Complaint::find($id);
+        $complaint = CustomerComplaint::find($id);
 
         if (!$complaint) {
             return response()->json([
@@ -133,21 +136,21 @@ class ComplaintController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'complaint_number' => 'string|unique:complaints,complaint_number,' . $id,
-            'subject' => 'string|max:255',
-            'description' => 'string',
+            'complaint_number' => 'string|unique:customer_complaints,complaint_number,' . $id,
+            'complaint_subject' => 'string|max:255',
+            'complaint_description' => 'string',
             'customer_name' => 'string|max:255',
             'customer_email' => 'nullable|email|max:255',
             'customer_phone' => 'nullable|string|max:50',
-            'category' => 'in:product_quality,service_quality,delivery,documentation,other',
-            'severity' => 'in:low,medium,high,critical',
-            'status' => 'in:new,investigating,action_required,resolved,closed,rejected',
+            'complaint_category' => 'in:product_quality,service_quality,delivery,documentation,technical_support,billing,other',
+            'severity' => 'in:minor,major,critical',
+            'priority' => 'in:low,medium,high,critical',
+            'status' => 'in:new,acknowledged,investigating,resolved,closed,escalated',
             'complaint_date' => 'date',
-            'resolution_date' => 'nullable|date',
-            'assigned_to' => 'nullable|exists:users,id',
+            'resolved_date' => 'nullable|date',
+            'assigned_to_user_id' => 'nullable|exists:users,id',
             'resolved_by' => 'nullable|exists:users,id',
-            'department_id' => 'nullable|exists:departments,id',
-            'sector_id' => 'nullable|exists:sectors,id',
+            'assigned_to_department_id' => 'nullable|exists:departments,id',
         ]);
 
         if ($validator->fails()) {
@@ -163,7 +166,7 @@ class ComplaintController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Complaint updated successfully',
-            'data' => $complaint->load(['department', 'sector', 'assignedTo', 'resolvedBy']),
+            'data' => $complaint->load(['assignedToDepartment', 'assignedToUser', 'receivedBy', 'resolvedBy']),
         ], 200);
     }
 
@@ -175,7 +178,7 @@ class ComplaintController extends Controller
      */
     public function destroy($id)
     {
-        $complaint = Complaint::find($id);
+        $complaint = CustomerComplaint::find($id);
 
         if (!$complaint) {
             return response()->json([
@@ -184,11 +187,11 @@ class ComplaintController extends Controller
             ], 404);
         }
 
-        // Only allow deletion of new or rejected complaints
-        if (!in_array($complaint->status, ['new', 'rejected'])) {
+        // Only allow deletion of new complaints
+        if ($complaint->status !== 'new') {
             return response()->json([
                 'success' => false,
-                'message' => 'Only new or rejected complaints can be deleted',
+                'message' => 'Only new complaints can be deleted',
             ], 403);
         }
 
@@ -208,14 +211,17 @@ class ComplaintController extends Controller
     public function statistics()
     {
         $stats = [
-            'total' => Complaint::count(),
-            'new' => Complaint::where('status', 'new')->count(),
-            'investigating' => Complaint::where('status', 'investigating')->count(),
-            'action_required' => Complaint::where('status', 'action_required')->count(),
-            'resolved' => Complaint::where('status', 'resolved')->count(),
-            'closed' => Complaint::where('status', 'closed')->count(),
-            'critical' => Complaint::where('severity', 'critical')->count(),
-            'high' => Complaint::where('severity', 'high')->count(),
+            'total' => CustomerComplaint::count(),
+            'new' => CustomerComplaint::where('status', 'new')->count(),
+            'acknowledged' => CustomerComplaint::where('status', 'acknowledged')->count(),
+            'investigating' => CustomerComplaint::where('status', 'investigating')->count(),
+            'resolved' => CustomerComplaint::where('status', 'resolved')->count(),
+            'closed' => CustomerComplaint::where('status', 'closed')->count(),
+            'escalated' => CustomerComplaint::where('status', 'escalated')->count(),
+            'critical_severity' => CustomerComplaint::where('severity', 'critical')->count(),
+            'major_severity' => CustomerComplaint::where('severity', 'major')->count(),
+            'critical_priority' => CustomerComplaint::where('priority', 'critical')->count(),
+            'high_priority' => CustomerComplaint::where('priority', 'high')->count(),
         ];
 
         return response()->json([
@@ -231,9 +237,9 @@ class ComplaintController extends Controller
      */
     public function unresolved()
     {
-        $complaints = Complaint::with(['department', 'sector', 'assignedTo'])
-            ->whereNotIn('status', ['resolved', 'closed', 'rejected'])
-            ->orderBy('severity', 'desc')
+        $complaints = CustomerComplaint::with(['assignedToDepartment', 'assignedToUser', 'receivedBy'])
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->orderBy('priority', 'desc')
             ->orderBy('complaint_date', 'asc')
             ->get();
 
