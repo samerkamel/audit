@@ -207,10 +207,10 @@ class ExternalAuditControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Audit deleted successfully',
+                'message' => 'External audit deleted successfully',
             ]);
 
-        $this->assertDatabaseMissing('external_audits', [
+        $this->assertSoftDeleted('external_audits', [
             'id' => $audit->id,
         ]);
     }

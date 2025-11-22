@@ -21,7 +21,7 @@ class ExternalAuditController extends Controller
         $status = $request->get('status');
         $type = $request->get('audit_type');
 
-        $query = ExternalAudit::with(['department', 'sector']);
+        $query = ExternalAudit::with(['coordinator', 'certificate']);
 
         if ($status) {
             $query->where('status', $status);
@@ -50,15 +50,14 @@ class ExternalAuditController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'audit_number' => 'required|string|unique:external_audits,audit_number',
-            'audit_type' => 'required|in:initial,surveillance,recertification,special',
+            'audit_type' => 'required|in:initial_certification,surveillance,recertification,special,follow_up',
             'standard' => 'required|string|max:255',
             'certification_body' => 'required|string|max:255',
             'lead_auditor_name' => 'required|string|max:255',
             'scheduled_start_date' => 'required|date',
             'scheduled_end_date' => 'required|date|after_or_equal:scheduled_start_date',
-            'scope' => 'required|string',
-            'department_id' => 'nullable|exists:departments,id',
-            'sector_id' => 'nullable|exists:sectors,id',
+            'scope_description' => 'nullable|string',
+            'coordinator_id' => 'nullable|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -73,8 +72,8 @@ class ExternalAuditController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'External audit created successfully',
-            'data' => $audit->load(['department', 'sector']),
+            'message' => 'Audit created successfully',
+            'data' => $audit->load(['coordinator', 'certificate']),
         ], 201);
     }
 
@@ -87,9 +86,7 @@ class ExternalAuditController extends Controller
     public function show($id)
     {
         $audit = ExternalAudit::with([
-            'department',
-            'sector',
-            'findings',
+            'coordinator',
             'certificate'
         ])->find($id);
 
@@ -126,7 +123,7 @@ class ExternalAuditController extends Controller
 
         $validator = Validator::make($request->all(), [
             'audit_number' => 'string|unique:external_audits,audit_number,' . $id,
-            'audit_type' => 'in:initial,surveillance,recertification,special',
+            'audit_type' => 'in:initial_certification,surveillance,recertification,special,follow_up',
             'standard' => 'string|max:255',
             'certification_body' => 'string|max:255',
             'lead_auditor_name' => 'string|max:255',
@@ -135,10 +132,9 @@ class ExternalAuditController extends Controller
             'actual_start_date' => 'nullable|date',
             'actual_end_date' => 'nullable|date|after_or_equal:actual_start_date',
             'status' => 'in:scheduled,in_progress,completed,cancelled',
-            'result' => 'nullable|in:pending,passed,failed,passed_with_minor_nc,passed_with_major_nc',
-            'scope' => 'string',
-            'department_id' => 'nullable|exists:departments,id',
-            'sector_id' => 'nullable|exists:sectors,id',
+            'result' => 'nullable|in:pending,passed,conditional,failed',
+            'scope_description' => 'nullable|string',
+            'coordinator_id' => 'nullable|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -153,8 +149,8 @@ class ExternalAuditController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'External audit updated successfully',
-            'data' => $audit->load(['department', 'sector']),
+            'message' => 'Audit updated successfully',
+            'data' => $audit->load(['coordinator', 'certificate']),
         ], 200);
     }
 
@@ -204,7 +200,7 @@ class ExternalAuditController extends Controller
             'in_progress' => ExternalAudit::where('status', 'in_progress')->count(),
             'completed' => ExternalAudit::where('status', 'completed')->count(),
             'passed' => ExternalAudit::where('result', 'passed')->count(),
-            'with_certificate' => ExternalAudit::whereNotNull('certificate_id')->count(),
+            'with_certificate' => ExternalAudit::whereHas('certificate')->count(),
             'upcoming' => ExternalAudit::where('status', 'scheduled')
                 ->where('scheduled_start_date', '>', now())
                 ->where('scheduled_start_date', '<=', now()->addDays(30))

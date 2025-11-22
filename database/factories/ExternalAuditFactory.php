@@ -21,7 +21,7 @@ class ExternalAuditFactory extends Factory
 
         return [
             'audit_number' => 'EA-' . date('Y') . '-' . str_pad(fake()->unique()->numberBetween(1, 999), 3, '0', STR_PAD_LEFT),
-            'audit_type' => fake()->randomElement(['initial', 'surveillance', 'recertification', 'special']),
+            'audit_type' => fake()->randomElement(['initial_certification', 'surveillance', 'recertification', 'special', 'follow_up']),
             'standard' => 'ISO 9001:2015',
             'certification_body' => fake()->randomElement(['BSI', 'SGS', 'TUV', 'DNV', 'LRQA']),
             'lead_auditor_name' => fake()->name(),
@@ -30,7 +30,7 @@ class ExternalAuditFactory extends Factory
             'scheduled_end_date' => $endDate->format('Y-m-d'),
             'scope_description' => fake()->sentence(),
             'status' => fake()->randomElement(['scheduled', 'in_progress', 'completed', 'cancelled']),
-            'result' => fake()->randomElement(['pending', 'passed', 'passed_with_conditions', 'failed']),
+            'result' => fake()->randomElement(['pending', 'passed', 'conditional', 'failed']),
         ];
     }
 }
