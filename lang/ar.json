@@ -899,5 +899,19 @@
   "Recertification": "إعادة الاعتماد",
   "Initial Certification": "الاعتماد الأولي",
   "Observations": "الملاحظات",
-  "Opportunities": "الفرص"
+  "Opportunities": "الفرص",
+
+  "Create Corrective Action Request (CAR)": "إنشاء طلب إجراء تصحيحي (CAR)",
+  "Select Source Type": "اختر نوع المصدر",
+  "Issued By (Department)": "صادر من (القسم)",
+  "Customer Complaint": "شكوى العميل",
+  "Process Performance": "أداء العملية",
+  "Other": "أخرى",
+  "Save as Draft to edit later, or submit for approval directly.": "احفظ كمسودة للتعديل لاحقاً، أو أرسل للموافقة مباشرة.",
+  "Maximum 500 characters": "الحد الأقصى 500 حرف",
+  "Describe the non-conformance or issue that requires corrective action": "صف عدم المطابقة أو المشكلة التي تتطلب إجراء تصحيحي",
+  "Additional clarifications or instructions from quality team": "توضيحات أو تعليمات إضافية من فريق الجودة",
+  "Select an option": "اختر خياراً",
+  "Non-Compliance": "عدم المطابقة",
+  "Creating CAR from Audit Finding": "إنشاء إجراء تصحيحي من نتيجة التدقيق"
 }

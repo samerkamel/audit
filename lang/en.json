@@ -899,5 +899,19 @@
   "Recertification": "Recertification",
   "Initial Certification": "Initial Certification",
   "Observations": "Observations",
-  "Opportunities": "Opportunities"
+  "Opportunities": "Opportunities",
+
+  "Create Corrective Action Request (CAR)": "Create Corrective Action Request (CAR)",
+  "Select Source Type": "Select Source Type",
+  "Issued By (Department)": "Issued By (Department)",
+  "Customer Complaint": "Customer Complaint",
+  "Process Performance": "Process Performance",
+  "Other": "Other",
+  "Save as Draft to edit later, or submit for approval directly.": "Save as Draft to edit later, or submit for approval directly.",
+  "Maximum 500 characters": "Maximum 500 characters",
+  "Describe the non-conformance or issue that requires corrective action": "Describe the non-conformance or issue that requires corrective action",
+  "Additional clarifications or instructions from quality team": "Additional clarifications or instructions from quality team",
+  "Select an option": "Select an option",
+  "Non-Compliance": "Non-Compliance",
+  "Creating CAR from Audit Finding": "Creating CAR from Audit Finding"
 }
