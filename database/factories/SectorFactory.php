@@ -27,6 +27,16 @@ class SectorFactory extends Factory
                 'Retail',
                 'Logistics',
             ]),
+            'name_ar' => fake()->randomElement([
+                'التصنيع',
+                'الخدمات',
+                'التكنولوجيا',
+                'الرعاية الصحية',
+                'التعليم',
+                'المالية',
+                'التجزئة',
+                'اللوجستية',
+            ]),
             'code' => strtoupper(fake()->unique()->lexify('???')),
             'description' => fake()->sentence(),
         ];
