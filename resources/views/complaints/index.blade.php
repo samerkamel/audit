@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Customer Complaints')
+@section('title', __('Customer Complaints'))
 
 @section('vendor-style')
 @vite([
@@ -20,30 +20,30 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center mb-6">
     <div>
-      <h4 class="fw-bold mb-1">Customer Complaints</h4>
-      <p class="text-muted mb-0">Manage and track customer feedback and complaints</p>
+      <h4 class="fw-bold mb-1">{{ __('Customer Complaints') }}</h4>
+      <p class="text-muted mb-0">{{ __('Manage and track customer feedback and complaints') }}</p>
     </div>
     <div class="d-flex gap-2">
       <!-- Export Dropdown -->
       <div class="btn-group">
         <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="icon-base ti tabler-download me-1"></i> Export
+          <i class="icon-base ti tabler-download me-1"></i> {{ __('Export') }}
         </button>
         <ul class="dropdown-menu">
           <li>
             <a class="dropdown-item" href="{{ route('reports.complaints.pdf') }}" target="_blank">
-              <i class="icon-base ti tabler-file-type-pdf me-2 text-danger"></i>Export to PDF
+              <i class="icon-base ti tabler-file-type-pdf me-2 text-danger"></i>{{ __('Export to PDF') }}
             </a>
           </li>
           <li>
             <a class="dropdown-item" href="{{ route('reports.complaints.excel') }}">
-              <i class="icon-base ti tabler-file-spreadsheet me-2 text-success"></i>Export to Excel
+              <i class="icon-base ti tabler-file-spreadsheet me-2 text-success"></i>{{ __('Export to Excel') }}
             </a>
           </li>
         </ul>
       </div>
       <a href="{{ route('complaints.create') }}" class="btn btn-primary">
-        <i class="icon-base ti tabler-plus me-1"></i> New Complaint
+        <i class="icon-base ti tabler-plus me-1"></i> {{ __('New Complaint') }}
       </a>
     </div>
   </div>
@@ -55,11 +55,11 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Total Complaints</span>
+              <span class="text-heading">{{ __('Total Complaints') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['total'] }}</h4>
               </div>
-              <small class="mb-0">All time</small>
+              <small class="mb-0">{{ __('All time') }}</small>
             </div>
             <span class="badge bg-label-primary rounded-pill p-2">
               <i class="icon-base ti tabler-file-description ti-lg"></i>
@@ -74,11 +74,11 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">New Complaints</span>
+              <span class="text-heading">{{ __('New') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['new'] }}</h4>
               </div>
-              <small class="mb-0">Requires acknowledgment</small>
+              <small class="mb-0">{{ __('Requires acknowledgment') }}</small>
             </div>
             <span class="badge bg-label-info rounded-pill p-2">
               <i class="icon-base ti tabler-file-plus ti-lg"></i>
@@ -93,11 +93,11 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Under Investigation</span>
+              <span class="text-heading">{{ __('Under Investigation') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['investigating'] }}</h4>
               </div>
-              <small class="mb-0">In progress</small>
+              <small class="mb-0">{{ __('In Progress') }}</small>
             </div>
             <span class="badge bg-label-warning rounded-pill p-2">
               <i class="icon-base ti tabler-search ti-lg"></i>
@@ -112,11 +112,11 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Resolved</span>
+              <span class="text-heading">{{ __('Resolved') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['resolved'] }}</h4>
               </div>
-              <small class="mb-0">Awaiting closure</small>
+              <small class="mb-0">{{ __('Awaiting closure') }}</small>
             </div>
             <span class="badge bg-label-success rounded-pill p-2">
               <i class="icon-base ti tabler-circle-check ti-lg"></i>
@@ -131,11 +131,11 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Closed</span>
+              <span class="text-heading">{{ __('Closed') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['closed'] }}</h4>
               </div>
-              <small class="mb-0">Successfully completed</small>
+              <small class="mb-0">{{ __('Successfully completed') }}</small>
             </div>
             <span class="badge bg-label-secondary rounded-pill p-2">
               <i class="icon-base ti tabler-lock ti-lg"></i>
@@ -150,11 +150,11 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Overdue</span>
+              <span class="text-heading">{{ __('Overdue') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['overdue'] }}</h4>
               </div>
-              <small class="mb-0">Past response date</small>
+              <small class="mb-0">{{ __('Past response date') }}</small>
             </div>
             <span class="badge bg-label-danger rounded-pill p-2">
               <i class="icon-base ti tabler-alert-triangle ti-lg"></i>
@@ -169,11 +169,11 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">High Priority</span>
+              <span class="text-heading">{{ __('High Priority') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['high_priority'] }}</h4>
               </div>
-              <small class="mb-0">Critical & High</small>
+              <small class="mb-0">{{ __('Critical & High') }}</small>
             </div>
             <span class="badge bg-label-danger rounded-pill p-2">
               <i class="icon-base ti tabler-alert-circle ti-lg"></i>
@@ -188,11 +188,11 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">CAR Generated</span>
+              <span class="text-heading">{{ __('CAR Generated') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['car_generated'] }}</h4>
               </div>
-              <small class="mb-0">With corrective actions</small>
+              <small class="mb-0">{{ __('With corrective actions') }}</small>
             </div>
             <span class="badge bg-label-primary rounded-pill p-2">
               <i class="icon-base ti tabler-file-arrow-right ti-lg"></i>
@@ -206,23 +206,23 @@
   <!-- Complaints Table -->
   <div class="card">
     <div class="card-header border-bottom">
-      <h5 class="card-title mb-0">All Complaints</h5>
+      <h5 class="card-title mb-0">{{ __('All Complaints') }}</h5>
     </div>
     <div class="card-datatable table-responsive">
       <table class="datatables-complaints table table-hover dt-responsive nowrap" style="width:100%">
         <thead>
           <tr>
-            <th>Complaint #</th>
-            <th>Date</th>
-            <th>Customer</th>
-            <th>Subject</th>
-            <th>Category</th>
-            <th>Priority</th>
-            <th>Severity</th>
-            <th>Status</th>
-            <th>Assigned To</th>
-            <th>CAR</th>
-            <th>Actions</th>
+            <th>{{ __('Complaint #') }}</th>
+            <th>{{ __('Date') }}</th>
+            <th>{{ __('Customer') }}</th>
+            <th>{{ __('Subject') }}</th>
+            <th>{{ __('Category') }}</th>
+            <th>{{ __('Priority') }}</th>
+            <th>{{ __('Severity') }}</th>
+            <th>{{ __('Status') }}</th>
+            <th>{{ __('Assigned To') }}</th>
+            <th>{{ __('CAR') }}</th>
+            <th>{{ __('Actions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -269,7 +269,7 @@
                 {{ ucfirst(str_replace('_', ' ', $complaint->status)) }}
               </span>
               @if($complaint->isOverdue())
-              <span class="badge bg-label-danger ms-1">Overdue</span>
+              <span class="badge bg-label-danger ms-1">{{ __('Overdue') }}</span>
               @endif
             </td>
             <td>
@@ -283,7 +283,7 @@
               @elseif($complaint->assignedToDepartment)
               <span class="text-muted">{{ $complaint->assignedToDepartment->name }}</span>
               @else
-              <span class="text-muted">Unassigned</span>
+              <span class="text-muted">{{ __('Unassigned') }}</span>
               @endif
             </td>
             <td>
@@ -292,7 +292,7 @@
                 {{ $complaint->car->car_number }}
               </a>
               @else
-              <span class="text-muted">—</span>
+              <span class="text-muted">-</span>
               @endif
             </td>
             <td>
@@ -304,14 +304,14 @@
                   <li>
                     <a class="dropdown-item" href="{{ route('complaints.show', $complaint) }}">
                       <i class="icon-base ti tabler-eye me-2"></i>
-                      <span>View Details</span>
+                      <span>{{ __('View Details') }}</span>
                     </a>
                   </li>
                   @if(in_array($complaint->status, ['new', 'acknowledged']))
                   <li>
                     <a class="dropdown-item" href="{{ route('complaints.edit', $complaint) }}">
                       <i class="icon-base ti tabler-edit me-2"></i>
-                      <span>Edit</span>
+                      <span>{{ __('Edit') }}</span>
                     </a>
                   </li>
                   @endif
@@ -320,12 +320,12 @@
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <form action="{{ route('complaints.destroy', $complaint) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this complaint?')">
+                    <form action="{{ route('complaints.destroy', $complaint) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('Are you sure?') }}')">
                       @csrf
                       @method('DELETE')
                       <button type="submit" class="dropdown-item text-danger">
                         <i class="icon-base ti tabler-trash me-2"></i>
-                        <span>Delete</span>
+                        <span>{{ __('Delete') }}</span>
                       </button>
                     </form>
                   </li>
@@ -357,12 +357,8 @@ $(document).ready(function() {
     ],
     language: {
       search: '',
-      searchPlaceholder: 'Search complaints...',
-      lengthMenu: '_MENU_',
-      paginate: {
-        next: '<i class="icon-base ti tabler-chevron-right ti-sm"></i>',
-        previous: '<i class="icon-base ti tabler-chevron-left ti-sm"></i>'
-      }
+      searchPlaceholder: '{{ __('Search complaints...') }}',
+      lengthMenu: '_MENU_'
     }
   });
 });

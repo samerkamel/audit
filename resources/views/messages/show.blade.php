@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'View Message')
+@section('title', __('View Message'))
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -8,21 +8,21 @@
     <div>
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb mb-1">
-          <li class="breadcrumb-item"><a href="{{ route('messages.index') }}">Messages</a></li>
-          <li class="breadcrumb-item active">View</li>
+          <li class="breadcrumb-item"><a href="{{ route('messages.index') }}">{{ __('Messages') }}</a></li>
+          <li class="breadcrumb-item active">{{ __('View') }}</li>
         </ol>
       </nav>
       <h4 class="fw-bold mb-0">{{ $message->subject }}</h4>
     </div>
     <div class="d-flex gap-2">
       <a href="{{ route('messages.index') }}" class="btn btn-outline-secondary">
-        <i class="icon-base ti tabler-arrow-left me-1"></i> Back
+        <i class="icon-base ti tabler-arrow-left me-1"></i> {{ __('Back') }}
       </a>
       <form action="{{ route('messages.destroy', $message) }}" method="POST" class="d-inline">
         @csrf
         @method('DELETE')
-        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Delete this message?')">
-          <i class="icon-base ti tabler-trash me-1"></i> Delete
+        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('{{ __('Delete this message?') }}')">
+          <i class="icon-base ti tabler-trash me-1"></i> {{ __('Delete') }}
         </button>
       </form>
     </div>
@@ -45,7 +45,7 @@
               </span>
               @endif
             </div>
-            <small class="text-muted">{{ $thread->count() }} message(s) in thread</small>
+            <small class="text-muted">{{ $thread->count() }} {{ __('message(s) in thread') }}</small>
           </div>
         </div>
         <div class="card-body p-0">
@@ -63,10 +63,10 @@
                     <h6 class="mb-0">
                       {{ $msg->sender->name }}
                       @if($msg->sender_id === auth()->id())
-                      <span class="badge bg-label-primary ms-1">You</span>
+                      <span class="badge bg-label-primary ms-1">{{ __('You') }}</span>
                       @endif
                     </h6>
-                    <small class="text-muted">To: {{ $msg->recipient->name }}</small>
+                    <small class="text-muted">{{ __('To:') }} {{ $msg->recipient->name }}</small>
                   </div>
                   <small class="text-muted">{{ $msg->created_at->format('M d, Y H:i') }}</small>
                 </div>
@@ -83,21 +83,21 @@
       <!-- Reply Form -->
       <div class="card">
         <div class="card-header border-bottom">
-          <h5 class="card-title mb-0">Reply</h5>
+          <h5 class="card-title mb-0">{{ __('Reply') }}</h5>
         </div>
         <div class="card-body">
           <form action="{{ route('messages.reply', $message) }}" method="POST">
             @csrf
             <div class="mb-3">
-              <label class="form-label">Your Reply</label>
-              <textarea class="form-control @error('body') is-invalid @enderror" name="body" rows="5" required placeholder="Type your reply...">{{ old('body') }}</textarea>
+              <label class="form-label">{{ __('Your Reply') }}</label>
+              <textarea class="form-control @error('body') is-invalid @enderror" name="body" rows="5" required placeholder="{{ __('Type your reply...') }}">{{ old('body') }}</textarea>
               @error('body')
               <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
             <div class="text-end">
               <button type="submit" class="btn btn-primary">
-                <i class="icon-base ti tabler-send me-1"></i> Send Reply
+                <i class="icon-base ti tabler-send me-1"></i> {{ __('Send Reply') }}
               </button>
             </div>
           </form>
@@ -112,7 +112,7 @@
   window.addEventListener('DOMContentLoaded', function() {
     Swal.fire({
       icon: 'success',
-      title: 'Success!',
+      title: '{{ __('Success!') }}',
       text: '{{ session('success') }}',
       customClass: { confirmButton: 'btn btn-primary' },
       buttonsStyling: false

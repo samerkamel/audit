@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Certificates')
+@section('title', __('ISO Certificates'))
 
 @section('vendor-style')
 @vite([
@@ -20,30 +20,30 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="d-flex justify-content-between align-items-center mb-6">
         <div>
-            <h4 class="fw-bold mb-1">ISO Certificates</h4>
-            <p class="text-muted mb-0">Manage certification documents and validity tracking</p>
+            <h4 class="fw-bold mb-1">{{ __('ISO Certificates') }}</h4>
+            <p class="text-muted mb-0">{{ __('Manage certification documents and validity tracking') }}</p>
         </div>
         <div class="d-flex gap-2">
             <!-- Export Dropdown -->
             <div class="btn-group">
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="icon-base ti tabler-download me-1"></i> Export
+                    <i class="icon-base ti tabler-download me-1"></i> {{ __('Export') }}
                 </button>
                 <ul class="dropdown-menu">
                     <li>
                         <a class="dropdown-item" href="{{ route('reports.certificates.pdf') }}" target="_blank">
-                            <i class="icon-base ti tabler-file-type-pdf me-2 text-danger"></i>Export to PDF
+                            <i class="icon-base ti tabler-file-type-pdf me-2 text-danger"></i>{{ __('Export to PDF') }}
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="{{ route('reports.certificates.excel') }}">
-                            <i class="icon-base ti tabler-file-spreadsheet me-2 text-success"></i>Export to Excel
+                            <i class="icon-base ti tabler-file-spreadsheet me-2 text-success"></i>{{ __('Export to Excel') }}
                         </a>
                     </li>
                 </ul>
             </div>
             <a href="{{ route('certificates.create') }}" class="btn btn-primary">
-                <i class="icon-base ti tabler-circle-plus me-1"></i>Register New Certificate
+                <i class="icon-base ti tabler-circle-plus me-1"></i>{{ __('Register New Certificate') }}
             </a>
         </div>
     </div>
@@ -56,7 +56,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <p class="text-muted mb-1 small">Total</p>
+                            <p class="text-muted mb-1 small">{{ __('Total') }}</p>
                             <h3 class="mb-0">{{ $stats['total'] }}</h3>
                         </div>
                         <span class="badge bg-label-primary rounded-pill p-2">
@@ -73,7 +73,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <p class="text-muted mb-1 small">Valid</p>
+                            <p class="text-muted mb-1 small">{{ __('Valid') }}</p>
                             <h3 class="mb-0 text-success">{{ $stats['valid'] }}</h3>
                         </div>
                         <span class="badge bg-label-success rounded-pill p-2">
@@ -90,7 +90,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <p class="text-muted mb-1 small">Expiring Soon</p>
+                            <p class="text-muted mb-1 small">{{ __('Expiring Soon') }}</p>
                             <h3 class="mb-0 text-warning">{{ $stats['expiring_soon'] }}</h3>
                         </div>
                         <span class="badge bg-label-warning rounded-pill p-2">
@@ -107,7 +107,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <p class="text-muted mb-1 small">Expired</p>
+                            <p class="text-muted mb-1 small">{{ __('Expired') }}</p>
                             <h3 class="mb-0 text-danger">{{ $stats['expired'] }}</h3>
                         </div>
                         <span class="badge bg-label-danger rounded-pill p-2">
@@ -124,7 +124,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <p class="text-muted mb-1 small">Suspended</p>
+                            <p class="text-muted mb-1 small">{{ __('Suspended') }}</p>
                             <h3 class="mb-0 text-secondary">{{ $stats['suspended'] }}</h3>
                         </div>
                         <span class="badge bg-label-secondary rounded-pill p-2">
@@ -141,7 +141,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <p class="text-muted mb-1 small">Revoked</p>
+                            <p class="text-muted mb-1 small">{{ __('Revoked') }}</p>
                             <h3 class="mb-0 text-dark">{{ $stats['revoked'] }}</h3>
                         </div>
                         <span class="badge bg-label-dark rounded-pill p-2">
@@ -156,22 +156,22 @@
     <!-- Certificates Table -->
     <div class="card">
         <div class="card-header border-bottom">
-            <h5 class="card-title mb-0">Certificate Registry</h5>
+            <h5 class="card-title mb-0">{{ __('Certificate Registry') }}</h5>
         </div>
         <div class="card-datatable table-responsive">
                 <table id="certificatesTable" class="datatables-certificate table dt-responsive nowrap" style="width:100%">
                     <thead>
                         <tr>
-                            <th>Certificate Number</th>
-                            <th>Standard</th>
-                            <th>Certification Body</th>
-                            <th>Type</th>
-                            <th>Issue Date</th>
-                            <th>Expiry Date</th>
-                            <th>Validity</th>
-                            <th>Status</th>
-                            <th>Audit</th>
-                            <th>Actions</th>
+                            <th>{{ __('Certificate Number') }}</th>
+                            <th>{{ __('Standard') }}</th>
+                            <th>{{ __('Certification Body') }}</th>
+                            <th>{{ __('Type') }}</th>
+                            <th>{{ __('Issue Date') }}</th>
+                            <th>{{ __('Expiry Date') }}</th>
+                            <th>{{ __('Validity') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Audit') }}</th>
+                            <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -194,17 +194,17 @@
                                 {{ $certificate->expiry_date->format('M d, Y') }}
                                 @if($certificate->isExpiringSoon())
                                 <br><small class="text-warning">
-                                    <i class="icon-base ti tabler-clock ti-xs"></i> {{ $certificate->days_until_expiry }} days left
+                                    <i class="icon-base ti tabler-clock ti-xs"></i> {{ $certificate->days_until_expiry }} {{ __('days left') }}
                                 </small>
                                 @elseif($certificate->isExpired())
                                 <br><small class="text-danger">
-                                    <i class="icon-base ti tabler-alert-triangle ti-xs"></i> Expired
+                                    <i class="icon-base ti tabler-alert-triangle ti-xs"></i> {{ __('Expired') }}
                                 </small>
                                 @endif
                             </td>
                             <td>
                                 @if($certificate->validity_period_in_years)
-                                {{ $certificate->validity_period_in_years }} year(s)
+                                {{ $certificate->validity_period_in_years }} {{ __('year(s)') }}
                                 @else
                                 -
                                 @endif
@@ -227,14 +227,14 @@
                                 <div class="btn-group btn-group-sm" role="group">
                                     <a href="{{ route('certificates.show', $certificate) }}"
                                        class="btn btn-outline-primary"
-                                       title="View Details">
+                                       title="{{ __('View Details') }}">
                                         <i class="icon-base ti tabler-eye"></i>
                                     </a>
 
                                     @if(in_array($certificate->status, ['valid', 'expiring_soon']))
                                     <a href="{{ route('certificates.edit', $certificate) }}"
                                        class="btn btn-outline-secondary"
-                                       title="Edit">
+                                       title="{{ __('Edit') }}">
                                         <i class="icon-base ti tabler-edit"></i>
                                     </a>
                                     @endif
@@ -243,10 +243,10 @@
                                     <form action="{{ route('certificates.destroy', $certificate) }}"
                                           method="POST"
                                           class="d-inline"
-                                          onsubmit="return confirm('Are you sure you want to delete this certificate?')">
+                                          onsubmit="return confirm('{{ __('Are you sure you want to delete this certificate?') }}')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                        <button type="submit" class="btn btn-outline-danger" title="{{ __('Delete') }}">
                                             <i class="icon-base ti tabler-trash"></i>
                                         </button>
                                     </form>
@@ -258,8 +258,8 @@
                         <tr>
                             <td colspan="10" class="text-center text-muted py-4">
                                 <i class="icon-base ti tabler-folder-off ti-xl d-block mb-2 opacity-50"></i>
-                                No certificates registered yet.
-                                <a href="{{ route('certificates.create') }}">Register your first certificate</a>
+                                {{ __('No certificates registered yet') }}.
+                                <a href="{{ route('certificates.create') }}">{{ __('Register your first certificate') }}</a>
                             </td>
                         </tr>
                         @endforelse
@@ -283,11 +283,11 @@ $(document).ready(function() {
             { responsivePriority: 2, targets: -1 } // Actions always visible
         ],
         language: {
-            search: "Search certificates:",
-            lengthMenu: "Show _MENU_ certificates per page",
-            info: "Showing _START_ to _END_ of _TOTAL_ certificates",
-            infoEmpty: "No certificates available",
-            infoFiltered: "(filtered from _MAX_ total certificates)"
+            search: "{{ __('Search certificates...') }}",
+            lengthMenu: "{{ __('Show') }} _MENU_",
+            info: "{{ __('Showing') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_",
+            infoEmpty: "{{ __('No data found') }}",
+            infoFiltered: ""
         }
     });
 });

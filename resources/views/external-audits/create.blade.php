@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Schedule External Audit')
+@section('title', __('Schedule External Audit'))
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -8,12 +8,12 @@
     <div class="mb-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('external-audits.index') }}">External Audits</a></li>
-                <li class="breadcrumb-item active">Schedule New Audit</li>
+                <li class="breadcrumb-item"><a href="{{ route('external-audits.index') }}">{{ __('External Audits') }}</a></li>
+                <li class="breadcrumb-item active">{{ __('Schedule New Audit') }}</li>
             </ol>
         </nav>
-        <h1 class="h3">Schedule External Audit</h1>
-        <p class="text-muted">Schedule a new external certification or surveillance audit</p>
+        <h1 class="h3">{{ __('Schedule External Audit') }}</h1>
+        <p class="text-muted">{{ __('Schedule a new external certification or surveillance audit') }}</p>
     </div>
 
     <div class="row">
@@ -25,30 +25,30 @@
 
                         <!-- Audit Information Section -->
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2 mb-3">Audit Information</h5>
+                            <h5 class="border-bottom pb-2 mb-3">{{ __('Audit Information') }}</h5>
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="audit_type" class="form-label required">Audit Type</label>
+                                    <label for="audit_type" class="form-label required">{{ __('Audit Type') }}</label>
                                     <select name="audit_type"
                                             id="audit_type"
                                             class="form-select @error('audit_type') is-invalid @enderror"
                                             required>
-                                        <option value="">Select audit type...</option>
+                                        <option value="">{{ __('Select audit type...') }}</option>
                                         <option value="initial_certification" {{ old('audit_type') === 'initial_certification' ? 'selected' : '' }}>
-                                            Initial Certification
+                                            {{ __('Initial Certification') }}
                                         </option>
                                         <option value="surveillance" {{ old('audit_type') === 'surveillance' ? 'selected' : '' }}>
-                                            Surveillance Audit
+                                            {{ __('Surveillance Audit') }}
                                         </option>
                                         <option value="recertification" {{ old('audit_type') === 'recertification' ? 'selected' : '' }}>
-                                            Recertification Audit
+                                            {{ __('Recertification Audit') }}
                                         </option>
                                         <option value="special" {{ old('audit_type') === 'special' ? 'selected' : '' }}>
-                                            Special Audit
+                                            {{ __('Special Audit') }}
                                         </option>
                                         <option value="follow_up" {{ old('audit_type') === 'follow_up' ? 'selected' : '' }}>
-                                            Follow-up Audit
+                                            {{ __('Follow-up Audit') }}
                                         </option>
                                     </select>
                                     @error('audit_type')
@@ -57,13 +57,13 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="standard" class="form-label required">Standard</label>
+                                    <label for="standard" class="form-label required">{{ __('Standard') }}</label>
                                     <input type="text"
                                            name="standard"
                                            id="standard"
                                            class="form-control @error('standard') is-invalid @enderror"
                                            value="{{ old('standard') }}"
-                                           placeholder="e.g., ISO 9001:2015"
+                                           placeholder="{{ __('e.g., ISO 9001:2015') }}"
                                            required>
                                     @error('standard')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -71,13 +71,13 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="certification_body" class="form-label required">Certification Body</label>
+                                    <label for="certification_body" class="form-label required">{{ __('Certification Body') }}</label>
                                     <input type="text"
                                            name="certification_body"
                                            id="certification_body"
                                            class="form-control @error('certification_body') is-invalid @enderror"
                                            value="{{ old('certification_body') }}"
-                                           placeholder="e.g., BSI, TUV, SGS"
+                                           placeholder="{{ __('e.g., BSI, TUV, SGS') }}"
                                            required>
                                     @error('certification_body')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -85,11 +85,11 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="coordinator_id" class="form-label">Internal Coordinator</label>
+                                    <label for="coordinator_id" class="form-label">{{ __('Internal Coordinator') }}</label>
                                     <select name="coordinator_id"
                                             id="coordinator_id"
                                             class="form-select @error('coordinator_id') is-invalid @enderror">
-                                        <option value="">Select coordinator...</option>
+                                        <option value="">{{ __('Select coordinator...') }}</option>
                                         @foreach($users as $user)
                                         <option value="{{ $user->id }}" {{ old('coordinator_id') == $user->id ? 'selected' : '' }}>
                                             {{ $user->name }}
@@ -99,18 +99,18 @@
                                     @error('coordinator_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                    <small class="text-muted">Internal staff member coordinating this audit</small>
+                                    <small class="text-muted">{{ __('Internal staff member coordinating this audit') }}</small>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Lead Auditor Section -->
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2 mb-3">Lead Auditor Information</h5>
+                            <h5 class="border-bottom pb-2 mb-3">{{ __('Lead Auditor Information') }}</h5>
 
                             <div class="row g-3">
                                 <div class="col-md-12">
-                                    <label for="lead_auditor_name" class="form-label required">Lead Auditor Name</label>
+                                    <label for="lead_auditor_name" class="form-label required">{{ __('Lead Auditor Name') }}</label>
                                     <input type="text"
                                            name="lead_auditor_name"
                                            id="lead_auditor_name"
@@ -123,7 +123,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="lead_auditor_email" class="form-label">Lead Auditor Email</label>
+                                    <label for="lead_auditor_email" class="form-label">{{ __('Lead Auditor Email') }}</label>
                                     <input type="email"
                                            name="lead_auditor_email"
                                            id="lead_auditor_email"
@@ -135,7 +135,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="lead_auditor_phone" class="form-label">Lead Auditor Phone</label>
+                                    <label for="lead_auditor_phone" class="form-label">{{ __('Lead Auditor Phone') }}</label>
                                     <input type="text"
                                            name="lead_auditor_phone"
                                            id="lead_auditor_phone"
@@ -150,11 +150,11 @@
 
                         <!-- Schedule Section -->
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2 mb-3">Audit Schedule</h5>
+                            <h5 class="border-bottom pb-2 mb-3">{{ __('Audit Schedule') }}</h5>
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="scheduled_start_date" class="form-label required">Scheduled Start Date</label>
+                                    <label for="scheduled_start_date" class="form-label required">{{ __('Scheduled Start Date') }}</label>
                                     <input type="date"
                                            name="scheduled_start_date"
                                            id="scheduled_start_date"
@@ -167,7 +167,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="scheduled_end_date" class="form-label required">Scheduled End Date</label>
+                                    <label for="scheduled_end_date" class="form-label required">{{ __('Scheduled End Date') }}</label>
                                     <input type="date"
                                            name="scheduled_end_date"
                                            id="scheduled_end_date"
@@ -183,11 +183,11 @@
 
                         <!-- Scope Section -->
                         <div class="mb-4">
-                            <h5 class="border-bottom pb-2 mb-3">Audit Scope</h5>
+                            <h5 class="border-bottom pb-2 mb-3">{{ __('Audit Scope') }}</h5>
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="audited_departments" class="form-label">Departments to be Audited</label>
+                                    <label for="audited_departments" class="form-label">{{ __('Departments to be Audited') }}</label>
                                     <select name="audited_departments[]"
                                             id="audited_departments"
                                             class="form-select @error('audited_departments') is-invalid @enderror"
@@ -203,24 +203,24 @@
                                     @error('audited_departments')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                    <small class="text-muted">Hold Ctrl (Cmd on Mac) to select multiple</small>
+                                    <small class="text-muted">{{ __('Hold Ctrl (Cmd on Mac) to select multiple') }}</small>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="audited_processes" class="form-label">Processes to be Audited</label>
+                                    <label for="audited_processes" class="form-label">{{ __('Processes to be Audited') }}</label>
                                     <textarea name="audited_processes"
                                               id="audited_processes"
                                               class="form-control @error('audited_processes') is-invalid @enderror"
                                               rows="5"
-                                              placeholder="Enter processes, one per line">{{ old('audited_processes') }}</textarea>
+                                              placeholder="{{ __('Enter processes, one per line') }}">{{ old('audited_processes') }}</textarea>
                                     @error('audited_processes')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                    <small class="text-muted">Enter each process on a new line</small>
+                                    <small class="text-muted">{{ __('Enter each process on a new line') }}</small>
                                 </div>
 
                                 <div class="col-md-12">
-                                    <label for="scope_description" class="form-label">Scope Description</label>
+                                    <label for="scope_description" class="form-label">{{ __('Scope Description') }}</label>
                                     <textarea name="scope_description"
                                               id="scope_description"
                                               class="form-control @error('scope_description') is-invalid @enderror"
@@ -236,10 +236,10 @@
                         <!-- Form Actions -->
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('external-audits.index') }}" class="btn btn-outline-secondary">
-                                Cancel
+                                {{ __('Cancel') }}
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="icon-base ti tabler-calendar-plus me-1"></i>Schedule Audit
+                                <i class="icon-base ti tabler-calendar-plus me-1"></i>{{ __('Schedule Audit') }}
                             </button>
                         </div>
                     </form>
@@ -252,14 +252,14 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <h6 class="card-title">
-                        <i class="icon-base ti tabler-info-circle text-primary"></i> Scheduling Guidelines
+                        <i class="icon-base ti tabler-info-circle text-primary"></i> {{ __('Scheduling Guidelines') }}
                     </h6>
                     <ul class="small mb-0">
-                        <li class="mb-2">Select the appropriate audit type based on your certification stage</li>
-                        <li class="mb-2">Ensure all lead auditor contact information is accurate</li>
-                        <li class="mb-2">Coordinate with departments to minimize operational disruption</li>
-                        <li class="mb-2">Allow adequate time between scheduled dates for thorough audit</li>
-                        <li>Assign an internal coordinator to facilitate the audit process</li>
+                        <li class="mb-2">{{ __('Select the appropriate audit type based on your certification stage') }}</li>
+                        <li class="mb-2">{{ __('Ensure all lead auditor contact information is accurate') }}</li>
+                        <li class="mb-2">{{ __('Coordinate with departments to minimize operational disruption') }}</li>
+                        <li class="mb-2">{{ __('Allow adequate time between scheduled dates for thorough audit') }}</li>
+                        <li>{{ __('Assign an internal coordinator to facilitate the audit process') }}</li>
                     </ul>
                 </div>
             </div>
@@ -267,23 +267,23 @@
             <div class="card border-0 shadow-sm mt-3">
                 <div class="card-body">
                     <h6 class="card-title">
-                        <i class="icon-base ti tabler-bookmark text-info"></i> Audit Types
+                        <i class="icon-base ti tabler-bookmark text-info"></i> {{ __('Audit Types') }}
                     </h6>
                     <div class="small">
                         <div class="mb-2">
-                            <strong>Initial Certification:</strong> First-time certification audit
+                            <strong>{{ __('Initial Certification') }}:</strong> {{ __('First-time certification audit') }}
                         </div>
                         <div class="mb-2">
-                            <strong>Surveillance:</strong> Regular monitoring audit (typically annual)
+                            <strong>{{ __('Surveillance') }}:</strong> {{ __('Regular monitoring audit (typically annual)') }}
                         </div>
                         <div class="mb-2">
-                            <strong>Recertification:</strong> Certificate renewal audit (typically every 3 years)
+                            <strong>{{ __('Recertification') }}:</strong> {{ __('Certificate renewal audit (typically every 3 years)') }}
                         </div>
                         <div class="mb-2">
-                            <strong>Special:</strong> Unscheduled audit due to specific circumstances
+                            <strong>{{ __('Special') }}:</strong> {{ __('Unscheduled audit due to specific circumstances') }}
                         </div>
                         <div>
-                            <strong>Follow-up:</strong> Audit to verify corrective actions
+                            <strong>{{ __('Follow-up') }}:</strong> {{ __('Audit to verify corrective actions') }}
                         </div>
                     </div>
                 </div>

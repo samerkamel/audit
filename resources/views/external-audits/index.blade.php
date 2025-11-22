@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'External Audits')
+@section('title', __('External Audits'))
 
 @section('vendor-style')
 @vite([
@@ -20,30 +20,30 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center mb-6">
     <div>
-      <h4 class="fw-bold mb-1">External Audits</h4>
-      <p class="text-muted mb-0">Manage external certification and surveillance audits</p>
+      <h4 class="fw-bold mb-1">{{ __('External Audits') }}</h4>
+      <p class="text-muted mb-0">{{ __('Manage external certification and surveillance audits') }}</p>
     </div>
     <div class="d-flex gap-2">
       <!-- Export Dropdown -->
       <div class="btn-group">
         <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="icon-base ti tabler-download me-1"></i> Export
+          <i class="icon-base ti tabler-download me-1"></i> {{ __('Export') }}
         </button>
         <ul class="dropdown-menu">
           <li>
             <a class="dropdown-item" href="{{ route('reports.audits.pdf') }}" target="_blank">
-              <i class="icon-base ti tabler-file-type-pdf me-2 text-danger"></i>Export to PDF
+              <i class="icon-base ti tabler-file-type-pdf me-2 text-danger"></i>{{ __('Export to PDF') }}
             </a>
           </li>
           <li>
             <a class="dropdown-item" href="{{ route('reports.audits.excel') }}">
-              <i class="icon-base ti tabler-file-spreadsheet me-2 text-success"></i>Export to Excel
+              <i class="icon-base ti tabler-file-spreadsheet me-2 text-success"></i>{{ __('Export to Excel') }}
             </a>
           </li>
         </ul>
       </div>
       <a href="{{ route('external-audits.create') }}" class="btn btn-primary">
-        <i class="icon-base ti tabler-plus me-1"></i> Schedule New Audit
+        <i class="icon-base ti tabler-plus me-1"></i> {{ __('Schedule New Audit') }}
       </a>
     </div>
   </div>
@@ -55,11 +55,11 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Total Audits</span>
+              <span class="text-heading">{{ __('Total Audits') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['total'] }}</h4>
               </div>
-              <small class="mb-0">All time</small>
+              <small class="mb-0">{{ __('All time') }}</small>
             </div>
             <span class="badge bg-label-primary rounded-pill p-2">
               <i class="icon-base ti tabler-clipboard-check ti-lg"></i>
@@ -74,14 +74,14 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Scheduled</span>
+              <span class="text-heading">{{ __('Scheduled') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['scheduled'] }}</h4>
               </div>
               @if($stats['upcoming'] > 0)
-              <small class="text-warning mb-0">{{ $stats['upcoming'] }} upcoming</small>
+              <small class="text-warning mb-0">{{ $stats['upcoming'] }} {{ __('upcoming') }}</small>
               @else
-              <small class="mb-0">Future audits</small>
+              <small class="mb-0">{{ __('Future audits') }}</small>
               @endif
             </div>
             <span class="badge bg-label-info rounded-pill p-2">
@@ -97,11 +97,11 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">In Progress</span>
+              <span class="text-heading">{{ __('In Progress') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['in_progress'] }}</h4>
               </div>
-              <small class="mb-0">Currently active</small>
+              <small class="mb-0">{{ __('Currently active') }}</small>
             </div>
             <span class="badge bg-label-warning rounded-pill p-2">
               <i class="icon-base ti tabler-clock-hour-4 ti-lg"></i>
@@ -116,14 +116,14 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Completed</span>
+              <span class="text-heading">{{ __('Completed') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['completed'] }}</h4>
               </div>
               @if($stats['passed'] > 0)
-              <small class="text-success mb-0">{{ $stats['passed'] }} passed</small>
+              <small class="text-success mb-0">{{ $stats['passed'] }} {{ __('passed') }}</small>
               @else
-              <small class="mb-0">Finished audits</small>
+              <small class="mb-0">{{ __('Finished audits') }}</small>
               @endif
             </div>
             <span class="badge bg-label-success rounded-pill p-2">
@@ -142,14 +142,14 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Certificates Issued</span>
+              <span class="text-heading">{{ __('Certificates Issued') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['with_certificate'] }}</h4>
               </div>
               @if($stats['completed'] > 0)
-              <small class="mb-0">{{ round(($stats['with_certificate'] / $stats['completed']) * 100) }}% of completed</small>
+              <small class="mb-0">{{ round(($stats['with_certificate'] / $stats['completed']) * 100) }}% {{ __('of completed') }}</small>
               @else
-              <small class="mb-0">From audits</small>
+              <small class="mb-0">{{ __('From audits') }}</small>
               @endif
             </div>
             <span class="badge bg-label-success rounded-pill p-2">
@@ -164,22 +164,22 @@
   <!-- Audits Table -->
   <div class="card">
     <div class="card-header border-bottom">
-      <h5 class="card-title mb-0">Audit History</h5>
+      <h5 class="card-title mb-0">{{ __('Audit History') }}</h5>
     </div>
     <div class="card-datatable table-responsive">
       <table id="auditsTable" class="datatables-audit table dt-responsive nowrap" style="width:100%">
         <thead>
           <tr>
-            <th>Audit Number</th>
-            <th>Type</th>
-            <th>Standard</th>
-            <th>Certification Body</th>
-            <th>Lead Auditor</th>
-            <th>Scheduled Date</th>
-            <th>Status</th>
-            <th>Result</th>
-            <th>Certificate</th>
-            <th>Actions</th>
+            <th>{{ __('Audit Number') }}</th>
+            <th>{{ __('Type') }}</th>
+            <th>{{ __('Standard') }}</th>
+            <th>{{ __('Certification Body') }}</th>
+            <th>{{ __('Lead Auditor') }}</th>
+            <th>{{ __('Scheduled Date') }}</th>
+            <th>{{ __('Status') }}</th>
+            <th>{{ __('Result') }}</th>
+            <th>{{ __('Certificate') }}</th>
+            <th>{{ __('Actions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -202,9 +202,9 @@
             <td>
               {{ $audit->scheduled_start_date->format('M d, Y') }}
               @if($audit->isUpcoming())
-              <br><small class="text-warning"><i class="icon-base ti tabler-clock ti-xs"></i> Upcoming</small>
+              <br><small class="text-warning"><i class="icon-base ti tabler-clock ti-xs"></i> {{ __('Upcoming') }}</small>
               @elseif($audit->isOverdue())
-              <br><small class="text-danger"><i class="icon-base ti tabler-alert-triangle ti-xs"></i> Overdue</small>
+              <br><small class="text-danger"><i class="icon-base ti tabler-alert-triangle ti-xs"></i> {{ __('Overdue') }}</small>
               @endif
             </td>
             <td><span class="badge bg-label-{{ $audit->status_color }}">{{ ucfirst(str_replace('_', ' ', $audit->status)) }}</span></td>
@@ -212,11 +212,11 @@
             <td>
               @if($audit->certificate)
               <a href="{{ route('certificates.show', $audit->certificate) }}" class="text-success">
-                <i class="icon-base ti tabler-award"></i> View
+                <i class="icon-base ti tabler-award"></i> {{ __('View') }}
               </a>
               @elseif($audit->canGenerateCertificate())
               <a href="{{ route('certificates.create', ['audit' => $audit->id]) }}" class="text-primary">
-                <i class="icon-base ti tabler-plus"></i> Generate
+                <i class="icon-base ti tabler-plus"></i> {{ __('Generate') }}
               </a>
               @else
               <span class="text-muted">-</span>
@@ -224,19 +224,19 @@
             </td>
             <td>
               <div class="d-flex align-items-center gap-1">
-                <a href="{{ route('external-audits.show', $audit) }}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill" title="View Details">
+                <a href="{{ route('external-audits.show', $audit) }}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill" title="{{ __('View Details') }}">
                   <i class="icon-base ti tabler-eye ti-md"></i>
                 </a>
                 @if(in_array($audit->status, ['scheduled', 'in_progress']))
-                <a href="{{ route('external-audits.edit', $audit) }}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill" title="Edit">
+                <a href="{{ route('external-audits.edit', $audit) }}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill" title="{{ __('Edit') }}">
                   <i class="icon-base ti tabler-edit ti-md"></i>
                 </a>
                 @endif
                 @if($audit->status === 'scheduled')
-                <form action="{{ route('external-audits.destroy', $audit) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this audit?')">
+                <form action="{{ route('external-audits.destroy', $audit) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('Are you sure?') }}')">
                   @csrf
                   @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-icon btn-text-secondary rounded-pill" title="Delete">
+                  <button type="submit" class="btn btn-sm btn-icon btn-text-secondary rounded-pill" title="{{ __('Delete') }}">
                     <i class="icon-base ti tabler-trash ti-md"></i>
                   </button>
                 </form>
@@ -248,8 +248,8 @@
           <tr>
             <td colspan="10" class="text-center text-muted py-4">
               <i class="icon-base ti tabler-folder-off ti-xl d-block mb-2 opacity-50"></i>
-              No external audits scheduled yet.
-              <br><a href="{{ route('external-audits.create') }}">Schedule your first audit</a>
+              {{ __('No external audits scheduled yet') }}.
+              <br><a href="{{ route('external-audits.create') }}">{{ __('Schedule your first audit') }}</a>
             </td>
           </tr>
           @endforelse
@@ -272,11 +272,12 @@ $(document).ready(function() {
       { responsivePriority: 2, targets: -1 } // Actions always visible
     ],
     language: {
-      search: "Search audits:",
-      lengthMenu: "Show _MENU_ audits",
-      info: "Showing _START_ to _END_ of _TOTAL_ audits",
-      infoEmpty: "No audits available",
-      infoFiltered: "(filtered from _MAX_ total audits)"
+      search: "",
+      searchPlaceholder: "{{ __('Search audits...') }}",
+      lengthMenu: "{{ __('Show') }} _MENU_",
+      info: "{{ __('Showing') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_",
+      infoEmpty: "{{ __('No data found') }}",
+      infoFiltered: ""
     }
   });
 });

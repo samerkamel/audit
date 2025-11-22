@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Document Details')
+@section('title', __('Document Details'))
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -8,7 +8,7 @@
     <div class="mb-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('documents.index') }}">Documents</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('documents.index') }}">{{ __('Documents') }}</a></li>
                 <li class="breadcrumb-item active">{{ $document->document_number }}</li>
             </ol>
         </nav>
@@ -33,8 +33,8 @@
     <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
         <i class="icon-base ti tabler-alert-triangle fs-4 me-3"></i>
         <div>
-            <strong>Review Required!</strong> This document is due for review.
-            Next review date was {{ $document->next_review_date->format('F d, Y') }}.
+            <strong>{{ __('Review Required!') }}</strong> {{ __('This document is due for review.') }}
+            {{ __('Next review date was') }} {{ $document->next_review_date->format('F d, Y') }}.
         </div>
     </div>
     @endif
@@ -45,24 +45,24 @@
             <!-- Document Information -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Document Information</h5>
+                    <h5 class="mb-0">{{ __('Document Information') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="text-muted small">Document Number</label>
+                            <label class="text-muted small">{{ __('Document Number') }}</label>
                             <p class="mb-0 fw-semibold">{{ $document->document_number }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Category</label>
+                            <label class="text-muted small">{{ __('Category') }}</label>
                             <p class="mb-0">{{ $document->category_label }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Version</label>
-                            <p class="mb-0">{{ $document->version }} (Revision {{ $document->revision_number }})</p>
+                            <label class="text-muted small">{{ __('Version') }}</label>
+                            <p class="mb-0">{{ $document->version }} ({{ __('Revision') }} {{ $document->revision_number }})</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Status</label>
+                            <label class="text-muted small">{{ __('Status') }}</label>
                             <p class="mb-0">
                                 <span class="badge bg-{{ $document->status_color }}">
                                     {{ ucfirst(str_replace('_', ' ', $document->status)) }}
@@ -70,8 +70,8 @@
                             </p>
                         </div>
                         <div class="col-md-12">
-                            <label class="text-muted small">Description</label>
-                            <p class="mb-0">{{ $document->description ?? 'No description provided' }}</p>
+                            <label class="text-muted small">{{ __('Description') }}</label>
+                            <p class="mb-0">{{ $document->description ?? __('No description provided') }}</p>
                         </div>
                     </div>
                 </div>
@@ -80,26 +80,26 @@
             <!-- Version & Dates -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Version Control</h5>
+                    <h5 class="mb-0">{{ __('Version Control') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         @if($document->effective_date)
                         <div class="col-md-6">
-                            <label class="text-muted small">Effective Date</label>
+                            <label class="text-muted small">{{ __('Effective Date') }}</label>
                             <p class="mb-0">{{ $document->effective_date->format('F d, Y') }}</p>
                         </div>
                         @endif
                         @if($document->next_review_date)
                         <div class="col-md-6">
-                            <label class="text-muted small">Next Review Date</label>
+                            <label class="text-muted small">{{ __('Next Review Date') }}</label>
                             <p class="mb-0">
                                 {{ $document->next_review_date->format('F d, Y') }}
                                 @if($document->days_until_review !== null)
                                     @if($document->days_until_review > 0)
-                                    <br><small class="text-muted">{{ $document->days_until_review }} days remaining</small>
+                                    <br><small class="text-muted">{{ __(':days days remaining', ['days' => $document->days_until_review]) }}</small>
                                     @else
-                                    <br><small class="text-danger">Overdue by {{ abs($document->days_until_review) }} days</small>
+                                    <br><small class="text-danger">{{ __('Overdue by :days days', ['days' => abs($document->days_until_review)]) }}</small>
                                     @endif
                                 @endif
                             </p>
@@ -107,7 +107,7 @@
                         @endif
                         @if($document->supersedes)
                         <div class="col-md-12">
-                            <label class="text-muted small">Supersedes</label>
+                            <label class="text-muted small">{{ __('Supersedes') }}</label>
                             <p class="mb-0">
                                 <a href="{{ route('documents.show', $document->supersedes) }}">
                                     {{ $document->supersedes->document_number }} - {{ $document->supersedes->title }}
@@ -117,7 +117,7 @@
                         @endif
                         @if($document->revision_notes)
                         <div class="col-md-12">
-                            <label class="text-muted small">Revision Notes</label>
+                            <label class="text-muted small">{{ __('Revision Notes') }}</label>
                             <p class="mb-0">{{ $document->revision_notes }}</p>
                         </div>
                         @endif
@@ -129,7 +129,7 @@
             @if($document->file_path)
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Attached File</h5>
+                    <h5 class="mb-0">{{ __('Attached File') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
@@ -143,7 +143,7 @@
                             </p>
                         </div>
                         <a href="{{ route('documents.download', $document) }}" class="btn btn-primary">
-                            <i class="icon-base ti tabler-download me-1"></i>Download
+                            <i class="icon-base ti tabler-download me-1"></i>{{ __('Download') }}
                         </a>
                     </div>
                 </div>
@@ -153,17 +153,17 @@
             <!-- Ownership & Approval -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Ownership & Approval</h5>
+                    <h5 class="mb-0">{{ __('Ownership & Approval') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="text-muted small">Document Owner</label>
-                            <p class="mb-0">{{ $document->owner->name ?? 'Not assigned' }}</p>
+                            <label class="text-muted small">{{ __('Document Owner') }}</label>
+                            <p class="mb-0">{{ $document->owner->name ?? __('Not assigned') }}</p>
                         </div>
                         @if($document->reviewed_by)
                         <div class="col-md-6">
-                            <label class="text-muted small">Reviewed By</label>
+                            <label class="text-muted small">{{ __('Reviewed By') }}</label>
                             <p class="mb-0">
                                 {{ $document->reviewer->name }}<br>
                                 <small class="text-muted">{{ $document->reviewed_date->format('M d, Y') }}</small>
@@ -172,7 +172,7 @@
                         @endif
                         @if($document->approved_by)
                         <div class="col-md-6">
-                            <label class="text-muted small">Approved By</label>
+                            <label class="text-muted small">{{ __('Approved By') }}</label>
                             <p class="mb-0">
                                 {{ $document->approver->name }}<br>
                                 <small class="text-muted">{{ $document->approved_date->format('M d, Y') }}</small>
@@ -187,12 +187,12 @@
             @if($document->applicable_departments || $document->keywords)
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Applicability & Keywords</h5>
+                    <h5 class="mb-0">{{ __('Applicability & Keywords') }}</h5>
                 </div>
                 <div class="card-body">
                     @if($document->applicable_departments && count($document->applicable_departments) > 0)
                     <div class="mb-3">
-                        <label class="text-muted small">Applicable Departments</label>
+                        <label class="text-muted small">{{ __('Applicable Departments') }}</label>
                         <p class="mb-0">
                             @foreach($departments->whereIn('id', $document->applicable_departments) as $dept)
                             <span class="badge bg-label-primary me-1">{{ $dept->name }}</span>
@@ -203,7 +203,7 @@
 
                     @if($document->keywords && count($document->keywords) > 0)
                     <div>
-                        <label class="text-muted small">Keywords</label>
+                        <label class="text-muted small">{{ __('Keywords') }}</label>
                         <p class="mb-0">
                             @foreach($document->keywords as $keyword)
                             <span class="badge bg-label-secondary me-1">{{ $keyword }}</span>
@@ -221,14 +221,14 @@
             <!-- Actions -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Actions</h5>
+                    <h5 class="mb-0">{{ __('Actions') }}</h5>
                 </div>
                 <div class="card-body">
                     @can('update', $document)
                     <!-- Edit Document -->
                     @if($document->canBeEdited())
                     <a href="{{ route('documents.edit', $document) }}" class="btn btn-outline-secondary w-100 mb-2">
-                        <i class="icon-base ti tabler-edit me-1"></i>Edit Document
+                        <i class="icon-base ti tabler-edit me-1"></i>{{ __('Edit Document') }}
                     </a>
                     @endif
 
@@ -237,7 +237,7 @@
                     <form action="{{ route('documents.submit-for-review', $document) }}" method="POST" class="mb-2">
                         @csrf
                         <button type="submit" class="btn btn-primary w-100">
-                            <i class="icon-base ti tabler-send me-1"></i>Submit for Review
+                            <i class="icon-base ti tabler-send me-1"></i>{{ __('Submit for Review') }}
                         </button>
                     </form>
                     @endif
@@ -247,7 +247,7 @@
                     <form action="{{ route('documents.review', $document) }}" method="POST" class="mb-2">
                         @csrf
                         <button type="submit" class="btn btn-info w-100">
-                            <i class="icon-base ti tabler-clipboard-check me-1"></i>Mark as Reviewed
+                            <i class="icon-base ti tabler-clipboard-check me-1"></i>{{ __('Mark as Reviewed') }}
                         </button>
                     </form>
                     @endif
@@ -257,7 +257,7 @@
                     <form action="{{ route('documents.approve', $document) }}" method="POST" class="mb-2">
                         @csrf
                         <button type="submit" class="btn btn-success w-100">
-                            <i class="icon-base ti tabler-circle-check me-1"></i>Approve Document
+                            <i class="icon-base ti tabler-circle-check me-1"></i>{{ __('Approve Document') }}
                         </button>
                     </form>
                     @endif
@@ -266,10 +266,10 @@
                     @if($document->status === 'approved')
                     <form action="{{ route('documents.make-effective', $document) }}"
                           method="POST"
-                          onsubmit="return confirm('Are you sure you want to make this document effective? This will set the effective date and schedule the next review.')">
+                          onsubmit="return confirm('{{ __('Are you sure you want to make this document effective? This will set the effective date and schedule the next review.') }}')">
                         @csrf
                         <button type="submit" class="btn btn-primary w-100 mb-2">
-                            <i class="icon-base ti tabler-checkup-list me-1"></i>Make Effective
+                            <i class="icon-base ti tabler-checkup-list me-1"></i>{{ __('Make Effective') }}
                         </button>
                     </form>
                     @endif
@@ -278,10 +278,10 @@
                     @if($document->isEffective())
                     <form action="{{ route('documents.make-obsolete', $document) }}"
                           method="POST"
-                          onsubmit="return confirm('Are you sure you want to mark this document as obsolete?')">
+                          onsubmit="return confirm('{{ __('Are you sure you want to mark this document as obsolete?') }}')">
                         @csrf
                         <button type="submit" class="btn btn-outline-warning w-100 mb-2">
-                            <i class="icon-base ti tabler-ban me-1"></i>Mark as Obsolete
+                            <i class="icon-base ti tabler-ban me-1"></i>{{ __('Mark as Obsolete') }}
                         </button>
                     </form>
                     @endif
@@ -293,7 +293,7 @@
             @if($document->supersededBy->count() > 0)
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Superseded By</h5>
+                    <h5 class="mb-0">{{ __('Superseded By') }}</h5>
                 </div>
                 <div class="card-body">
                     @foreach($document->supersededBy as $newer)
@@ -315,23 +315,23 @@
             <!-- Metadata -->
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Details</h5>
+                    <h5 class="mb-0">{{ __('Details') }}</h5>
                 </div>
                 <div class="card-body">
                     <p class="mb-2 small">
-                        <strong>Created by:</strong><br>
-                        {{ $document->createdBy->name ?? 'System' }}<br>
+                        <strong>{{ __('Created by:') }}</strong><br>
+                        {{ $document->createdBy->name ?? __('System') }}<br>
                         <span class="text-muted">{{ $document->created_at->format('M d, Y') }}</span>
                     </p>
                     @if($document->updated_by)
                     <p class="mb-0 small">
-                        <strong>Last updated by:</strong><br>
+                        <strong>{{ __('Last updated by:') }}</strong><br>
                         {{ $document->updatedBy->name }}<br>
                         <span class="text-muted">{{ $document->updated_at->diffForHumans() }}</span>
                     </p>
                     @else
                     <p class="mb-0 small">
-                        <strong>Last updated:</strong><br>
+                        <strong>{{ __('Last updated:') }}</strong><br>
                         <span class="text-muted">{{ $document->updated_at->diffForHumans() }}</span>
                     </p>
                     @endif

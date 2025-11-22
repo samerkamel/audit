@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'External Audit Details')
+@section('title', __('External Audit Details'))
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -8,7 +8,7 @@
     <div class="mb-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('external-audits.index') }}">External Audits</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('external-audits.index') }}">{{ __('External Audits') }}</a></li>
                 <li class="breadcrumb-item active">{{ $externalAudit->audit_number }}</li>
             </ol>
         </nav>
@@ -37,29 +37,29 @@
             <!-- Audit Information -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Audit Information</h5>
+                    <h5 class="mb-0">{{ __('Audit Information') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="text-muted small">Audit Type</label>
+                            <label class="text-muted small">{{ __('Audit Type') }}</label>
                             <p class="mb-0">{{ $externalAudit->audit_type_label }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Standard</label>
+                            <label class="text-muted small">{{ __('Standard') }}</label>
                             <p class="mb-0">{{ $externalAudit->standard }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Certification Body</label>
+                            <label class="text-muted small">{{ __('Certification Body') }}</label>
                             <p class="mb-0">{{ $externalAudit->certification_body }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Internal Coordinator</label>
+                            <label class="text-muted small">{{ __('Internal Coordinator') }}</label>
                             <p class="mb-0">
                                 @if($externalAudit->coordinator)
                                 {{ $externalAudit->coordinator->name }}
                                 @else
-                                <span class="text-muted">Not assigned</span>
+                                <span class="text-muted">{{ __('Not assigned') }}</span>
                                 @endif
                             </p>
                         </div>
@@ -70,17 +70,17 @@
             <!-- Lead Auditor Information -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Lead Auditor</h5>
+                    <h5 class="mb-0">{{ __('Lead Auditor') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-12">
-                            <label class="text-muted small">Name</label>
+                            <label class="text-muted small">{{ __('Name') }}</label>
                             <p class="mb-0">{{ $externalAudit->lead_auditor_name }}</p>
                         </div>
                         @if($externalAudit->lead_auditor_email)
                         <div class="col-md-6">
-                            <label class="text-muted small">Email</label>
+                            <label class="text-muted small">{{ __('Email') }}</label>
                             <p class="mb-0">
                                 <a href="mailto:{{ $externalAudit->lead_auditor_email }}">
                                     {{ $externalAudit->lead_auditor_email }}
@@ -90,7 +90,7 @@
                         @endif
                         @if($externalAudit->lead_auditor_phone)
                         <div class="col-md-6">
-                            <label class="text-muted small">Phone</label>
+                            <label class="text-muted small">{{ __('Phone') }}</label>
                             <p class="mb-0">
                                 <a href="tel:{{ $externalAudit->lead_auditor_phone }}">
                                     {{ $externalAudit->lead_auditor_phone }}
@@ -105,37 +105,37 @@
             <!-- Schedule Information -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Schedule</h5>
+                    <h5 class="mb-0">{{ __('Schedule') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="text-muted small">Scheduled Start Date</label>
+                            <label class="text-muted small">{{ __('Scheduled Start Date') }}</label>
                             <p class="mb-0">{{ $externalAudit->scheduled_start_date->format('F d, Y') }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Scheduled End Date</label>
+                            <label class="text-muted small">{{ __('Scheduled End Date') }}</label>
                             <p class="mb-0">{{ $externalAudit->scheduled_end_date->format('F d, Y') }}</p>
                         </div>
                         @if($externalAudit->actual_start_date)
                         <div class="col-md-6">
-                            <label class="text-muted small">Actual Start Date</label>
+                            <label class="text-muted small">{{ __('Actual Start Date') }}</label>
                             <p class="mb-0">{{ $externalAudit->actual_start_date->format('F d, Y') }}</p>
                         </div>
                         @endif
                         @if($externalAudit->actual_end_date)
                         <div class="col-md-6">
-                            <label class="text-muted small">Actual End Date</label>
+                            <label class="text-muted small">{{ __('Actual End Date') }}</label>
                             <p class="mb-0">{{ $externalAudit->actual_end_date->format('F d, Y') }}</p>
                         </div>
                         @endif
                         <div class="col-md-6">
-                            <label class="text-muted small">Duration</label>
-                            <p class="mb-0">{{ $externalAudit->duration_in_days }} day(s)</p>
+                            <label class="text-muted small">{{ __('Duration') }}</label>
+                            <p class="mb-0">{{ $externalAudit->duration_in_days }} {{ __('day(s)') }}</p>
                         </div>
                         @if($externalAudit->next_audit_date)
                         <div class="col-md-6">
-                            <label class="text-muted small">Next Audit Date</label>
+                            <label class="text-muted small">{{ __('Next Audit Date') }}</label>
                             <p class="mb-0">{{ $externalAudit->next_audit_date->format('F d, Y') }}</p>
                         </div>
                         @endif
@@ -146,19 +146,19 @@
             <!-- Scope Information -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Audit Scope</h5>
+                    <h5 class="mb-0">{{ __('Audit Scope') }}</h5>
                 </div>
                 <div class="card-body">
                     @if($externalAudit->scope_description)
                     <div class="mb-3">
-                        <label class="text-muted small">Scope Description</label>
+                        <label class="text-muted small">{{ __('Scope Description') }}</label>
                         <p class="mb-0">{{ $externalAudit->scope_description }}</p>
                     </div>
                     @endif
 
                     @if($externalAudit->audited_departments && count($externalAudit->audited_departments) > 0)
                     <div class="mb-3">
-                        <label class="text-muted small">Audited Departments</label>
+                        <label class="text-muted small">{{ __('Audited Departments') }}</label>
                         <div class="d-flex flex-wrap gap-1">
                             @foreach($externalAudit->audited_departments as $deptId)
                             @php
@@ -174,7 +174,7 @@
 
                     @if($externalAudit->audited_processes && count($externalAudit->audited_processes) > 0)
                     <div>
-                        <label class="text-muted small">Audited Processes</label>
+                        <label class="text-muted small">{{ __('Audited Processes') }}</label>
                         <ul class="mb-0">
                             @foreach($externalAudit->audited_processes as $process)
                             <li>{{ $process }}</li>
@@ -189,7 +189,7 @@
             @if($externalAudit->status === 'completed')
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Audit Results</h5>
+                    <h5 class="mb-0">{{ __('Audit Results') }}</h5>
                 </div>
                 <div class="card-body">
                     <!-- Findings Summary -->
@@ -197,46 +197,46 @@
                         <div class="col-md-3">
                             <div class="text-center p-3 bg-danger bg-opacity-10 rounded">
                                 <h3 class="mb-0 text-danger">{{ $externalAudit->major_ncrs_count }}</h3>
-                                <small class="text-muted">Major NCRs</small>
+                                <small class="text-muted">{{ __('Major NCRs') }}</small>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="text-center p-3 bg-warning bg-opacity-10 rounded">
                                 <h3 class="mb-0 text-warning">{{ $externalAudit->minor_ncrs_count }}</h3>
-                                <small class="text-muted">Minor NCRs</small>
+                                <small class="text-muted">{{ __('Minor NCRs') }}</small>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="text-center p-3 bg-info bg-opacity-10 rounded">
                                 <h3 class="mb-0 text-info">{{ $externalAudit->observations_count }}</h3>
-                                <small class="text-muted">Observations</small>
+                                <small class="text-muted">{{ __('Observations') }}</small>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="text-center p-3 bg-success bg-opacity-10 rounded">
                                 <h3 class="mb-0 text-success">{{ $externalAudit->opportunities_count }}</h3>
-                                <small class="text-muted">Opportunities</small>
+                                <small class="text-muted">{{ __('Opportunities') }}</small>
                             </div>
                         </div>
                     </div>
 
                     @if($externalAudit->audit_summary)
                     <div class="mb-3">
-                        <label class="text-muted small">Audit Summary</label>
+                        <label class="text-muted small">{{ __('Audit Summary') }}</label>
                         <p class="mb-0">{{ $externalAudit->audit_summary }}</p>
                     </div>
                     @endif
 
                     @if($externalAudit->strengths)
                     <div class="mb-3">
-                        <label class="text-muted small">Strengths</label>
+                        <label class="text-muted small">{{ __('Strengths') }}</label>
                         <p class="mb-0 text-success">{{ $externalAudit->strengths }}</p>
                     </div>
                     @endif
 
                     @if($externalAudit->areas_for_improvement)
                     <div>
-                        <label class="text-muted small">Areas for Improvement</label>
+                        <label class="text-muted small">{{ __('Areas for Improvement') }}</label>
                         <p class="mb-0 text-warning">{{ $externalAudit->areas_for_improvement }}</p>
                     </div>
                     @endif
@@ -250,7 +250,7 @@
             <!-- Workflow Actions -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Actions</h5>
+                    <h5 class="mb-0">{{ __('Actions') }}</h5>
                 </div>
                 <div class="card-body">
                     @can('update', $externalAudit)
@@ -259,7 +259,7 @@
                     <form action="{{ route('external-audits.start', $externalAudit) }}" method="POST" class="mb-2">
                         @csrf
                         <button type="submit" class="btn btn-success w-100">
-                            <i class="icon-base ti tabler-player-play me-1"></i>Start Audit
+                            <i class="icon-base ti tabler-player-play me-1"></i>{{ __('Start Audit') }}
                         </button>
                     </form>
                     @endif
@@ -267,14 +267,14 @@
                     <!-- Complete Audit -->
                     @if($externalAudit->canComplete())
                     <button type="button" class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#completeAuditModal">
-                        <i class="icon-base ti tabler-circle-check me-1"></i>Complete Audit
+                        <i class="icon-base ti tabler-circle-check me-1"></i>{{ __('Complete Audit') }}
                     </button>
                     @endif
 
                     <!-- Edit Audit -->
                     @if(in_array($externalAudit->status, ['scheduled', 'in_progress']))
                     <a href="{{ route('external-audits.edit', $externalAudit) }}" class="btn btn-outline-secondary w-100 mb-2">
-                        <i class="icon-base ti tabler-edit me-1"></i>Edit Details
+                        <i class="icon-base ti tabler-edit me-1"></i>{{ __('Edit Details') }}
                     </a>
                     @endif
 
@@ -282,10 +282,10 @@
                     @if($externalAudit->status !== 'completed' && $externalAudit->status !== 'cancelled')
                     <form action="{{ route('external-audits.cancel', $externalAudit) }}"
                           method="POST"
-                          onsubmit="return confirm('Are you sure you want to cancel this audit?')">
+                          onsubmit="return confirm('{{ __('Are you sure you want to cancel this audit?') }}')">
                         @csrf
                         <button type="submit" class="btn btn-outline-warning w-100 mb-2">
-                            <i class="icon-base ti tabler-x me-1"></i>Cancel Audit
+                            <i class="icon-base ti tabler-x me-1"></i>{{ __('Cancel Audit') }}
                         </button>
                     </form>
                     @endif
@@ -294,14 +294,14 @@
                     <!-- Generate Certificate -->
                     @if($externalAudit->canGenerateCertificate())
                     <a href="{{ route('certificates.create', ['audit' => $externalAudit->id]) }}" class="btn btn-success w-100 mb-2">
-                        <i class="icon-base ti tabler-award me-1"></i>Generate Certificate
+                        <i class="icon-base ti tabler-award me-1"></i>{{ __('Generate Certificate') }}
                     </a>
                     @endif
 
                     <!-- View Certificate -->
                     @if($externalAudit->certificate)
                     <a href="{{ route('certificates.show', $externalAudit->certificate) }}" class="btn btn-outline-success w-100 mb-2">
-                        <i class="icon-base ti tabler-award-fill me-1"></i>View Certificate
+                        <i class="icon-base ti tabler-award-fill me-1"></i>{{ __('View Certificate') }}
                     </a>
                     @endif
                 </div>
@@ -311,7 +311,7 @@
             @if($externalAudit->certificate)
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Certificate</h5>
+                    <h5 class="mb-0">{{ __('Certificate') }}</h5>
                 </div>
                 <div class="card-body">
                     <p class="mb-2">
@@ -323,13 +323,13 @@
                         </span>
                     </p>
                     <p class="mb-2 small">
-                        <strong>Issued:</strong> {{ $externalAudit->certificate->issue_date->format('M d, Y') }}<br>
-                        <strong>Expires:</strong> {{ $externalAudit->certificate->expiry_date->format('M d, Y') }}
+                        <strong>{{ __('Issued:') }}</strong> {{ $externalAudit->certificate->issue_date->format('M d, Y') }}<br>
+                        <strong>{{ __('Expires:') }}</strong> {{ $externalAudit->certificate->expiry_date->format('M d, Y') }}
                     </p>
                     @if($externalAudit->certificate->isExpiringSoon())
                     <div class="alert alert-warning py-2 small mb-0">
                         <i class="icon-base ti tabler-alert-triangle"></i>
-                        Expires in {{ $externalAudit->certificate->days_until_expiry }} days
+                        {{ __('Expires in') }} {{ $externalAudit->certificate->days_until_expiry }} {{ __('days') }}
                     </div>
                     @endif
                 </div>
@@ -339,16 +339,16 @@
             <!-- Metadata -->
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Details</h5>
+                    <h5 class="mb-0">{{ __('Details') }}</h5>
                 </div>
                 <div class="card-body">
                     <p class="mb-2 small">
-                        <strong>Created by:</strong><br>
-                        {{ $externalAudit->createdBy->name ?? 'System' }}<br>
+                        <strong>{{ __('Created by:') }}</strong><br>
+                        {{ $externalAudit->createdBy->name ?? __('System') }}<br>
                         <span class="text-muted">{{ $externalAudit->created_at->format('M d, Y') }}</span>
                     </p>
                     <p class="mb-0 small">
-                        <strong>Last updated:</strong><br>
+                        <strong>{{ __('Last updated:') }}</strong><br>
                         <span class="text-muted">{{ $externalAudit->updated_at->diffForHumans() }}</span>
                     </p>
                 </div>
@@ -364,61 +364,61 @@
             <form action="{{ route('external-audits.complete', $externalAudit) }}" method="POST">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title">Complete Audit</h5>
+                    <h5 class="modal-title">{{ __('Complete Audit') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="actual_end_date" class="form-label required">Actual End Date</label>
+                            <label for="actual_end_date" class="form-label required">{{ __('Actual End Date') }}</label>
                             <input type="date" name="actual_end_date" id="actual_end_date" class="form-control" required>
                         </div>
                         <div class="col-md-6">
-                            <label for="result" class="form-label required">Audit Result</label>
+                            <label for="result" class="form-label required">{{ __('Audit Result') }}</label>
                             <select name="result" id="result" class="form-select" required>
-                                <option value="">Select result...</option>
-                                <option value="passed">Passed</option>
-                                <option value="conditional">Conditional</option>
-                                <option value="failed">Failed</option>
+                                <option value="">{{ __('Select result...') }}</option>
+                                <option value="passed">{{ __('Passed') }}</option>
+                                <option value="conditional">{{ __('Conditional') }}</option>
+                                <option value="failed">{{ __('Failed') }}</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="major_ncrs_count" class="form-label required">Major NCRs</label>
+                            <label for="major_ncrs_count" class="form-label required">{{ __('Major NCRs') }}</label>
                             <input type="number" name="major_ncrs_count" id="major_ncrs_count" class="form-control" min="0" value="0" required>
                         </div>
                         <div class="col-md-3">
-                            <label for="minor_ncrs_count" class="form-label required">Minor NCRs</label>
+                            <label for="minor_ncrs_count" class="form-label required">{{ __('Minor NCRs') }}</label>
                             <input type="number" name="minor_ncrs_count" id="minor_ncrs_count" class="form-control" min="0" value="0" required>
                         </div>
                         <div class="col-md-3">
-                            <label for="observations_count" class="form-label required">Observations</label>
+                            <label for="observations_count" class="form-label required">{{ __('Observations') }}</label>
                             <input type="number" name="observations_count" id="observations_count" class="form-control" min="0" value="0" required>
                         </div>
                         <div class="col-md-3">
-                            <label for="opportunities_count" class="form-label required">Opportunities</label>
+                            <label for="opportunities_count" class="form-label required">{{ __('Opportunities') }}</label>
                             <input type="number" name="opportunities_count" id="opportunities_count" class="form-control" min="0" value="0" required>
                         </div>
                         <div class="col-md-12">
-                            <label for="audit_summary" class="form-label required">Audit Summary</label>
+                            <label for="audit_summary" class="form-label required">{{ __('Audit Summary') }}</label>
                             <textarea name="audit_summary" id="audit_summary" class="form-control" rows="3" required></textarea>
                         </div>
                         <div class="col-md-12">
-                            <label for="strengths" class="form-label">Strengths</label>
+                            <label for="strengths" class="form-label">{{ __('Strengths') }}</label>
                             <textarea name="strengths" id="strengths" class="form-control" rows="2"></textarea>
                         </div>
                         <div class="col-md-12">
-                            <label for="areas_for_improvement" class="form-label">Areas for Improvement</label>
+                            <label for="areas_for_improvement" class="form-label">{{ __('Areas for Improvement') }}</label>
                             <textarea name="areas_for_improvement" id="areas_for_improvement" class="form-control" rows="2"></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label for="next_audit_date" class="form-label">Next Audit Date</label>
+                            <label for="next_audit_date" class="form-label">{{ __('Next Audit Date') }}</label>
                             <input type="date" name="next_audit_date" id="next_audit_date" class="form-control">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Complete Audit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Complete Audit') }}</button>
                 </div>
             </form>
         </div>

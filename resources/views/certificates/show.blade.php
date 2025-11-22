@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Certificate Details')
+@section('title', __('Certificate Details'))
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -8,7 +8,7 @@
     <div class="mb-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('certificates.index') }}">Certificates</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('certificates.index') }}">{{ __('Certificates') }}</a></li>
                 <li class="breadcrumb-item active">{{ $certificate->certificate_number }}</li>
             </ol>
         </nav>
@@ -33,8 +33,8 @@
     <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
         <i class="icon-base ti tabler-alert-triangle fs-4 me-3"></i>
         <div>
-            <strong>Expiry Warning!</strong> This certificate expires in <strong>{{ $certificate->days_until_expiry }} days</strong> on {{ $certificate->expiry_date->format('F d, Y') }}.
-            Please arrange for recertification audit.
+            <strong>{{ __('Expiry Warning!') }}</strong> {{ __('This certificate expires in') }} <strong>{{ $certificate->days_until_expiry }} {{ __('days') }}</strong> {{ __('on') }} {{ $certificate->expiry_date->format('F d, Y') }}.
+            {{ __('Please arrange for recertification audit.') }}
         </div>
     </div>
     @endif
@@ -43,8 +43,8 @@
     <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
         <i class="icon-base ti tabler-x fs-4 me-3"></i>
         <div>
-            <strong>Certificate Expired!</strong> This certificate expired on {{ $certificate->expiry_date->format('F d, Y') }}.
-            Immediate action required to maintain certification status.
+            <strong>{{ __('Certificate Expired!') }}</strong> {{ __('This certificate expired on') }} {{ $certificate->expiry_date->format('F d, Y') }}.
+            {{ __('Immediate action required to maintain certification status.') }}
         </div>
     </div>
     @endif
@@ -55,24 +55,24 @@
             <!-- Certificate Information -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Certificate Information</h5>
+                    <h5 class="mb-0">{{ __('Certificate Information') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="text-muted small">Certificate Number</label>
+                            <label class="text-muted small">{{ __('Certificate Number') }}</label>
                             <p class="mb-0 fw-semibold">{{ $certificate->certificate_number }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Certificate Type</label>
+                            <label class="text-muted small">{{ __('Certificate Type') }}</label>
                             <p class="mb-0">{{ $certificate->certificate_type_label }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Standard</label>
+                            <label class="text-muted small">{{ __('Standard') }}</label>
                             <p class="mb-0">{{ $certificate->standard }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="text-muted small">Certification Body</label>
+                            <label class="text-muted small">{{ __('Certification Body') }}</label>
                             <p class="mb-0">{{ $certificate->certification_body }}</p>
                         </div>
                     </div>
@@ -82,21 +82,21 @@
             <!-- Validity Information -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Validity Period</h5>
+                    <h5 class="mb-0">{{ __('Validity Period') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="text-muted small">Issue Date</label>
+                            <label class="text-muted small">{{ __('Issue Date') }}</label>
                             <p class="mb-0">{{ $certificate->issue_date->format('F d, Y') }}</p>
                         </div>
                         <div class="col-md-4">
-                            <label class="text-muted small">Expiry Date</label>
+                            <label class="text-muted small">{{ __('Expiry Date') }}</label>
                             <p class="mb-0">{{ $certificate->expiry_date->format('F d, Y') }}</p>
                         </div>
                         <div class="col-md-4">
-                            <label class="text-muted small">Validity Period</label>
-                            <p class="mb-0">{{ $certificate->validity_period_in_years }} year(s)</p>
+                            <label class="text-muted small">{{ __('Validity Period') }}</label>
+                            <p class="mb-0">{{ $certificate->validity_period_in_years }} {{ __('year(s)') }}</p>
                         </div>
                         @if(!$certificate->isExpired())
                         <div class="col-md-12">
@@ -112,11 +112,11 @@
                                      aria-valuenow="{{ $percentElapsed }}"
                                      aria-valuemin="0"
                                      aria-valuemax="100">
-                                    {{ round($percentElapsed) }}% of validity period used
+                                    {{ round($percentElapsed) }}% {{ __('of validity period used') }}
                                 </div>
                             </div>
                             <small class="text-muted">
-                                {{ $certificate->days_until_expiry > 0 ? $certificate->days_until_expiry . ' days remaining' : 'Expired' }}
+                                {{ $certificate->days_until_expiry > 0 ? $certificate->days_until_expiry . ' ' . __('days remaining') : __('Expired') }}
                             </small>
                         </div>
                         @endif
@@ -127,7 +127,7 @@
             <!-- Scope of Certification -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Scope of Certification</h5>
+                    <h5 class="mb-0">{{ __('Scope of Certification') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -136,7 +136,7 @@
 
                     @if($certificate->covered_sites && count($certificate->covered_sites) > 0)
                     <div class="mb-3">
-                        <label class="text-muted small">Covered Sites</label>
+                        <label class="text-muted small">{{ __('Covered Sites') }}</label>
                         <ul class="mb-0">
                             @foreach($certificate->covered_sites as $site)
                             <li>{{ $site }}</li>
@@ -147,7 +147,7 @@
 
                     @if($certificate->covered_processes && count($certificate->covered_processes) > 0)
                     <div>
-                        <label class="text-muted small">Covered Processes</label>
+                        <label class="text-muted small">{{ __('Covered Processes') }}</label>
                         <ul class="mb-0">
                             @foreach($certificate->covered_processes as $process)
                             <li>{{ $process }}</li>
@@ -162,7 +162,7 @@
             @if($certificate->notes)
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Notes</h5>
+                    <h5 class="mb-0">{{ __('Notes') }}</h5>
                 </div>
                 <div class="card-body">
                     <p class="mb-0">{{ $certificate->notes }}</p>
@@ -176,14 +176,14 @@
             <!-- Actions -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Actions</h5>
+                    <h5 class="mb-0">{{ __('Actions') }}</h5>
                 </div>
                 <div class="card-body">
                     @can('update', $certificate)
                     <!-- Edit Certificate -->
                     @if(in_array($certificate->status, ['valid', 'expiring_soon']))
                     <a href="{{ route('certificates.edit', $certificate) }}" class="btn btn-outline-secondary w-100 mb-2">
-                        <i class="icon-base ti tabler-edit me-1"></i>Edit Details
+                        <i class="icon-base ti tabler-edit me-1"></i>{{ __('Edit Details') }}
                     </a>
                     @endif
 
@@ -191,10 +191,10 @@
                     @if($certificate->status !== 'suspended' && $certificate->status !== 'revoked' && $certificate->status !== 'expired')
                     <form action="{{ route('certificates.suspend', $certificate) }}"
                           method="POST"
-                          onsubmit="return confirm('Are you sure you want to suspend this certificate?')">
+                          onsubmit="return confirm('{{ __('Are you sure you want to suspend this certificate?') }}')">
                         @csrf
                         <button type="submit" class="btn btn-outline-warning w-100 mb-2">
-                            <i class="icon-base ti tabler-player-pause me-1"></i>Suspend Certificate
+                            <i class="icon-base ti tabler-player-pause me-1"></i>{{ __('Suspend Certificate') }}
                         </button>
                     </form>
                     @endif
@@ -203,10 +203,10 @@
                     @if($certificate->status !== 'revoked')
                     <form action="{{ route('certificates.revoke', $certificate) }}"
                           method="POST"
-                          onsubmit="return confirm('Are you sure you want to revoke this certificate? This action indicates the certificate is permanently invalidated.')">
+                          onsubmit="return confirm('{{ __('Are you sure you want to revoke this certificate? This action indicates the certificate is permanently invalidated.') }}')">
                         @csrf
                         <button type="submit" class="btn btn-outline-danger w-100 mb-2">
-                            <i class="icon-base ti tabler-slash me-1"></i>Revoke Certificate
+                            <i class="icon-base ti tabler-slash me-1"></i>{{ __('Revoke Certificate') }}
                         </button>
                     </form>
                     @endif
@@ -216,7 +216,7 @@
                     <form action="{{ route('certificates.reinstate', $certificate) }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-success w-100 mb-2">
-                            <i class="icon-base ti tabler-circle-check me-1"></i>Reinstate Certificate
+                            <i class="icon-base ti tabler-circle-check me-1"></i>{{ __('Reinstate Certificate') }}
                         </button>
                     </form>
                     @endif
@@ -228,7 +228,7 @@
             @if($certificate->issuedForAudit)
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Related Audit</h5>
+                    <h5 class="mb-0">{{ __('Related Audit') }}</h5>
                 </div>
                 <div class="card-body">
                     <p class="mb-2">
@@ -243,11 +243,11 @@
                         </span>
                     </p>
                     <p class="mb-2 small">
-                        <strong>Type:</strong> {{ $certificate->issuedForAudit->audit_type_label }}<br>
-                        <strong>Date:</strong> {{ $certificate->issuedForAudit->actual_end_date->format('M d, Y') }}
+                        <strong>{{ __('Type') }}:</strong> {{ $certificate->issuedForAudit->audit_type_label }}<br>
+                        <strong>{{ __('Date') }}:</strong> {{ $certificate->issuedForAudit->actual_end_date->format('M d, Y') }}
                     </p>
                     <a href="{{ route('external-audits.show', $certificate->issuedForAudit) }}" class="btn btn-sm btn-outline-primary w-100">
-                        <i class="icon-base ti tabler-eye me-1"></i>View Audit Details
+                        <i class="icon-base ti tabler-eye me-1"></i>{{ __('View Audit Details') }}
                     </a>
                 </div>
             </div>
@@ -256,11 +256,11 @@
             <!-- Status Information -->
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Status Information</h5>
+                    <h5 class="mb-0">{{ __('Status Information') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="text-muted small">Current Status</label>
+                        <label class="text-muted small">{{ __('Current Status') }}</label>
                         <p class="mb-0">
                             <span class="badge bg-{{ $certificate->status_color }}">
                                 {{ ucfirst(str_replace('_', ' ', $certificate->status)) }}
@@ -270,14 +270,14 @@
 
                     @if(!$certificate->isExpired())
                     <div class="mb-3">
-                        <label class="text-muted small">Validity Check</label>
+                        <label class="text-muted small">{{ __('Validity Check') }}</label>
                         <p class="mb-0">
                             @if($certificate->isValid())
-                            <i class="icon-base ti tabler-circle-check text-success"></i> Certificate is valid
+                            <i class="icon-base ti tabler-circle-check text-success"></i> {{ __('Certificate is valid') }}
                             @elseif($certificate->isExpiringSoon())
-                            <i class="icon-base ti tabler-alert-triangle text-warning"></i> Expiring in {{ $certificate->days_until_expiry }} days
+                            <i class="icon-base ti tabler-alert-triangle text-warning"></i> {{ __('Expiring in') }} {{ $certificate->days_until_expiry }} {{ __('days') }}
                             @else
-                            <i class="icon-base ti tabler-x text-danger"></i> Not currently valid
+                            <i class="icon-base ti tabler-x text-danger"></i> {{ __('Not currently valid') }}
                             @endif
                         </p>
                     </div>
@@ -288,16 +288,16 @@
             <!-- Metadata -->
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">Details</h5>
+                    <h5 class="mb-0">{{ __('Details') }}</h5>
                 </div>
                 <div class="card-body">
                     <p class="mb-2 small">
-                        <strong>Created by:</strong><br>
-                        {{ $certificate->createdBy->name ?? 'System' }}<br>
+                        <strong>{{ __('Created by') }}:</strong><br>
+                        {{ $certificate->createdBy->name ?? __('System') }}<br>
                         <span class="text-muted">{{ $certificate->created_at->format('M d, Y') }}</span>
                     </p>
                     <p class="mb-0 small">
-                        <strong>Last updated:</strong><br>
+                        <strong>{{ __('Last updated') }}:</strong><br>
                         <span class="text-muted">{{ $certificate->updated_at->diffForHumans() }}</span>
                     </p>
                 </div>

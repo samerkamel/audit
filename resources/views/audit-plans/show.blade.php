@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Audit Plan Details')
+@section('title', __('Audit Plan Details'))
 
 @section('vendor-style')
 @vite('resources/assets/vendor/libs/sweetalert2/sweetalert2.scss')
@@ -19,24 +19,24 @@
               {{ ucfirst(str_replace('_', ' ', $auditPlan->status)) }}
             </span>
             @if($auditPlan->isOverdue())
-              <span class="badge bg-label-danger">Overdue</span>
+              <span class="badge bg-label-danger">{{ __('Overdue') }}</span>
             @endif
             <span class="badge bg-label-info">{{ $auditPlan->audit_type_label }}</span>
             @if(!$auditPlan->is_active)
-              <span class="badge bg-label-secondary">Inactive</span>
+              <span class="badge bg-label-secondary">{{ __('Inactive') }}</span>
             @endif
           </div>
         </div>
         <div class="d-flex gap-2">
           <a href="{{ route('audit-plans.index') }}" class="btn btn-sm btn-secondary">
-            <i class="icon-base ti tabler-arrow-left me-1"></i> Back to List
+            <i class="icon-base ti tabler-arrow-left me-1"></i> {{ __('Back to List') }}
           </a>
 
           @if($auditPlan->status === 'planned')
             <form action="{{ route('audit-plans.start', $auditPlan) }}" method="POST" class="d-inline">
               @csrf
               <button type="submit" class="btn btn-sm btn-primary">
-                <i class="icon-base ti tabler-player-play me-1"></i> Start Audit
+                <i class="icon-base ti tabler-player-play me-1"></i> {{ __('Start Audit') }}
               </button>
             </form>
           @endif
@@ -45,19 +45,19 @@
             <form action="{{ route('audit-plans.complete', $auditPlan) }}" method="POST" class="d-inline">
               @csrf
               <button type="submit" class="btn btn-sm btn-success">
-                <i class="icon-base ti tabler-check me-1"></i> Complete Audit
+                <i class="icon-base ti tabler-check me-1"></i> {{ __('Complete Audit') }}
               </button>
             </form>
           @endif
 
           @if(!in_array($auditPlan->status, ['completed', 'cancelled']))
             <a href="{{ route('audit-plans.edit', $auditPlan) }}" class="btn btn-sm btn-info">
-              <i class="icon-base ti tabler-edit me-1"></i> Edit
+              <i class="icon-base ti tabler-edit me-1"></i> {{ __('Edit') }}
             </a>
             <form action="{{ route('audit-plans.cancel', $auditPlan) }}" method="POST" class="d-inline">
               @csrf
               <button type="button" class="btn btn-sm btn-warning btn-cancel-audit">
-                <i class="icon-base ti tabler-ban me-1"></i> Cancel
+                <i class="icon-base ti tabler-ban me-1"></i> {{ __('Cancel') }}
               </button>
             </form>
           @endif
@@ -67,7 +67,7 @@
               @csrf
               @method('DELETE')
               <button type="button" class="btn btn-sm btn-danger btn-delete-audit">
-                <i class="icon-base ti tabler-trash me-1"></i> Delete
+                <i class="icon-base ti tabler-trash me-1"></i> {{ __('Delete') }}
               </button>
             </form>
           @endif
@@ -84,8 +84,8 @@
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
-            <span class="text-heading">Duration</span>
-            <h4 class="mb-0 me-2">{{ $stats['duration'] ?? 'N/A' }} {{ isset($stats['duration']) ? 'days' : '' }}</h4>
+            <span class="text-heading">{{ __('Duration') }}</span>
+            <h4 class="mb-0 me-2">{{ $stats['duration'] ?? __('N/A') }} {{ isset($stats['duration']) ? __('days') : '' }}</h4>
           </div>
           <div class="avatar">
             <span class="avatar-initial rounded-circle bg-label-primary">
@@ -102,13 +102,13 @@
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
-            <span class="text-heading">Days Remaining</span>
+            <span class="text-heading">{{ __('Days Remaining') }}</span>
             <h4 class="mb-0 me-2 {{ isset($stats['days_remaining']) && $stats['days_remaining'] < 0 ? 'text-danger' : '' }}">
               @if(isset($stats['days_remaining']))
-                {{ abs($stats['days_remaining']) }} days
-                @if($stats['days_remaining'] < 0) overdue @endif
+                {{ abs($stats['days_remaining']) }} {{ __('days') }}
+                @if($stats['days_remaining'] < 0) {{ __('overdue') }} @endif
               @else
-                N/A
+                {{ __('N/A') }}
               @endif
             </h4>
           </div>
@@ -127,7 +127,7 @@
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
-            <span class="text-heading">Status</span>
+            <span class="text-heading">{{ __('Status') }}</span>
             <h5 class="mb-0 me-2 badge bg-label-{{ $auditPlan->status_color }}">
               {{ ucfirst(str_replace('_', ' ', $auditPlan->status)) }}
             </h5>
@@ -147,8 +147,8 @@
       <div class="card-body">
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
-            <span class="text-heading">Overdue</span>
-            <h4 class="mb-0 me-2">{{ ($stats['is_overdue'] ?? false) ? 'Yes' : 'No' }}</h4>
+            <span class="text-heading">{{ __('Overdue') }}</span>
+            <h4 class="mb-0 me-2">{{ ($stats['is_overdue'] ?? false) ? __('Yes') : __('No') }}</h4>
           </div>
           <div class="avatar">
             <span class="avatar-initial rounded-circle bg-label-{{ ($stats['is_overdue'] ?? false) ? 'danger' : 'success' }}">
@@ -166,17 +166,17 @@
   <div class="col-md-6">
     <div class="card mb-6">
       <div class="card-header">
-        <h5 class="mb-0">Basic Information</h5>
+        <h5 class="mb-0">{{ __('Basic Information') }}</h5>
       </div>
       <div class="card-body">
         <table class="table table-borderless">
           <tbody>
             <tr>
-              <td class="text-nowrap fw-medium">Audit Type</td>
+              <td class="text-nowrap fw-medium">{{ __('Audit Type') }}</td>
               <td><span class="badge bg-label-info">{{ $auditPlan->audit_type_label }}</span></td>
             </tr>
             <tr>
-              <td class="text-nowrap fw-medium">Departments</td>
+              <td class="text-nowrap fw-medium">{{ __('Departments') }}</td>
               <td>
                 @if($auditPlan->departments->count() > 0)
                   @foreach($auditPlan->departments as $department)
@@ -185,12 +185,12 @@
                     </span>
                   @endforeach
                 @else
-                  <span class="text-muted">No departments assigned</span>
+                  <span class="text-muted">{{ __('No departments assigned') }}</span>
                 @endif
               </td>
             </tr>
             <tr>
-              <td class="text-nowrap fw-medium">Lead Auditor</td>
+              <td class="text-nowrap fw-medium">{{ __('Lead Auditor') }}</td>
               <td>
                 <div class="d-flex align-items-center">
                   <div class="avatar avatar-sm me-2">
@@ -206,7 +206,7 @@
               </td>
             </tr>
             <tr>
-              <td class="text-nowrap fw-medium">Created By</td>
+              <td class="text-nowrap fw-medium">{{ __('Created By') }}</td>
               <td>
                 <div class="d-flex align-items-center">
                   <div class="avatar avatar-sm me-2">
@@ -222,10 +222,10 @@
               </td>
             </tr>
             <tr>
-              <td class="text-nowrap fw-medium">Active Status</td>
+              <td class="text-nowrap fw-medium">{{ __('Active Status') }}</td>
               <td>
                 <span class="badge bg-label-{{ $auditPlan->is_active ? 'success' : 'secondary' }}">
-                  {{ $auditPlan->is_active ? 'Active' : 'Inactive' }}
+                  {{ $auditPlan->is_active ? __('Active') : __('Inactive') }}
                 </span>
               </td>
             </tr>
@@ -238,37 +238,37 @@
   <div class="col-md-6">
     <div class="card mb-6">
       <div class="card-header">
-        <h5 class="mb-0">Timeline & Dates</h5>
+        <h5 class="mb-0">{{ __('Timeline & Dates') }}</h5>
       </div>
       <div class="card-body">
         <table class="table table-borderless">
           <tbody>
             <tr>
-              <td class="text-nowrap fw-medium">Actual Start Date</td>
+              <td class="text-nowrap fw-medium">{{ __('Actual Start Date') }}</td>
               <td>
                 @if($auditPlan->actual_start_date)
                   {{ $auditPlan->actual_start_date->format('d M Y') }}
                 @else
-                  <span class="text-muted">Not started yet</span>
+                  <span class="text-muted">{{ __('Not started yet') }}</span>
                 @endif
               </td>
             </tr>
             <tr>
-              <td class="text-nowrap fw-medium">Actual End Date</td>
+              <td class="text-nowrap fw-medium">{{ __('Actual End Date') }}</td>
               <td>
                 @if($auditPlan->actual_end_date)
                   {{ $auditPlan->actual_end_date->format('d M Y') }}
                 @else
-                  <span class="text-muted">Not completed yet</span>
+                  <span class="text-muted">{{ __('Not completed yet') }}</span>
                 @endif
               </td>
             </tr>
             <tr>
-              <td class="text-nowrap fw-medium">Created At</td>
+              <td class="text-nowrap fw-medium">{{ __('Created At') }}</td>
               <td>{{ $auditPlan->created_at->format('d M Y, H:i') }}</td>
             </tr>
             <tr>
-              <td class="text-nowrap fw-medium">Last Updated</td>
+              <td class="text-nowrap fw-medium">{{ __('Last Updated') }}</td>
               <td>{{ $auditPlan->updated_at->format('d M Y, H:i') }}</td>
             </tr>
           </tbody>
@@ -285,7 +285,7 @@
     <div class="card mb-6">
       <div class="card-header">
         <h5 class="mb-0">
-          <i class="icon-base ti tabler-building-community me-1"></i> Departments & CheckList Groups
+          <i class="icon-base ti tabler-building-community me-1"></i> {{ __('Departments & CheckList Groups') }}
         </h5>
       </div>
       <div class="card-body">
@@ -317,7 +317,7 @@
 
             <div>
               <h6 class="text-muted mb-2">
-                <i class="icon-base ti tabler-list-check me-1"></i> Assigned CheckList Groups
+                <i class="icon-base ti tabler-list-check me-1"></i> {{ __('Assigned CheckList Groups') }}
               </h6>
               @php
                 $checklistGroups = $auditPlan->checklistGroupsForDepartment($department->id)->get();
@@ -335,12 +335,12 @@
                             <span class="badge bg-label-info badge-sm mt-1">{{ $group->quality_procedure_reference }}</span>
                           @endif
                         </div>
-                        <a href="{{ route('checklist-groups.show', $group) }}" class="btn btn-xs btn-icon btn-label-primary" title="View Details">
+                        <a href="{{ route('checklist-groups.show', $group) }}" class="btn btn-xs btn-icon btn-label-primary" title="{{ __('View Details') }}">
                           <i class="icon-base ti tabler-eye"></i>
                         </a>
                       </div>
                       <small class="text-muted d-block mt-1">
-                        <i class="icon-base ti tabler-list"></i> {{ $group->auditQuestions->count() }} questions
+                        <i class="icon-base ti tabler-list"></i> {{ $group->auditQuestions->count() }} {{ __('questions') }}
                       </small>
                     </div>
                   @endforeach
@@ -348,9 +348,9 @@
               @else
                 <div class="alert alert-warning mb-0">
                   <i class="icon-base ti tabler-alert-triangle me-1"></i>
-                  No checklist groups assigned to this department yet.
+                  {{ __('No checklist groups assigned to this department yet.') }}
                   @if(!in_array($auditPlan->status, ['completed', 'cancelled']))
-                    <a href="{{ route('audit-plans.edit', $auditPlan) }}" class="alert-link">Add checklist groups</a>
+                    <a href="{{ route('audit-plans.edit', $auditPlan) }}" class="alert-link">{{ __('Add checklist groups') }}</a>
                   @endif
                 </div>
               @endif
@@ -369,7 +369,7 @@
   <div class="col-12">
     <div class="card mb-6">
       <div class="card-header">
-        <h5 class="mb-0">Description</h5>
+        <h5 class="mb-0">{{ __('Description') }}</h5>
       </div>
       <div class="card-body">
         <p class="mb-0">{{ $auditPlan->description }}</p>
@@ -382,7 +382,7 @@
   <div class="col-md-6">
     <div class="card mb-6">
       <div class="card-header">
-        <h5 class="mb-0">Audit Scope</h5>
+        <h5 class="mb-0">{{ __('Audit Scope') }}</h5>
       </div>
       <div class="card-body">
         <p class="mb-0">{{ $auditPlan->scope }}</p>
@@ -395,7 +395,7 @@
   <div class="col-md-6">
     <div class="card mb-6">
       <div class="card-header">
-        <h5 class="mb-0">Audit Objectives</h5>
+        <h5 class="mb-0">{{ __('Audit Objectives') }}</h5>
       </div>
       <div class="card-body">
         <p class="mb-0">{{ $auditPlan->objectives }}</p>
@@ -419,12 +419,12 @@ $(document).ready(function() {
     const form = $(this).closest('form');
 
     Swal.fire({
-      title: 'Are you sure?',
-      text: "This audit plan will be deleted!",
+      title: '{{ __('Are you sure?') }}',
+      text: "{{ __('This audit plan will be deleted!') }}",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel!',
+      confirmButtonText: '{{ __('Yes, delete it!') }}',
+      cancelButtonText: '{{ __('No, cancel!') }}',
       customClass: {
         confirmButton: 'btn btn-danger me-3',
         cancelButton: 'btn btn-label-secondary'
@@ -443,12 +443,12 @@ $(document).ready(function() {
     const form = $(this).closest('form');
 
     Swal.fire({
-      title: 'Cancel Audit Plan?',
-      text: "This will mark the audit plan as cancelled!",
+      title: '{{ __('Cancel Audit Plan?') }}',
+      text: "{{ __('This will mark the audit plan as cancelled!') }}",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, cancel it!',
-      cancelButtonText: 'No, go back!',
+      confirmButtonText: '{{ __('Yes, cancel it!') }}',
+      cancelButtonText: '{{ __('No, go back!') }}',
       customClass: {
         confirmButton: 'btn btn-warning me-3',
         cancelButton: 'btn btn-label-secondary'

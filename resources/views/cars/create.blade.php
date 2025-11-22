@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Create CAR')
+@section('title', __('Create CAR'))
 
 @section('vendor-style')
 @vite([
@@ -22,9 +22,9 @@
     <div class="col-12">
       <div class="card mb-6">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Create Corrective Action Request (CAR)</h5>
+          <h5 class="mb-0">{{ __('Create Corrective Action Request (CAR)') }}</h5>
           <a href="{{ route('cars.index') }}" class="btn btn-sm btn-secondary">
-            <i class="icon-base ti tabler-arrow-left me-1"></i> Back to List
+            <i class="icon-base ti tabler-arrow-left me-1"></i> {{ __('Back to List') }}
           </a>
         </div>
         <div class="card-body">
@@ -32,11 +32,11 @@
           <div class="alert alert-info d-flex align-items-center mb-6" role="alert">
             <i class="icon-base ti tabler-info-circle me-2 icon-24px"></i>
             <div>
-              <strong>Creating CAR from Audit Finding</strong><br>
+              <strong>{{ __('Creating CAR from Audit Finding') }}</strong><br>
               <small>
-                Audit: {{ $auditFinding->audit->auditPlan->plan_name }}<br>
-                Department: {{ $auditFinding->audit->auditPlan->department->name }}<br>
-                Finding: {{ $auditFinding->question_text }}
+                {{ __('Audit') }}: {{ $auditFinding->audit->auditPlan->plan_name }}<br>
+                {{ __('Department') }}: {{ $auditFinding->audit->auditPlan->department->name }}<br>
+                {{ __('Finding') }}: {{ $auditFinding->question_text }}
               </small>
             </div>
           </div>
@@ -48,17 +48,17 @@
             <div class="row g-6">
               <!-- Source Type -->
               <div class="col-md-6">
-                <label class="form-label" for="source_type">Source Type <span class="text-danger">*</span></label>
+                <label class="form-label" for="source_type">{{ __('Source Type') }} <span class="text-danger">*</span></label>
                 <select class="form-select select2 @error('source_type') is-invalid @enderror"
                         id="source_type"
                         name="source_type"
                         required>
-                  <option value="">Select Source Type</option>
-                  <option value="internal_audit" {{ old('source_type', $auditFinding ? 'internal_audit' : '') == 'internal_audit' ? 'selected' : '' }}>Internal Audit</option>
-                  <option value="external_audit" {{ old('source_type') == 'external_audit' ? 'selected' : '' }}>External Audit</option>
-                  <option value="customer_complaint" {{ old('source_type') == 'customer_complaint' ? 'selected' : '' }}>Customer Complaint</option>
-                  <option value="process_performance" {{ old('source_type') == 'process_performance' ? 'selected' : '' }}>Process Performance</option>
-                  <option value="other" {{ old('source_type') == 'other' ? 'selected' : '' }}>Other</option>
+                  <option value="">{{ __('Select Source Type') }}</option>
+                  <option value="internal_audit" {{ old('source_type', $auditFinding ? 'internal_audit' : '') == 'internal_audit' ? 'selected' : '' }}>{{ __('Internal Audit') }}</option>
+                  <option value="external_audit" {{ old('source_type') == 'external_audit' ? 'selected' : '' }}>{{ __('External Audit') }}</option>
+                  <option value="customer_complaint" {{ old('source_type') == 'customer_complaint' ? 'selected' : '' }}>{{ __('Customer Complaint') }}</option>
+                  <option value="process_performance" {{ old('source_type') == 'process_performance' ? 'selected' : '' }}>{{ __('Process Performance') }}</option>
+                  <option value="other" {{ old('source_type') == 'other' ? 'selected' : '' }}>{{ __('Other') }}</option>
                 </select>
                 @error('source_type')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -72,16 +72,16 @@
 
               <!-- Priority -->
               <div class="col-md-6">
-                <label class="form-label" for="priority">Priority <span class="text-danger">*</span></label>
+                <label class="form-label" for="priority">{{ __('Priority') }} <span class="text-danger">*</span></label>
                 <select class="form-select select2 @error('priority') is-invalid @enderror"
                         id="priority"
                         name="priority"
                         required>
-                  <option value="">Select Priority</option>
-                  <option value="critical" {{ old('priority') == 'critical' ? 'selected' : '' }}>Critical</option>
-                  <option value="high" {{ old('priority', 'high') == 'high' ? 'selected' : '' }}>High</option>
-                  <option value="medium" {{ old('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
-                  <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>Low</option>
+                  <option value="">{{ __('Select Priority') }}</option>
+                  <option value="critical" {{ old('priority') == 'critical' ? 'selected' : '' }}>{{ __('Critical') }}</option>
+                  <option value="high" {{ old('priority', 'high') == 'high' ? 'selected' : '' }}>{{ __('High') }}</option>
+                  <option value="medium" {{ old('priority') == 'medium' ? 'selected' : '' }}>{{ __('Medium') }}</option>
+                  <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>{{ __('Low') }}</option>
                 </select>
                 @error('priority')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -90,12 +90,12 @@
 
               <!-- From Department -->
               <div class="col-md-6">
-                <label class="form-label" for="from_department_id">Issued By (Department) <span class="text-danger">*</span></label>
+                <label class="form-label" for="from_department_id">{{ __('Issued By (Department)') }} <span class="text-danger">*</span></label>
                 <select class="form-select select2 @error('from_department_id') is-invalid @enderror"
                         id="from_department_id"
                         name="from_department_id"
                         required>
-                  <option value="">Select Department</option>
+                  <option value="">{{ __('Select Department') }}</option>
                   @foreach($departments as $department)
                   <option value="{{ $department->id }}" {{ old('from_department_id', auth()->user()->department_id ?? '') == $department->id ? 'selected' : '' }}>
                     {{ $department->name }} ({{ $department->code }})
@@ -109,12 +109,12 @@
 
               <!-- To Department -->
               <div class="col-md-6">
-                <label class="form-label" for="to_department_id">Responsible Department <span class="text-danger">*</span></label>
+                <label class="form-label" for="to_department_id">{{ __('Responsible Department') }} <span class="text-danger">*</span></label>
                 <select class="form-select select2 @error('to_department_id') is-invalid @enderror"
                         id="to_department_id"
                         name="to_department_id"
                         required>
-                  <option value="">Select Department</option>
+                  <option value="">{{ __('Select Department') }}</option>
                   @foreach($departments as $department)
                   <option value="{{ $department->id }}"
                           {{ old('to_department_id', $auditFinding ? $auditFinding->audit->auditPlan->department_id : '') == $department->id ? 'selected' : '' }}>
@@ -129,7 +129,7 @@
 
               <!-- Issued Date -->
               <div class="col-md-6">
-                <label class="form-label" for="issued_date">Issued Date <span class="text-danger">*</span></label>
+                <label class="form-label" for="issued_date">{{ __('Issued Date') }} <span class="text-danger">*</span></label>
                 <input type="text"
                        class="form-control flatpickr-date @error('issued_date') is-invalid @enderror"
                        id="issued_date"
@@ -144,41 +144,41 @@
 
               <!-- Status -->
               <div class="col-md-6">
-                <label class="form-label" for="status">Status <span class="text-danger">*</span></label>
+                <label class="form-label" for="status">{{ __('Status') }} <span class="text-danger">*</span></label>
                 <select class="form-select @error('status') is-invalid @enderror"
                         id="status"
                         name="status"
                         required>
-                  <option value="draft" {{ old('status', 'draft') == 'draft' ? 'selected' : '' }}>Draft</option>
-                  <option value="pending_approval" {{ old('status') == 'pending_approval' ? 'selected' : '' }}>Pending Approval</option>
+                  <option value="draft" {{ old('status', 'draft') == 'draft' ? 'selected' : '' }}>{{ __('Draft') }}</option>
+                  <option value="pending_approval" {{ old('status') == 'pending_approval' ? 'selected' : '' }}>{{ __('Pending Approval') }}</option>
                 </select>
                 @error('status')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
                 <small class="form-text text-muted">
-                  Save as Draft to edit later, or submit for approval directly.
+                  {{ __('Save as Draft to edit later, or submit for approval directly.') }}
                 </small>
               </div>
 
               <!-- Subject -->
               <div class="col-12">
-                <label class="form-label" for="subject">Subject <span class="text-danger">*</span></label>
+                <label class="form-label" for="subject">{{ __('Subject') }} <span class="text-danger">*</span></label>
                 <input type="text"
                        class="form-control @error('subject') is-invalid @enderror"
                        id="subject"
                        name="subject"
-                       value="{{ old('subject', $auditFinding ? 'Non-Compliance: ' . $auditFinding->question_text : '') }}"
+                       value="{{ old('subject', $auditFinding ? __('Non-Compliance') . ': ' . $auditFinding->question_text : '') }}"
                        maxlength="500"
                        required>
                 @error('subject')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
-                <small class="form-text text-muted">Maximum 500 characters</small>
+                <small class="form-text text-muted">{{ __('Maximum 500 characters') }}</small>
               </div>
 
               <!-- NCR Description -->
               <div class="col-12">
-                <label class="form-label" for="ncr_description">Non-Conformance Description <span class="text-danger">*</span></label>
+                <label class="form-label" for="ncr_description">{{ __('Non-Conformance Description') }} <span class="text-danger">*</span></label>
                 <textarea class="form-control @error('ncr_description') is-invalid @enderror"
                           id="ncr_description"
                           name="ncr_description"
@@ -187,12 +187,12 @@
                 @error('ncr_description')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
-                <small class="form-text text-muted">Describe the non-conformance or issue that requires corrective action</small>
+                <small class="form-text text-muted">{{ __('Describe the non-conformance or issue that requires corrective action') }}</small>
               </div>
 
               <!-- Quality Team Clarification -->
               <div class="col-12">
-                <label class="form-label" for="clarification">Quality Team Clarification (Optional)</label>
+                <label class="form-label" for="clarification">{{ __('Quality Team Clarification (Optional)') }}</label>
                 <textarea class="form-control @error('clarification') is-invalid @enderror"
                           id="clarification"
                           name="clarification"
@@ -200,7 +200,7 @@
                 @error('clarification')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
-                <small class="form-text text-muted">Additional clarifications or instructions from quality team</small>
+                <small class="form-text text-muted">{{ __('Additional clarifications or instructions from quality team') }}</small>
               </div>
             </div>
 
@@ -208,10 +208,10 @@
             <div class="row mt-6">
               <div class="col-12">
                 <button type="submit" class="btn btn-primary me-3">
-                  <i class="icon-base ti tabler-device-floppy me-1"></i> Create CAR
+                  <i class="icon-base ti tabler-device-floppy me-1"></i> {{ __('Create CAR') }}
                 </button>
                 <a href="{{ route('cars.index') }}" class="btn btn-label-secondary">
-                  <i class="icon-base ti tabler-x me-1"></i> Cancel
+                  <i class="icon-base ti tabler-x me-1"></i> {{ __('Cancel') }}
                 </a>
               </div>
             </div>
@@ -229,7 +229,7 @@ $(document).ready(function() {
   // Initialize Select2
   $('.select2').select2({
     theme: 'bootstrap-5',
-    placeholder: 'Select an option',
+    placeholder: '{{ __("Select an option") }}',
     allowClear: true
   });
 

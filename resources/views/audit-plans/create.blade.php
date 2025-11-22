@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Create Audit Plan')
+@section('title', __('Create Audit Plan'))
 
 @section('vendor-style')
 @vite('resources/assets/vendor/libs/select2/select2.scss')
@@ -11,9 +11,9 @@
   <div class="col-12">
     <div class="card mb-6">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Create New Audit Plan</h5>
+        <h5 class="mb-0">{{ __('Create New Audit Plan') }}</h5>
         <a href="{{ route('audit-plans.index') }}" class="btn btn-sm btn-secondary">
-          <i class="icon-base ti tabler-arrow-left me-1"></i> Back to List
+          <i class="icon-base ti tabler-arrow-left me-1"></i> {{ __('Back to List') }}
         </a>
       </div>
       <div class="card-body">
@@ -25,10 +25,10 @@
           <div class="row mt-4">
             <div class="col-12">
               <button type="submit" class="btn btn-primary me-3">
-                <i class="icon-base ti tabler-device-floppy me-1"></i> Create Audit Plan
+                <i class="icon-base ti tabler-device-floppy me-1"></i> {{ __('Create Audit Plan') }}
               </button>
               <a href="{{ route('audit-plans.index') }}" class="btn btn-label-secondary">
-                <i class="icon-base ti tabler-x me-1"></i> Cancel
+                <i class="icon-base ti tabler-x me-1"></i> {{ __('Cancel') }}
               </a>
             </div>
           </div>
@@ -58,7 +58,7 @@
 
   // Pre-generate options HTML for departments and auditors
   const departmentOptions = `
-    <option value="">Select Department</option>
+    <option value="">{{ __('Select Department') }}</option>
     @foreach($departments as $department)
       <option value="{{ $department->id }}">{{ $department->name }} ({{ $department->code }})</option>
     @endforeach
@@ -94,16 +94,16 @@
       <div class="card mb-3 department-section" data-index="${index}">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="mb-0">Department ${index}</h6>
+            <h6 class="mb-0">{{ __('Department') }} ${index}</h6>
             <button type="button" class="btn btn-sm btn-danger remove-department">
-              <i class="icon-base ti tabler-trash"></i> Remove
+              <i class="icon-base ti tabler-trash"></i> {{ __('Remove') }}
             </button>
           </div>
 
           <div class="row">
             <!-- Department Selection -->
             <div class="col-md-6 mb-3">
-              <label class="form-label">Department <span class="text-danger">*</span></label>
+              <label class="form-label">{{ __('Department') }} <span class="text-danger">*</span></label>
               <select class="form-select select2-department" name="departments[${index}][department_id]" required>
                 ${departmentOptions}
               </select>
@@ -111,39 +111,39 @@
 
             <!-- Auditors Selection -->
             <div class="col-md-6 mb-3">
-              <label class="form-label">Assigned Auditors</label>
+              <label class="form-label">{{ __('Assigned Auditors') }}</label>
               <select class="form-select select2-auditors" name="departments[${index}][auditor_ids][]" multiple>
                 ${auditorOptions}
               </select>
-              <small class="text-muted">Select auditors for this department</small>
+              <small class="text-muted">{{ __('Select auditors for this department') }}</small>
             </div>
 
             <!-- CheckList Groups Selection -->
             <div class="col-12 mb-3">
-              <label class="form-label">CheckList Groups</label>
+              <label class="form-label">{{ __('CheckList Groups') }}</label>
               <select class="form-select select2-checklist-groups" name="departments[${index}][checklist_group_ids][]" multiple>
                 ${checklistGroupOptions}
               </select>
-              <small class="text-muted">Select checklist groups to audit for this department</small>
+              <small class="text-muted">{{ __('Select checklist groups to audit for this department') }}</small>
             </div>
 
             <!-- Planned Start Date -->
             <div class="col-md-6 mb-3">
-              <label class="form-label">Planned Start Date</label>
+              <label class="form-label">{{ __('Planned Start Date') }}</label>
               <input type="date" class="form-control" name="departments[${index}][planned_start_date]">
             </div>
 
             <!-- Planned End Date -->
             <div class="col-md-6 mb-3">
-              <label class="form-label">Planned End Date</label>
+              <label class="form-label">{{ __('Planned End Date') }}</label>
               <input type="date" class="form-control" name="departments[${index}][planned_end_date]">
             </div>
 
             <!-- Notes -->
             <div class="col-12 mb-3">
-              <label class="form-label">Notes</label>
+              <label class="form-label">{{ __('Notes') }}</label>
               <textarea class="form-control" name="departments[${index}][notes]" rows="2"
-                placeholder="Additional notes for this department's audit"></textarea>
+                placeholder="{{ __("Additional notes for this department's audit") }}"></textarea>
             </div>
           </div>
         </div>
@@ -154,19 +154,19 @@
   // Initialize Select2 in a container
   function initializeSelect2InContainer($container) {
     $container.find('.select2-department').select2({
-      placeholder: 'Select Department',
+      placeholder: '{{ __('Select Department') }}',
       allowClear: true,
       width: '100%'
     });
 
     $container.find('.select2-auditors').select2({
-      placeholder: 'Select Auditors',
+      placeholder: '{{ __('Select Auditors') }}',
       allowClear: true,
       width: '100%'
     });
 
     $container.find('.select2-checklist-groups').select2({
-      placeholder: 'Select CheckList Groups',
+      placeholder: '{{ __('Select CheckList Groups') }}',
       allowClear: true,
       width: '100%'
     });
@@ -199,7 +199,7 @@
         $('#departmentsContainer').html(`
           <div class="alert alert-info">
             <i class="icon-base ti tabler-info-circle me-2"></i>
-            Click "Add Department" to start adding departments to this audit plan.
+            {{ __('Click "Add Department" to start adding departments to this audit plan.') }}
           </div>
         `);
       }
@@ -211,7 +211,7 @@
     const departmentCount = $('#departmentsContainer .department-section').length;
     if (departmentCount === 0) {
       e.preventDefault();
-      alert('Please add at least one department to the audit plan.');
+      alert('{{ __('Please add at least one department to the audit plan.') }}');
       return false;
     }
   });

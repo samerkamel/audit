@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Improvement Opportunities')
+@section('title', __('Improvement Opportunities'))
 
 @section('vendor-style')
 @vite([
@@ -20,18 +20,18 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center mb-6">
     <div>
-      <h4 class="fw-bold mb-1">Improvement Opportunities</h4>
-      <p class="text-muted mb-0">Manage and track improvement opportunities from audit observations</p>
+      <h4 class="fw-bold mb-1">{{ __('Improvement Opportunities') }}</h4>
+      <p class="text-muted mb-0">{{ __('Manage and track improvement opportunities from audit observations') }}</p>
     </div>
     <div class="d-flex gap-2">
       <form action="{{ route('improvement-opportunities.auto-create-from-observations') }}" method="POST" class="d-inline">
         @csrf
-        <button type="submit" class="btn btn-label-primary" onclick="return confirm('Create Improvement Opportunities from all observation findings without existing IOs?')">
-          <i class="icon-base ti tabler-wand me-1"></i> Auto-Create IOs
+        <button type="submit" class="btn btn-label-primary" onclick="return confirm('{{ __('Create Improvement Opportunities from all observation findings without existing IOs?') }}')">
+          <i class="icon-base ti tabler-wand me-1"></i> {{ __('Auto-Create IOs') }}
         </button>
       </form>
       <a href="{{ route('improvement-opportunities.create') }}" class="btn btn-primary">
-        <i class="icon-base ti tabler-plus me-1"></i> Create IO
+        <i class="icon-base ti tabler-plus me-1"></i> {{ __('Create IO') }}
       </a>
     </div>
   </div>
@@ -43,7 +43,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Total IOs</span>
+              <span class="text-heading">{{ __('Total IOs') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $statistics['total'] }}</h4>
               </div>
@@ -62,7 +62,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Issued</span>
+              <span class="text-heading">{{ __('Issued') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $statistics['issued'] }}</h4>
               </div>
@@ -81,7 +81,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">In Progress</span>
+              <span class="text-heading">{{ __('In Progress') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $statistics['in_progress'] }}</h4>
               </div>
@@ -100,7 +100,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Closed</span>
+              <span class="text-heading">{{ __('Closed') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $statistics['closed'] }}</h4>
               </div>
@@ -123,7 +123,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">High Priority</span>
+              <span class="text-heading">{{ __('High Priority') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $statistics['high_priority'] }}</h4>
               </div>
@@ -142,7 +142,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Overdue</span>
+              <span class="text-heading">{{ __('Overdue') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $statistics['overdue'] }}</h4>
               </div>
@@ -161,7 +161,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Pending Approval</span>
+              <span class="text-heading">{{ __('Pending Approval') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $statistics['pending_approval'] }}</h4>
               </div>
@@ -180,7 +180,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Draft</span>
+              <span class="text-heading">{{ __('Draft') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $statistics['draft'] }}</h4>
               </div>
@@ -199,21 +199,21 @@
   <!-- IO List -->
   <div class="card">
     <div class="card-header border-bottom">
-      <h5 class="card-title mb-0">Improvement Opportunity List</h5>
+      <h5 class="card-title mb-0">{{ __('Improvement Opportunities List') }}</h5>
     </div>
     <div class="card-datatable table-responsive">
       <table class="datatables-io table dt-responsive nowrap" style="width:100%">
         <thead>
           <tr>
-            <th>IO Number</th>
-            <th>Subject</th>
-            <th>From</th>
-            <th>To Department</th>
-            <th>Source Type</th>
-            <th>Priority</th>
-            <th>Status</th>
-            <th>Issued Date</th>
-            <th>Actions</th>
+            <th>{{ __('IO Number') }}</th>
+            <th>{{ __('Subject') }}</th>
+            <th>{{ __('From') }}</th>
+            <th>{{ __('To Department') }}</th>
+            <th>{{ __('Source Type') }}</th>
+            <th>{{ __('Priority') }}</th>
+            <th>{{ __('Status') }}</th>
+            <th>{{ __('Issued Date') }}</th>
+            <th>{{ __('Actions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -254,26 +254,26 @@
                 </button>
                 <div class="dropdown-menu">
                   <a class="dropdown-item" href="{{ route('improvement-opportunities.show', $io) }}">
-                    <i class="icon-base ti tabler-eye me-1"></i> View Details
+                    <i class="icon-base ti tabler-eye me-1"></i> {{ __('View Details') }}
                   </a>
                   @if(in_array($io->status, ['draft', 'rejected_to_be_edited']))
                   <a class="dropdown-item" href="{{ route('improvement-opportunities.edit', $io) }}">
-                    <i class="icon-base ti tabler-edit me-1"></i> Edit
+                    <i class="icon-base ti tabler-edit me-1"></i> {{ __('Edit') }}
                   </a>
                   @endif
                   @if($io->status === 'draft')
                   <form action="{{ route('improvement-opportunities.submit-for-approval', $io) }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="dropdown-item">
-                      <i class="icon-base ti tabler-send me-1"></i> Submit for Approval
+                      <i class="icon-base ti tabler-send me-1"></i> {{ __('Submit for Approval') }}
                     </button>
                   </form>
                   <div class="dropdown-divider"></div>
-                  <form action="{{ route('improvement-opportunities.destroy', $io) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this IO?')">
+                  <form action="{{ route('improvement-opportunities.destroy', $io) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('Are you sure?') }}')">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="dropdown-item text-danger">
-                      <i class="icon-base ti tabler-trash me-1"></i> Delete
+                      <i class="icon-base ti tabler-trash me-1"></i> {{ __('Delete') }}
                     </button>
                   </form>
                   @endif
@@ -285,7 +285,7 @@
           <tr>
             <td colspan="9" class="text-center py-4">
               <i class="icon-base ti tabler-database-off icon-48px text-muted mb-2"></i>
-              <p class="text-muted mb-0">No Improvement Opportunities found</p>
+              <p class="text-muted mb-0">{{ __('No Improvement Opportunities found') }}</p>
             </td>
           </tr>
           @endforelse
@@ -311,7 +311,7 @@ $(document).ready(function() {
     ],
     language: {
       search: '',
-      searchPlaceholder: 'Search IOs...'
+      searchPlaceholder: '{{ __('Search IOs...') }}'
     }
   });
 });
