@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Audit Plans Management')
+@section('title', __('Audit Plans Management'))
 
 @section('vendor-style')
 @vite([
@@ -22,11 +22,11 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center mb-6">
     <div>
-      <h4 class="fw-bold mb-1">Audit Plans Management</h4>
-      <p class="text-muted mb-0">Plan and schedule organizational audits</p>
+      <h4 class="fw-bold mb-1">{{ __('Audit Plans Management') }}</h4>
+      <p class="text-muted mb-0">{{ __('Plan and schedule organizational audits') }}</p>
     </div>
     <a href="{{ route('audit-plans.create') }}" class="btn btn-primary">
-      <i class="icon-base ti tabler-plus me-1"></i> Create Audit Plan
+      <i class="icon-base ti tabler-plus me-1"></i> {{ __('Create Audit Plan') }}
     </a>
   </div>
 
@@ -37,7 +37,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Total</span>
+              <span class="text-heading">{{ __('Total') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['total'] }}</h4>
               </div>
@@ -56,7 +56,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Draft</span>
+              <span class="text-heading">{{ __('Draft') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['draft'] }}</h4>
               </div>
@@ -75,7 +75,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Planned</span>
+              <span class="text-heading">{{ __('Planned') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['planned'] }}</h4>
               </div>
@@ -94,7 +94,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">In Progress</span>
+              <span class="text-heading">{{ __('In Progress') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['in_progress'] }}</h4>
               </div>
@@ -113,7 +113,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Completed</span>
+              <span class="text-heading">{{ __('Completed') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['completed'] }}</h4>
               </div>
@@ -132,7 +132,7 @@
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
-              <span class="text-heading">Overdue</span>
+              <span class="text-heading">{{ __('Overdue') }}</span>
               <div class="d-flex align-items-center my-1">
                 <h4 class="mb-0 me-2">{{ $stats['overdue'] }}</h4>
               </div>
@@ -152,10 +152,10 @@
   <div class="d-flex justify-content-end mb-3">
     <div class="btn-group" role="group">
       <button type="button" class="btn btn-outline-primary active" id="tableViewBtn" onclick="toggleView('table')">
-        <i class="icon-base ti tabler-table me-1"></i> Table View
+        <i class="icon-base ti tabler-table me-1"></i> {{ __('Table View') }}
       </button>
       <button type="button" class="btn btn-outline-primary" id="ganttViewBtn" onclick="toggleView('gantt')">
-        <i class="icon-base ti tabler-chart-gantt me-1"></i> Gantt Chart
+        <i class="icon-base ti tabler-chart-gantt me-1"></i> {{ __('Gantt Chart') }}
       </button>
     </div>
   </div>
@@ -163,12 +163,12 @@
   <!-- Gantt Chart Card -->
   <div class="card mb-6" id="ganttChartCard" style="display: none;">
     <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-      <h5 class="card-title mb-0">Audit Plans Timeline ({{ date('Y') }})</h5>
+      <h5 class="card-title mb-0">{{ __('Audit Plans Timeline') }} ({{ date('Y') }})</h5>
       <div class="d-flex gap-2">
-        <span class="badge bg-info"><i class="icon-base ti tabler-circle-filled me-1"></i>Planned</span>
-        <span class="badge bg-warning"><i class="icon-base ti tabler-circle-filled me-1"></i>In Progress</span>
-        <span class="badge bg-success"><i class="icon-base ti tabler-circle-filled me-1"></i>Completed</span>
-        <span class="badge bg-danger"><i class="icon-base ti tabler-circle-filled me-1"></i>Overdue</span>
+        <span class="badge bg-info"><i class="icon-base ti tabler-circle-filled me-1"></i>{{ __('Planned') }}</span>
+        <span class="badge bg-warning"><i class="icon-base ti tabler-circle-filled me-1"></i>{{ __('In Progress') }}</span>
+        <span class="badge bg-success"><i class="icon-base ti tabler-circle-filled me-1"></i>{{ __('Completed') }}</span>
+        <span class="badge bg-danger"><i class="icon-base ti tabler-circle-filled me-1"></i>{{ __('Overdue') }}</span>
       </div>
     </div>
     <div class="card-body">
@@ -179,19 +179,19 @@
   <!-- Audit Plans List Card -->
   <div class="card" id="tableViewCard">
     <div class="card-header border-bottom">
-      <h5 class="card-title mb-0">Audit Plans List</h5>
+      <h5 class="card-title mb-0">{{ __('Audit Plans List') }}</h5>
     </div>
     <div class="card-datatable table-responsive">
       <table class="datatables-audit-plans table">
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Type</th>
-            <th>Sector</th>
-            <th>Lead Auditor</th>
-            <th>Planned Dates</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>{{ __('Title') }}</th>
+            <th>{{ __('Type') }}</th>
+            <th>{{ __('Sector') }}</th>
+            <th>{{ __('Lead Auditor') }}</th>
+            <th>{{ __('Planned Dates') }}</th>
+            <th>{{ __('Status') }}</th>
+            <th>{{ __('Actions') }}</th>
           </tr>
         </thead>
         <tbody>
