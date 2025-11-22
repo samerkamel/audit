@@ -49,3 +49,11 @@ yarn-error.log
 
 # Snyk Security Extension - AI Rules (auto-generated)
 .github/instructions/snyk_rules.instructions.md
+
+# Test artifacts
+tests/e2e-screenshots/
+tests/*-results.txt
+tests/test-output.log
+tests/*.backup
+tests/*.pre-bulk-refactor
+.playwright-mcp/
