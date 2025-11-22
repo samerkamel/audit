@@ -120,7 +120,7 @@
                     @foreach($checklistGroups as $group)
                       <option value="{{ $group->id }}"
                         @if(isset($auditPlan))
-                          {{ $auditPlan->checklistGroupsForDepartment($dept->id)->pluck('id')->contains($group->id) ? 'selected' : '' }}
+                          {{ $auditPlan->checklistGroupsForDepartment($dept->id)->pluck('check_list_groups.id')->contains($group->id) ? 'selected' : '' }}
                         @endif
                       >
                         {{ $group->code }} - {{ $group->title }} ({{ $group->auditQuestions->count() }} questions)

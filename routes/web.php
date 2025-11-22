@@ -167,7 +167,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Main Page Route (Protected)
-Route::get('/', [Analytics::class, 'index'])->middleware('auth')->name('dashboard-analytics');
+Route::get('/', [App\Http\Controllers\DashboardController::class, 'index'])->middleware('auth')->name('dashboard-analytics');
 
 // Dashboard Routes (Protected)
 Route::middleware(['auth'])->group(function () {
@@ -381,6 +381,10 @@ use App\Http\Controllers\AuditReportController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\CarResponseController;
 use App\Http\Controllers\CarFollowUpController;
+use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\ExternalAuditController;
+use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\DocumentController;
 
 Route::middleware(['auth'])->group(function () {
     // User Management
@@ -448,4 +452,67 @@ Route::middleware(['auth'])->group(function () {
     Route::post('cars/{car}/follow-ups/{followUp}/reject', [CarFollowUpController::class, 'reject'])->name('cars.follow-ups.reject');
     Route::delete('cars/{car}/follow-ups/{followUp}/remove-attachment', [CarFollowUpController::class, 'removeAttachment'])->name('cars.follow-ups.remove-attachment');
     Route::delete('cars/{car}/follow-ups/{followUp}', [CarFollowUpController::class, 'destroy'])->name('cars.follow-ups.destroy');
+
+    // Customer Complaint Management
+    Route::resource('complaints', ComplaintController::class);
+    Route::post('complaints/{complaint}/acknowledge', [ComplaintController::class, 'acknowledge'])->name('complaints.acknowledge');
+    Route::post('complaints/{complaint}/investigate', [ComplaintController::class, 'investigate'])->name('complaints.investigate');
+    Route::post('complaints/{complaint}/resolve', [ComplaintController::class, 'resolve'])->name('complaints.resolve');
+    Route::post('complaints/{complaint}/close', [ComplaintController::class, 'close'])->name('complaints.close');
+    Route::post('complaints/{complaint}/generate-car', [ComplaintController::class, 'generateCar'])->name('complaints.generate-car');
+
+    // External Audit Management
+    Route::resource('external-audits', ExternalAuditController::class);
+    Route::post('external-audits/{externalAudit}/start', [ExternalAuditController::class, 'start'])->name('external-audits.start');
+    Route::post('external-audits/{externalAudit}/complete', [ExternalAuditController::class, 'complete'])->name('external-audits.complete');
+    Route::post('external-audits/{externalAudit}/cancel', [ExternalAuditController::class, 'cancel'])->name('external-audits.cancel');
+
+    // Certificate Management
+    Route::resource('certificates', CertificateController::class);
+    Route::post('certificates/{certificate}/suspend', [CertificateController::class, 'suspend'])->name('certificates.suspend');
+    Route::post('certificates/{certificate}/revoke', [CertificateController::class, 'revoke'])->name('certificates.revoke');
+    Route::post('certificates/{certificate}/reinstate', [CertificateController::class, 'reinstate'])->name('certificates.reinstate');
+
+    // Document Management
+    Route::resource('documents', DocumentController::class);
+    Route::post('documents/{document}/submit-for-review', [DocumentController::class, 'submitForReview'])->name('documents.submit-for-review');
+    Route::post('documents/{document}/review', [DocumentController::class, 'review'])->name('documents.review');
+    Route::post('documents/{document}/approve', [DocumentController::class, 'approve'])->name('documents.approve');
+    Route::post('documents/{document}/make-effective', [DocumentController::class, 'makeEffective'])->name('documents.make-effective');
+    Route::post('documents/{document}/make-obsolete', [DocumentController::class, 'makeObsolete'])->name('documents.make-obsolete');
+    Route::get('documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
+
+    // Notification Management
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+        Route::get('/unread-count', [App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('unread-count');
+        Route::get('/latest', [App\Http\Controllers\NotificationController::class, 'getLatest'])->name('latest');
+        Route::post('/{notification}/mark-as-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('mark-as-read');
+        Route::post('/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('mark-all-as-read');
+        Route::delete('/{notification}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('destroy');
+        Route::delete('/', [App\Http\Controllers\NotificationController::class, 'destroyAll'])->name('destroy-all');
+    });
+
+    // Report Export Routes
+    Route::prefix('reports')->name('reports.')->group(function () {
+        // Audits Reports
+        Route::get('/audits/pdf', [App\Http\Controllers\ReportController::class, 'auditsPdf'])->name('audits.pdf');
+        Route::get('/audits/excel', [App\Http\Controllers\ReportController::class, 'auditsExcel'])->name('audits.excel');
+
+        // CARs Reports
+        Route::get('/cars/pdf', [App\Http\Controllers\ReportController::class, 'carsPdf'])->name('cars.pdf');
+        Route::get('/cars/excel', [App\Http\Controllers\ReportController::class, 'carsExcel'])->name('cars.excel');
+
+        // Certificates Reports
+        Route::get('/certificates/pdf', [App\Http\Controllers\ReportController::class, 'certificatesPdf'])->name('certificates.pdf');
+        Route::get('/certificates/excel', [App\Http\Controllers\ReportController::class, 'certificatesExcel'])->name('certificates.excel');
+
+        // Documents Reports
+        Route::get('/documents/pdf', [App\Http\Controllers\ReportController::class, 'documentsPdf'])->name('documents.pdf');
+        Route::get('/documents/excel', [App\Http\Controllers\ReportController::class, 'documentsExcel'])->name('documents.excel');
+
+        // Complaints Reports
+        Route::get('/complaints/pdf', [App\Http\Controllers\ReportController::class, 'complaintsPdf'])->name('complaints.pdf');
+        Route::get('/complaints/excel', [App\Http\Controllers\ReportController::class, 'complaintsExcel'])->name('complaints.excel');
+    });
 });

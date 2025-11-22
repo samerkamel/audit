@@ -68,6 +68,36 @@
       "name": "CAR Management",
       "icon": "menu-icon icon-base ti tabler-alert-circle",
       "slug": "cars"
+    },
+    {
+      "url": "/complaints",
+      "name": "Customer Complaints",
+      "icon": "menu-icon icon-base ti tabler-message-report",
+      "slug": "complaints"
+    },
+    {
+      "menuHeader": "External Audits & Certifications"
+    },
+    {
+      "url": "/external-audits",
+      "name": "External Audits",
+      "icon": "menu-icon icon-base ti tabler-file-certificate",
+      "slug": "external-audits"
+    },
+    {
+      "url": "/certificates",
+      "name": "ISO Certificates",
+      "icon": "menu-icon icon-base ti tabler-award",
+      "slug": "certificates"
+    },
+    {
+      "menuHeader": "Document Control"
+    },
+    {
+      "url": "/documents",
+      "name": "Document Management",
+      "icon": "menu-icon icon-base ti tabler-file-text",
+      "slug": "documents"
     }
   ]
 }

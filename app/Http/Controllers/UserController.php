@@ -104,8 +104,13 @@ class UserController extends Controller
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
-        // Assign roles
-        $user->assignRole($validated['roles']);
+        // Assign roles (handle both single and multiple roles)
+        $roles = $validated['roles'];
+        if (is_array($roles)) {
+            $user->syncRoles($roles);
+        } else {
+            $user->assignRole($roles);
+        }
 
         return redirect()->route('users.index')
             ->with('success', 'User created successfully.');

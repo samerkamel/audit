@@ -56,6 +56,7 @@ export default defineConfig({
       input: [
         'resources/css/app.css',
         'resources/assets/css/demo.css',
+        'resources/assets/css/mobile-responsive.css',
         'resources/js/app.js',
         ...pageJsFiles,
         ...vendorJsFiles,

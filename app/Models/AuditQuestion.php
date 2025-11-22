@@ -17,6 +17,7 @@ class AuditQuestion extends Model
      */
     protected $fillable = [
         'code',
+        'question',
         'question_text',
         'iso_reference',
         'quality_procedure_reference',
@@ -100,5 +101,21 @@ class AuditQuestion extends Model
             'security' => 'Security',
             default => ucfirst($this->category),
         };
+    }
+
+    /**
+     * Get the question attribute (alias for question_text).
+     */
+    public function getQuestionAttribute(): ?string
+    {
+        return $this->question_text;
+    }
+
+    /**
+     * Set the question attribute (maps to question_text).
+     */
+    public function setQuestionAttribute($value): void
+    {
+        $this->attributes['question_text'] = $value;
     }
 }

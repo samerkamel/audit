@@ -199,22 +199,38 @@ class Car extends Model
     }
 
     /**
-     * Generate next CAR number.
+     * Generate next CAR number with duplicate handling.
      */
     public static function generateCarNumber(): string
     {
         $year = date('y');
-        $lastCar = static::where('car_number', 'like', "C{$year}%")
-            ->orderBy('car_number', 'desc')
-            ->first();
+        $maxAttempts = 100; // Safety limit to prevent infinite loops
 
-        if ($lastCar) {
-            $lastNumber = (int) substr($lastCar->car_number, 3);
-            $nextNumber = $lastNumber + 1;
-        } else {
-            $nextNumber = 1;
+        for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
+            // Find the highest CAR number for this year (including soft-deleted)
+            $lastCar = static::withTrashed()
+                ->where('car_number', 'like', "C{$year}%")
+                ->orderBy('car_number', 'desc')
+                ->first();
+
+            if ($lastCar) {
+                $lastNumber = (int) substr($lastCar->car_number, 3);
+                $nextNumber = $lastNumber + 1;
+            } else {
+                $nextNumber = 1;
+            }
+
+            $carNumber = sprintf('C%s%03d', $year, $nextNumber);
+
+            // Check if this number already exists (including soft-deleted)
+            if (!static::withTrashed()->where('car_number', $carNumber)->exists()) {
+                return $carNumber;
+            }
+
+            // If it exists, the loop will continue and find the next highest number
         }
 
-        return sprintf('C%s%03d', $year, $nextNumber);
+        // Fallback: use timestamp-based unique number if all attempts failed
+        return sprintf('C%s%s', $year, substr(time(), -5));
     }
 }

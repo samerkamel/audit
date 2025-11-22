@@ -155,7 +155,7 @@
               </td>
               <td>
                 <div style="max-width: 300px;">
-                  {{ Str::limit($group->title, 60) }}
+                  {{ \Illuminate\Support\Str::limit($group->title, 60) }}
                 </div>
               </td>
               <td>

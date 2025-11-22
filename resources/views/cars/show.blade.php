@@ -98,7 +98,7 @@
   @php
     $hasAcceptedResponse = $car->responses()->where('response_status', 'accepted')->exists();
     $hasFollowUps = $car->followUps()->count() > 0;
-    $allFollowUpsAccepted = $car->followUps()->where('status', '!=', 'accepted')->doesntExist();
+    $allFollowUpsAccepted = $car->followUps()->where('follow_up_status', '!=', 'accepted')->doesntExist();
     $canClose = $hasAcceptedResponse && $hasFollowUps && $allFollowUpsAccepted && $car->status !== 'closed';
   @endphp
 
@@ -225,7 +225,7 @@
       <div class="card mb-6">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="card-title mb-0">Department Responses</h5>
-          @if(in_array($car->status, ['issued', 'in_progress']) && Auth::user()->department_id === $car->to_department_id)
+          @if(in_array($car->status, ['issued', 'in_progress']) && auth()->user()?->department_id === $car->to_department_id)
           <a href="{{ route('cars.responses.create', $car) }}" class="btn btn-sm btn-primary">
             <i class="icon-base ti tabler-plus me-1"></i> Add Response
           </a>
@@ -243,7 +243,7 @@
                 <span class="badge bg-label-{{ $response->response_status_color }}">
                   {{ ucwords(str_replace('_', ' ', $response->response_status)) }}
                 </span>
-                @if(in_array($response->response_status, ['pending', 'rejected']) && Auth::user()->department_id === $car->to_department_id)
+                @if(in_array($response->response_status, ['pending', 'rejected']) && auth()->user()?->department_id === $car->to_department_id)
                 <a href="{{ route('cars.responses.edit', [$car, $response]) }}" class="btn btn-xs btn-label-primary">
                   <i class="icon-base ti tabler-edit"></i>
                 </a>

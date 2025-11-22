@@ -85,7 +85,7 @@
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
             <span class="text-heading">Duration</span>
-            <h4 class="mb-0 me-2">{{ $stats['duration'] }} days</h4>
+            <h4 class="mb-0 me-2">{{ $stats['duration'] ?? 'N/A' }} {{ isset($stats['duration']) ? 'days' : '' }}</h4>
           </div>
           <div class="avatar">
             <span class="avatar-initial rounded-circle bg-label-primary">
@@ -103,13 +103,17 @@
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
             <span class="text-heading">Days Remaining</span>
-            <h4 class="mb-0 me-2 {{ $stats['days_remaining'] < 0 ? 'text-danger' : '' }}">
-              {{ abs($stats['days_remaining']) }} days
-              @if($stats['days_remaining'] < 0) overdue @endif
+            <h4 class="mb-0 me-2 {{ isset($stats['days_remaining']) && $stats['days_remaining'] < 0 ? 'text-danger' : '' }}">
+              @if(isset($stats['days_remaining']))
+                {{ abs($stats['days_remaining']) }} days
+                @if($stats['days_remaining'] < 0) overdue @endif
+              @else
+                N/A
+              @endif
             </h4>
           </div>
           <div class="avatar">
-            <span class="avatar-initial rounded-circle bg-label-{{ $stats['days_remaining'] < 0 ? 'danger' : 'info' }}">
+            <span class="avatar-initial rounded-circle bg-label-{{ isset($stats['days_remaining']) && $stats['days_remaining'] < 0 ? 'danger' : 'info' }}">
               <i class="icon-base ti tabler-clock icon-26px"></i>
             </span>
           </div>
@@ -144,10 +148,10 @@
         <div class="d-flex align-items-start justify-content-between">
           <div class="content-left">
             <span class="text-heading">Overdue</span>
-            <h4 class="mb-0 me-2">{{ $stats['is_overdue'] ? 'Yes' : 'No' }}</h4>
+            <h4 class="mb-0 me-2">{{ ($stats['is_overdue'] ?? false) ? 'Yes' : 'No' }}</h4>
           </div>
           <div class="avatar">
-            <span class="avatar-initial rounded-circle bg-label-{{ $stats['is_overdue'] ? 'danger' : 'success' }}">
+            <span class="avatar-initial rounded-circle bg-label-{{ ($stats['is_overdue'] ?? false) ? 'danger' : 'success' }}">
               <i class="icon-base ti tabler-alert-triangle icon-26px"></i>
             </span>
           </div>
@@ -326,7 +330,7 @@
                       <div class="d-flex justify-content-between align-items-start">
                         <div>
                           <small class="fw-medium d-block">{{ $group->code }}</small>
-                          <small class="text-muted d-block">{{ Str::limit($group->title, 30) }}</small>
+                          <small class="text-muted d-block">{{ \Illuminate\Support\Str::limit($group->title, 30) }}</small>
                           @if($group->quality_procedure_reference)
                             <span class="badge bg-label-info badge-sm mt-1">{{ $group->quality_procedure_reference }}</span>
                           @endif

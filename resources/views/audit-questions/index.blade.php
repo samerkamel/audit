@@ -155,7 +155,7 @@
               </td>
               <td>
                 <div style="max-width: 400px;">
-                  {{ Str::limit($question->question, 80) }}
+                  {{ \Illuminate\Support\Str::limit($question->question, 80) }}
                 </div>
               </td>
               <td>

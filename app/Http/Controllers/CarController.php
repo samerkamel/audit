@@ -134,7 +134,7 @@ class CarController extends Controller
         }
 
         return redirect()
-            ->route('cars.show', $car)
+            ->route('cars.index')
             ->with('success', "CAR {$car->car_number} created successfully.");
     }
 

@@ -24,6 +24,24 @@
       <p class="text-muted mb-0">Manage and track corrective actions from non-conformances</p>
     </div>
     <div class="d-flex gap-2">
+      <!-- Export Dropdown -->
+      <div class="btn-group">
+        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="icon-base ti tabler-download me-1"></i> Export
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item" href="{{ route('reports.cars.pdf') }}" target="_blank">
+              <i class="icon-base ti tabler-file-type-pdf me-2 text-danger"></i>Export to PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="{{ route('reports.cars.excel') }}">
+              <i class="icon-base ti tabler-file-spreadsheet me-2 text-success"></i>Export to Excel
+            </a>
+          </li>
+        </ul>
+      </div>
       <form action="{{ route('cars.auto-create-from-findings') }}" method="POST" class="d-inline">
         @csrf
         <button type="submit" class="btn btn-label-primary" onclick="return confirm('Create CARs from all non-compliant findings without existing CARs?')">
@@ -202,7 +220,7 @@
       <h5 class="card-title mb-0">CAR List</h5>
     </div>
     <div class="card-datatable table-responsive">
-      <table class="datatables-cars table">
+      <table class="datatables-cars table dt-responsive nowrap" style="width:100%">
         <thead>
           <tr>
             <th>CAR Number</th>
@@ -301,9 +319,14 @@
 <script>
 $(document).ready(function() {
   $('.datatables-cars').DataTable({
+    responsive: true,
     order: [[7, 'desc']], // Order by issued date descending
     pageLength: 15,
     dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+    columnDefs: [
+      { responsivePriority: 1, targets: 0 }, // CAR Number always visible
+      { responsivePriority: 2, targets: -1 } // Actions always visible
+    ],
     language: {
       search: '',
       searchPlaceholder: 'Search CARs...'

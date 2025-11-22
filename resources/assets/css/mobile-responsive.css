@@ -1,0 +1,389 @@
+/**
+ * Mobile Responsiveness Enhancements
+ * ISO 9001:2015 Audit Management System
+ */
+
+/* ==========================================================================
+   Mobile Navigation Improvements
+   ========================================================================== */
+
+@media (max-width: 991px) {
+  /* Improve mobile menu toggle visibility */
+  .layout-menu-toggle {
+    padding: 0.5rem !important;
+    font-size: 1.5rem;
+  }
+
+  /* Better spacing for mobile navbar */
+  .navbar-nav-right {
+    padding: 0.5rem 0;
+  }
+
+  /* Stack notification and user dropdowns vertically if needed */
+  .navbar-nav.flex-row {
+    gap: 0.5rem;
+  }
+}
+
+/* ==========================================================================
+   DataTables Mobile Optimizations
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Improve DataTables responsive controls */
+  table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+  table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+    background-color: var(--bs-primary);
+    border: 2px solid var(--bs-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Better spacing for responsive child rows */
+  table.dataTable > tbody > tr.child ul.dtr-details {
+    padding-left: 1rem;
+  }
+
+  table.dataTable > tbody > tr.child ul.dtr-details > li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  /* Hide less important columns on mobile */
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter {
+    margin-bottom: 1rem;
+  }
+
+  /* Stack DataTable controls vertically */
+  .dataTables_wrapper .row {
+    margin: 0;
+  }
+
+  .dataTables_wrapper .col-sm-12 {
+    padding: 0;
+  }
+}
+
+/* ==========================================================================
+   Card and Statistics Optimizations
+   ========================================================================== */
+
+@media (max-width: 575px) {
+  /* Improve card spacing on mobile */
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  /* Better statistics card layout */
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  /* Ensure statistics are readable */
+  .card-body h4 {
+    font-size: 1.5rem;
+  }
+
+  .card-body small {
+    font-size: 0.75rem;
+  }
+}
+
+/* ==========================================================================
+   Button Groups and Action Menus
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Stack button groups vertically on mobile */
+  .d-flex.gap-2 {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .d-flex.gap-2 > * {
+    width: 100%;
+  }
+
+  .d-flex.gap-2 .btn-group {
+    width: 100%;
+  }
+
+  .d-flex.gap-2 .btn-group button,
+  .d-flex.gap-2 .btn-group .dropdown-toggle {
+    width: 100%;
+  }
+
+  /* Ensure primary action buttons are prominent */
+  .btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9375rem;
+  }
+
+  /* Better dropdown menu positioning on mobile */
+  .dropdown-menu {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* ==========================================================================
+   Form Optimizations
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Touch-friendly form inputs */
+  .form-control,
+  .form-select {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .form-label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  /* Stack form rows vertically */
+  .row.g-6 {
+    --bs-gutter-y: 1rem;
+  }
+
+  /* Better spacing for form groups */
+  .mb-6 {
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+/* ==========================================================================
+   Modal Improvements
+   ========================================================================== */
+
+@media (max-width: 575px) {
+  /* Full-width modals on mobile */
+  .modal-dialog {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+
+  .modal-content {
+    border-radius: 0.5rem;
+  }
+
+  /* Better modal header spacing */
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-body {
+    padding: 1rem;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    padding: 1rem;
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+    margin: 0.25rem 0;
+  }
+}
+
+/* ==========================================================================
+   Table Action Buttons
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Make action buttons touch-friendly */
+  .btn-sm.btn-icon {
+    width: 36px;
+    height: 36px;
+    padding: 0.375rem;
+  }
+
+  .btn-sm.btn-icon i {
+    font-size: 1.125rem;
+  }
+
+  /* Better spacing for action button groups */
+  .d-flex.align-items-center.gap-1 {
+    gap: 0.5rem !important;
+  }
+}
+
+/* ==========================================================================
+   Notification Dropdown Mobile
+   ========================================================================== */
+
+@media (max-width: 575px) {
+  /* Full-width notification dropdown on mobile */
+  .dropdown-notifications .dropdown-menu {
+    min-width: 100vw !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    margin-top: 0.5rem;
+    border-radius: 0;
+  }
+
+  /* Better notification list spacing */
+  .dropdown-notifications-list {
+    max-height: 60vh !important;
+  }
+
+  .list-group-item {
+    padding: 1rem;
+  }
+}
+
+/* ==========================================================================
+   Statistics Cards Mobile Layout
+   ========================================================================== */
+
+@media (max-width: 991px) {
+  /* Ensure statistics cards stack properly */
+  .row.g-6 > [class*="col-"] {
+    margin-bottom: 1rem;
+  }
+
+  /* Better avatar sizing in cards */
+  .avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .avatar-initial {
+    font-size: 1.125rem;
+  }
+}
+
+/* ==========================================================================
+   Page Header Mobile
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Stack page headers vertically */
+  .d-flex.justify-content-between.align-items-center.mb-6 {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+
+  .d-flex.justify-content-between.align-items-center.mb-6 > div:last-child {
+    width: 100%;
+  }
+
+  /* Ensure page titles are readable */
+  h4.fw-bold,
+  h1.h3 {
+    font-size: 1.5rem;
+  }
+
+  p.text-muted {
+    font-size: 0.875rem;
+  }
+}
+
+/* ==========================================================================
+   Pagination Mobile
+   ========================================================================== */
+
+@media (max-width: 575px) {
+  /* Compact pagination on mobile */
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .page-item {
+    margin: 0.125rem;
+  }
+
+  .page-link {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  /* Hide some pagination numbers on small screens */
+  .pagination .page-item:not(.active):not(.disabled):not(:first-child):not(:last-child):not(:nth-child(2)):not(:nth-last-child(2)) {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Touch Improvements
+   ========================================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  .btn:hover {
+    transform: none;
+  }
+
+  /* Increase tap target sizes */
+  a, button, .btn, .form-check-input {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Better focus states for touch */
+  .btn:focus,
+  .form-control:focus,
+  .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+  }
+}
+
+/* ==========================================================================
+   Landscape Orientation Optimizations
+   ========================================================================== */
+
+@media (max-width: 991px) and (orientation: landscape) {
+  /* Reduce vertical padding in landscape mode */
+  .container-xxl {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .mb-6 {
+    margin-bottom: 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+  /* Hide navigation and actions when printing */
+  .layout-menu,
+  .layout-navbar,
+  .btn-group,
+  .dropdown,
+  .pagination {
+    display: none !important;
+  }
+
+  /* Expand all DataTables content for printing */
+  table.dataTable tr.dtr-inline.collapsed > td:before,
+  table.dataTable tr.dtr-inline.collapsed > th:before {
+    display: none;
+  }
+
+  /* Better table printing */
+  .dataTables_wrapper {
+    overflow: visible;
+  }
+
+  table {
+    page-break-inside: avoid;
+  }
+}

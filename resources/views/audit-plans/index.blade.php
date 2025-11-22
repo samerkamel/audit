@@ -183,17 +183,17 @@
             <td>
               <span class="badge bg-label-info">{{ $plan->audit_type_label }}</span>
             </td>
-            <td>{{ $plan->sector->name }}</td>
+            <td>{{ $plan->sector?->name ?? '-' }}</td>
             <td>
               <div class="d-flex flex-column">
-                <span class="fw-medium">{{ $plan->leadAuditor->name }}</span>
-                <small class="text-muted">{{ $plan->leadAuditor->email }}</small>
+                <span class="fw-medium">{{ $plan->leadAuditor?->name ?? 'Not Assigned' }}</span>
+                <small class="text-muted">{{ $plan->leadAuditor?->email ?? '' }}</small>
               </div>
             </td>
             <td>
               <div class="d-flex flex-column">
-                <small>{{ $plan->planned_start_date->format('d M Y') }}</small>
-                <small>{{ $plan->planned_end_date->format('d M Y') }}</small>
+                <small>{{ $plan->planned_start_date?->format('d M Y') ?? '-' }}</small>
+                <small>{{ $plan->planned_end_date?->format('d M Y') ?? '-' }}</small>
               </div>
             </td>
             <td>

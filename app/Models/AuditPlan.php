@@ -64,7 +64,7 @@ class AuditPlan extends Model
      */
     public function checklistGroups(): BelongsToMany
     {
-        return $this->belongsToMany(CheckListGroup::class, 'audit_plan_checklist_groups')
+        return $this->belongsToMany(CheckListGroup::class, 'audit_plan_checklist_groups', 'audit_plan_id', 'checklist_group_id')
             ->withPivot('department_id')
             ->withTimestamps();
     }
@@ -149,6 +149,28 @@ class AuditPlan extends Model
             'quality' => 'Quality Audit',
             default => ucfirst($this->audit_type),
         };
+    }
+
+    /**
+     * Check if the audit plan is overdue.
+     */
+    public function isOverdue(): bool
+    {
+        // If completed or cancelled, not overdue
+        if (in_array($this->status, ['completed', 'cancelled'])) {
+            return false;
+        }
+
+        // Check if any department's planned end date has passed
+        $latestEndDate = $this->departments()
+            ->whereNotIn('audit_plan_department.status', ['completed', 'deferred'])
+            ->max('planned_end_date');
+
+        if ($latestEndDate && now()->greaterThan($latestEndDate)) {
+            return true;
+        }
+
+        return false;
     }
 
 }

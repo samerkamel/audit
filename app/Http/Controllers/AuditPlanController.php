@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\CheckListGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuditPlanController extends Controller
 {
@@ -54,7 +55,7 @@ class AuditPlanController extends Controller
         $auditPlans = $query->latest()->paginate(15);
         $departments = Department::where('is_active', true)->get();
         $auditors = User::whereHas('roles', function ($q) {
-            $q->whereIn('name', ['admin', 'auditor', 'lead_auditor', 'manager']);
+            $q->whereIn('name', ['super_admin', 'quality_manager', 'quality_engineer', 'management_rep', 'external_auditor']);
         })->get();
 
         // Calculate statistics
@@ -80,7 +81,7 @@ class AuditPlanController extends Controller
     {
         $departments = Department::where('is_active', true)->get();
         $auditors = User::whereHas('roles', function ($q) {
-            $q->whereIn('name', ['admin', 'auditor', 'lead_auditor', 'manager']);
+            $q->whereIn('name', ['super_admin', 'quality_manager', 'quality_engineer', 'management_rep', 'external_auditor']);
         })->get();
         $checklistGroups = CheckListGroup::where('is_active', true)
             ->with('auditQuestions')
@@ -138,7 +139,7 @@ class AuditPlanController extends Controller
             ]);
 
             // Get the pivot record we just created
-            $pivotRecord = \DB::table('audit_plan_department')
+            $pivotRecord = DB::table('audit_plan_department')
                 ->where('audit_plan_id', $auditPlan->id)
                 ->where('department_id', $departmentId)
                 ->first();
@@ -146,7 +147,7 @@ class AuditPlanController extends Controller
             // Attach auditors to this department if any
             if (!empty($deptData['auditor_ids']) && $pivotRecord) {
                 foreach ($deptData['auditor_ids'] as $auditorId) {
-                    \DB::table('audit_plan_department_auditor')->insert([
+                    DB::table('audit_plan_department_auditor')->insert([
                         'audit_plan_department_id' => $pivotRecord->id,
                         'user_id' => $auditorId,
                         'role' => 'member',
@@ -159,7 +160,7 @@ class AuditPlanController extends Controller
             // Attach checklist groups to this department
             if (!empty($deptData['checklist_group_ids'])) {
                 foreach ($deptData['checklist_group_ids'] as $checklistGroupId) {
-                    \DB::table('audit_plan_checklist_groups')->insert([
+                    DB::table('audit_plan_checklist_groups')->insert([
                         'audit_plan_id' => $auditPlan->id,
                         'department_id' => $departmentId,
                         'checklist_group_id' => $checklistGroupId,
@@ -208,7 +209,7 @@ class AuditPlanController extends Controller
     {
         $departments = Department::where('is_active', true)->get();
         $auditors = User::whereHas('roles', function ($q) {
-            $q->whereIn('name', ['admin', 'auditor', 'lead_auditor', 'manager']);
+            $q->whereIn('name', ['super_admin', 'quality_manager', 'quality_engineer', 'management_rep', 'external_auditor']);
         })->get();
         $checklistGroups = CheckListGroup::where('is_active', true)
             ->with('auditQuestions')
@@ -259,7 +260,7 @@ class AuditPlanController extends Controller
         $auditPlan->departments()->detach();
 
         // Also delete existing checklist group assignments
-        \DB::table('audit_plan_checklist_groups')
+        DB::table('audit_plan_checklist_groups')
             ->where('audit_plan_id', $auditPlan->id)
             ->delete();
 
@@ -276,7 +277,7 @@ class AuditPlanController extends Controller
             ]);
 
             // Get the pivot record we just created
-            $pivotRecord = \DB::table('audit_plan_department')
+            $pivotRecord = DB::table('audit_plan_department')
                 ->where('audit_plan_id', $auditPlan->id)
                 ->where('department_id', $departmentId)
                 ->first();
@@ -284,7 +285,7 @@ class AuditPlanController extends Controller
             // Attach auditors to this department if any
             if (!empty($deptData['auditor_ids']) && $pivotRecord) {
                 foreach ($deptData['auditor_ids'] as $auditorId) {
-                    \DB::table('audit_plan_department_auditor')->insert([
+                    DB::table('audit_plan_department_auditor')->insert([
                         'audit_plan_department_id' => $pivotRecord->id,
                         'user_id' => $auditorId,
                         'role' => 'member',
@@ -297,7 +298,7 @@ class AuditPlanController extends Controller
             // Attach checklist groups to this department
             if (!empty($deptData['checklist_group_ids'])) {
                 foreach ($deptData['checklist_group_ids'] as $checklistGroupId) {
-                    \DB::table('audit_plan_checklist_groups')->insert([
+                    DB::table('audit_plan_checklist_groups')->insert([
                         'audit_plan_id' => $auditPlan->id,
                         'department_id' => $departmentId,
                         'checklist_group_id' => $checklistGroupId,
