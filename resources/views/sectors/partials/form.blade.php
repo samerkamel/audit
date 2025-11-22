@@ -22,9 +22,9 @@
 
   <!-- Sector Name (Arabic) -->
   <div class="col-md-6 mb-4">
-    <label for="name_ar" class="form-label">Sector Name (Arabic)</label>
+    <label for="name_ar" class="form-label">Sector Name (Arabic) <span class="text-danger">*</span></label>
     <input type="text" class="form-control @error('name_ar') is-invalid @enderror" id="name_ar" name="name_ar"
-      value="{{ old('name_ar', $sector->name_ar ?? '') }}" placeholder="تكنولوجيا المعلومات" dir="rtl">
+      value="{{ old('name_ar', $sector->name_ar ?? '') }}" placeholder="تكنولوجيا المعلومات" dir="rtl" required>
     @error('name_ar')
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror

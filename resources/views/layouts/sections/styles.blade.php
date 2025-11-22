@@ -29,3 +29,6 @@
 <!-- app CSS -->
 @vite(['resources/css/app.css'])
 <!-- END: app CSS-->
+
+<!-- Mobile Responsive CSS -->
+@vite(['resources/assets/css/mobile-responsive.css'])

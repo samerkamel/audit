@@ -27,9 +27,9 @@
   </div>
 
   <div class="col-md-6 mb-4">
-    <label for="name_ar" class="form-label">Name (Arabic)</label>
+    <label for="name_ar" class="form-label">Name (Arabic) <span class="text-danger">*</span></label>
     <input type="text" class="form-control @error('name_ar') is-invalid @enderror" id="name_ar" name="name_ar"
-      value="{{ old('name_ar', $department->name_ar ?? '') }}" dir="rtl">
+      value="{{ old('name_ar', $department->name_ar ?? '') }}" dir="rtl" required>
     @error('name_ar')<div class="invalid-feedback">{{ $message }}</div>@enderror
   </div>
 
