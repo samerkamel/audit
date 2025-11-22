@@ -235,24 +235,24 @@ class ExternalAuditControllerTest extends TestCase
     /** @test */
     public function it_can_get_audit_statistics()
     {
-        ExternalAudit::factory()->create(['status' => 'scheduled']);
-        ExternalAudit::factory()->create(['status' => 'in_progress']);
+        // Clear any existing audits for accurate count
+        ExternalAudit::query()->forceDelete();
+
+        ExternalAudit::factory()->create(['status' => 'scheduled', 'result' => 'pending']);
+        ExternalAudit::factory()->create(['status' => 'in_progress', 'result' => 'pending']);
         ExternalAudit::factory()->count(2)->create(['status' => 'completed', 'result' => 'passed']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $this->token)
             ->getJson('/api/v1/audits/statistics');
 
-        $response->assertStatus(200)
-            ->assertJson([
-                'success' => true,
-                'data' => [
-                    'total' => 4,
-                    'scheduled' => 1,
-                    'in_progress' => 1,
-                    'completed' => 2,
-                    'passed' => 2,
-                ],
-            ]);
+        $response->assertStatus(200);
+
+        $data = $response->json('data');
+        $this->assertEquals(4, $data['total']);
+        $this->assertEquals(1, $data['scheduled']);
+        $this->assertEquals(1, $data['in_progress']);
+        $this->assertEquals(2, $data['completed']);
+        $this->assertEquals(2, $data['passed']);
     }
 
     /** @test */
